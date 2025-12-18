@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>最新動態 | ProBall Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" href="https://fav.farm/⚾">
+    <link rel="stylesheet" href="latest.css" />
+  </head>
+  <body class="theme-light">
+    <div class="bgfx" aria-hidden="true">
+      <div class="bgfx__gradient"></div>
+      <div class="bgfx__grid"></div>
+      <div class="bgfx__noise"></div>
+      <div class="bgfx__orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+      </div>
+    </div>
+    <header class="navbar" role="banner">
+      <div class="navbar__inner container">
+        <a href="app.html" class="navbar__brand" aria-label="回到首頁">
+          <i class="ri-baseball-line"></i>
+          <span>ProBall Analytics</span>
+        </a>
+        <nav class="navbar__nav" role="navigation" aria-label="賽事分類">
+          <a class="nav__link" href="matches.html#league">聯盟賽程</a>
+          <a class="nav__link" href="international.html">國際賽</a>
+          <a class="nav__link is-active" href="#">最新動態</a>
+        </nav>
+        <div class="navbar__tools">
+          <div class="search">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <input id="latestSearch" type="search" placeholder="搜尋新聞 / 分析 / 球隊" aria-label="搜尋最新動態" />
+          </div>
+          <button class="btn btn-outline" id="themeToggle" aria-label="切換主題" aria-pressed="false" title="切換主題">
+            <i class="ri-moon-line"></i>
+          </button>
+          <div class="user-menu">
+            <button class="avatar" aria-label="使用者選單" id="userMenuBtn">
+              <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=200&auto=format&fit=crop" alt="使用者頭像" />
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+            <div class="dropdown-menu" id="userDropdown" hidden>
+              <a href="#profile" class="dropdown-item"><i class="ri-user-line"></i> 個人資料</a>
+              <a href="#settings" class="dropdown-item"><i class="ri-settings-3-line"></i> 設定</a>
+              <a href="#favorites" class="dropdown-item"><i class="ri-heart-line"></i> 我的收藏</a>
+              <div class="dropdown-divider"></div>
+              <a href="#logout" class="dropdown-item"><i class="ri-logout-box-r-line"></i> 登出</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="page-header container">
+        <div class="page-title">
+          <h1><i class="ri-flashlight-line"></i> 最新動態</h1>
+          <p>整合近期比賽與即將開始，提供即時資訊與互動體驗</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-outline" id="autoRefreshBtn"><i class="ri-time-line"></i> 自動更新：關</button>
+          <button class="btn btn-accent" id="refreshBtn"><i class="ri-refresh-line"></i> 重新整理</button>
+        </div>
+      </section>
+
+      <section class="latest-controls container" aria-label="篩選與分類">
+        <div class="control-group">
+          <i class="ri-sparkling-2-line"></i>
+          <select id="typeFilter" aria-label="類型">
+            <option value="all">所有類型</option>
+            <option value="live">LIVE</option>
+            <option value="upcoming">即將開始</option>
+            <option value="final">已結束</option>
+            <option value="news">新聞</option>
+            <option value="analysis">分析</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <i class="ri-sort-desc"></i>
+          <select id="sortBy" aria-label="排序">
+            <option value="time">時間最近</option>
+            <option value="status">狀態（LIVE 優先）</option>
+            <option value="impact">影響力</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <i class="ri-equalizer-line"></i>
+          <button class="btn btn-outline" id="quickFilters"><i class="ri-fire-line"></i> 熱門</button>
+        </div>
+      </section>
+
+      <div class="container">
+        <div class="chips" id="typeChips" role="tablist" aria-label="快速篩選">
+          <button class="chip is-active" data-type="all" role="tab" aria-selected="true"><i class="ri-sparkling-2-line"></i> 全部</button>
+          <button class="chip" data-type="live" role="tab" aria-selected="false"><i class="ri-live-line"></i> LIVE</button>
+          <button class="chip" data-type="upcoming" role="tab" aria-selected="false"><i class="ri-time-line"></i> 即將</button>
+          <button class="chip" data-type="final" role="tab" aria-selected="false"><i class="ri-check-line"></i> 結束</button>
+          <button class="chip" data-type="news" role="tab" aria-selected="false"><i class="ri-article-line"></i> 新聞</button>
+          <button class="chip" data-type="analysis" role="tab" aria-selected="false"><i class="ri-bar-chart-line"></i> 分析</button>
+        </div>
+      </div>
+
+      <section class="latest-hero">
+        <div class="container latest-hero__inner">
+          <div class="latest-hero__text">
+            <h2><i class="ri-live-line"></i> 現正熱播</h2>
+            <p>追蹤最新比分、直播與賽事事件更新。支援一鍵收藏、提醒與分享。</p>
+            <div class="latest-hero__actions">
+              <a class="hero-btn-primary" href="#feed"><i class="ri-arrow-down-s-line"></i> 開始瀏覽</a>
+              <button class="hero-btn-secondary" id="subscribeAll"><i class="ri-notification-line"></i> 訂閱所有 LIVE</button>
+            </div>
+          </div>
+          <div class="latest-hero__visual" aria-hidden="true">
+            <div class="ball"></div>
+            <div class="pulse"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="feed" class="latest-feed container" aria-live="polite">
+        <div id="feedGrid" class="feed-grid"></div>
+      </section>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <div class="footer-brand"><i class="ri-baseball-line"></i><span>ProBall Analytics</span></div>
+            <p class="footer-description">專業的棒球賽事數據分析平台，提供即時賽事資訊、深度分析與AI預測服務。</p>
+            <div class="social-links">
+              <a href="#facebook" class="social-link" aria-label="Facebook"><i class="ri-facebook-fill"></i></a>
+              <a href="#twitter" class="social-link" aria-label="Twitter"><i class="ri-twitter-fill"></i></a>
+              <a href="#instagram" class="social-link" aria-label="Instagram"><i class="ri-instagram-fill"></i></a>
+              <a href="#youtube" class="social-link" aria-label="YouTube"><i class="ri-youtube-fill"></i></a>
+              <a href="#line" class="social-link" aria-label="LINE"><i class="ri-line-fill"></i></a>
+            </div>
+          </div>
+          <div class="footer-section">
+            <h4>平台服務</h4>
+            <ul class="footer-links">
+              <li><a href="#about">關於我們</a></li>
+              <li><a href="#features">功能特色</a></li>
+              <li><a href="#pricing">價格方案</a></li>
+              <li><a href="#api">API 服務</a></li>
+              <li><a href="#partners">合作夥伴</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>支援服務</h4>
+            <ul class="footer-links">
+              <li><a href="#help">幫助中心</a></li>
+              <li><a href="#contact">聯絡客服</a></li>
+              <li><a href="#feedback">意見回饋</a></li>
+              <li><a href="#tutorial">使用教學</a></li>
+              <li><a href="#faq">常見問題</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>法律條款</h4>
+            <ul class="footer-links">
+              <li><a href="#terms">使用條款</a></li>
+              <li><a href="#privacy">隱私政策</a></li>
+              <li><a href="#cookies">Cookie 政策</a></li>
+              <li><a href="#security">安全政策</a></li>
+              <li><a href="#compliance">法規遵循</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <div class="footer-info">
+            <p>&copy; <span id="currentYear"></span> ProBall Analytics. 保留所有權利。</p>
+            <p>台灣台北市 | 統一編號：12345678</p>
+          </div>
+          <div class="footer-actions">
+            <a href="#language" class="footer-action"><i class="ri-global-line"></i> 繁體中文</a>
+            <a href="#accessibility" class="footer-action"><i class="ri-accessibility-line"></i> 無障礙服務</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    <script src="latest.js"></script>
+  </body>
+</html> 

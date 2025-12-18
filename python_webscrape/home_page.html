@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deeksite - CPBL Baseball Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Team-specific styling */
+        .team-brothers { 
+            background-color: rgba(0, 91, 170, 0.05); 
+            border-left: 4px solid #005baa;
+        }
+        .team-monkeys { 
+            background-color: rgba(255, 105, 180, 0.05); 
+            border-left: 4px solid #ff69b4;
+        }
+        .team-guardians { 
+            background-color: rgba(139, 69, 19, 0.05); 
+            border-left: 4px solid #8b4513;
+        }
+        .team-lions { 
+            background-color: rgba(255, 140, 0, 0.05); 
+            border-left: 4px solid #ff8c00;
+        }
+        .team-dragons { 
+            background-color: rgba(34, 139, 34, 0.05); 
+            border-left: 4px solid #228b22;
+        }
+        
+        /* Active tab styling */
+        .tab-active {
+            border-bottom: 3px solid #3b82f6;
+            color: #3b82f6;
+            font-weight: 600;
+            background-color: white;
+        }
+        
+        /* Card hover effect */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* Animation for loading content */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .mobile-stack {
+                flex-direction: column;
+            }
+            .team-logo {
+                width: 32px;
+                height: 32px;
+            }
+        }
+        
+        /* Gradient background for header */
+        .header-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+        }
+        
+        /* Custom shadow for tables */
+        .table-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+    <!-- Header -->
+    <header class="header-gradient text-white shadow-lg sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white rounded-full p-2">
+                        <i class="fas fa-baseball-ball text-blue-800 text-xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold tracking-tight">Deeksite <span class="font-normal">| CPBL Dashboard</span></h1>
+                </div>
+                <a href="https://www.cpbl.com.tw/" target="_blank" class="text-sm bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-full flex items-center transition-colors duration-300">
+                    <span>Official Site</span>
+                    <i class="fas fa-external-link-alt ml-2 text-xs"></i>
+                </a>
+            </div>
+            
+            <nav class="mt-4">
+                <ul class="flex space-x-6 overflow-x-auto pb-2 scrollbar-hide">
+                    <li><a href="#" class="hover:text-blue-200 whitespace-nowrap px-2 py-1 rounded transition-colors duration-200">News</a></li>
+                    <li><a href="#" class="hover:text-blue-200 whitespace-nowrap px-2 py-1 rounded transition-colors duration-200">Schedule</a></li>
+                    <li><a href="#" class="hover:text-blue-200 whitespace-nowrap px-2 py-1 rounded transition-colors duration-200">Scores</a></li>
+                    <li><a href="#" class="font-semibold text-blue-200 bg-blue-900/30 whitespace-nowrap px-2 py-1 rounded transition-colors duration-200">Standings</a></li>
+                    <li><a href="#" class="hover:text-blue-200 whitespace-nowrap px-2 py-1 rounded transition-colors duration-200">Stats</a></li>
+                    <li><a href="#" class="hover:text-blue-200 whitespace-nowrap px-2 py-1 rounded transition-colors duration-200">Players</a></li>
+                    <li><a href="#" class="hover:text-blue-200 whitespace-nowrap px-2 py-1 rounded transition-colors duration-200">Shop</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Standings Section -->
+        <section class="mb-12 animate-fadeIn">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-trophy text-yellow-500 mr-2"></i>
+                    Team Standings
+                </h2>
+                <div class="flex space-x-2 bg-gray-100 p-1 rounded-lg">
+                    <button id="first-half-btn" class="px-4 py-1 rounded-md tab-active transition-colors duration-200">2025 First Half</button>
+                    <button id="second-half-btn" class="px-4 py-1 rounded-md transition-colors duration-200">2025 Second Half</button>
+                </div>
+            </div>
+                    
+            <div id="first-half-standings" class="bg-white rounded-2xl table-shadow overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GP</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">W-L-T</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PCT</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GB</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Streak</th>
+                            </tr>
+                        </thead>
+                        <tbody id="first-half-body" class="bg-white divide-y divide-gray-200">
+                            <!-- Data will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                    
+            <div id="second-half-standings" class="bg-white rounded-2xl table-shadow overflow-hidden mt-6 hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GP</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">W-L-T</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PCT</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GB</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Streak</th>
+                            </tr>
+                        </thead>
+                        <tbody id="second-half-body" class="bg-white divide-y divide-gray-200">
+                            <!-- Data will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upcoming Games Section -->
+        <section class="mb-12 animate-fadeIn" style="animation-delay: 0.1s;">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="far fa-calendar-alt text-green-500 mr-2"></i>
+                Upcoming Games
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-white rounded-2xl shadow-md overflow-hidden card-hover">
+                    <div class="p-4">
+                        <div class="text-xs font-semibold text-gray-500 mb-2">Tomorrow • 18:35</div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="https://via.placeholder.com/40" alt="Brothers" class="w-8 h-8 rounded-full mr-2">
+                                <span class="font-medium">Brothers</span>
+                            </div>
+                            <span class="text-gray-500">vs</span>
+                            <div class="flex items-center">
+                                <img src="https://via.placeholder.com/40" alt="Monkeys" class="w-8 h-8 rounded-full mr-2">
+                                <span class="font-medium">Monkeys</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Taoyuan Stadium</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl shadow-md overflow-hidden card-hover">
+                    <div class="p-4">
+                        <div class="text-xs font-semibold text-gray-500 mb-2">Tomorrow • 18:35</div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="https://via.placeholder.com/40" alt="Guardians" class="w-8 h-8 rounded-full mr-2">
+                                <span class="font-medium">Guardians</span>
+                            </div>
+                            <span class="text-gray-500">vs</span>
+                            <div class="flex items-center">
+                                <img src="https://via.placeholder.com/40" alt="Lions" class="w-8 h-8 rounded-full mr-2">
+                                <span class="font-medium">Lions</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Tainan Stadium</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl shadow-md overflow-hidden card-hover">
+                    <div class="p-4">
+                        <div class="text-xs font-semibold text-gray-500 mb-2">Tomorrow • 18:35</div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="https://via.placeholder.com/40" alt="Dragons" class="w-8 h-8 rounded-full mr-2">
+                                <span class="font-medium">Dragons</span>
+                            </div>
+                            <span class="text-gray-500">vs</span>
+                            <div class="flex items-center">
+                                <img src="https://via.placeholder.com/40" alt="Brothers" class="w-8 h-8 rounded-full mr-2">
+                                <span class="font-medium">Brothers</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Taichung Stadium</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pitching Leaders Section -->
+        <section class="mb-12 animate-fadeIn" style="animation-delay: 0.1s;">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-baseball-ball text-red-500 mr-2"></i>
+                Pitching Leaders
+            </h2>
+                    
+            <div class="flex overflow-x-auto pb-2 mb-4 scrollbar-hide">
+                <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+                    <button data-category="era" class="pitching-tab px-4 py-1 rounded-md tab-active transition-colors duration-200">ERA</button>
+                    <button data-category="wins" class="pitching-tab px-4 py-1 rounded-md transition-colors duration-200">Wins</button>
+                    <button data-category="saves" class="pitching-tab px-4 py-1 rounded-md transition-colors duration-200">Saves</button>
+                    <button data-category="holds" class="pitching-tab px-4 py-1 rounded-md transition-colors duration-200">Holds</button>
+                    <button data-category="strikeouts" class="pitching-tab px-4 py-1 rounded-md transition-colors duration-200">K's</button>
+                </div>
+            </div>
+                    
+            <div id="pitching-cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <!-- Cards will be inserted here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Batting Leaders Section -->
+        <section class="mb-12 animate-fadeIn" style="animation-delay: 0.2s;">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-bat text-yellow-600 mr-2"></i>
+                Batting Leaders
+            </h2>
+                    
+            <div class="flex overflow-x-auto pb-2 mb-4 scrollbar-hide">
+                <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+                    <button data-category="avg" class="batting-tab px-4 py-1 rounded-md tab-active transition-colors duration-200">AVG</button>
+                    <button data-category="hits" class="batting-tab px-4 py-1 rounded-md transition-colors duration-200">Hits</button>
+                    <button data-category="hr" class="batting-tab px-4 py-1 rounded-md transition-colors duration-200">HR</button>
+                    <button data-category="rbi" class="batting-tab px-4 py-1 rounded-md transition-colors duration-200">RBI</button>
+                    <button data-category="sb" class="batting-tab px-4 py-1 rounded-md transition-colors duration-200">SB</button>
+                </div>
+            </div>
+                    
+            <div id="batting-cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <!-- Cards will be inserted here by JavaScript -->
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-xl font-bold mb-2 flex items-center">
+                        <i class="fas fa-baseball-ball text-blue-300 mr-2"></i>
+                        Deeksite CPBL Dashboard
+                    </h3>
+                    <p class="text-gray-400">Taiwan Professional Baseball Data Platform</p>
+                </div>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="https://www.cpbl.com.tw/" target="_blank" class="text-blue-300 hover:text-blue-100 transition-colors duration-200 flex items-center">
+                        <i class="fas fa-globe mr-1"></i> CPBL Official
+                    </a>
+                    <a href="#" class="text-blue-300 hover:text-blue-100 transition-colors duration-200 flex items-center">
+                        <i class="fas fa-info-circle mr-1"></i> About
+                    </a>
+                    <a href="#" class="text-blue-300 hover:text-blue-100 transition-colors duration-200 flex items-center">
+                        <i class="fas fa-envelope mr-1"></i> Contact
+                    </a>
+                </div>
+            </div>
+            <div class="mt-6 pt-6 border-t border-gray-700 text-center text-gray-400 text-sm">
+                <p>© 2025 Deeksite. All rights reserved.</p>
+                <p class="mt-1">Data source: Chinese Professional Baseball League (CPBL)</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample data (would normally come from API)
+        const data = {
+            "web_url": "https://www.cpbl.com.tw/",
+            "standing": {
+                "first_half": [
+                    { "team": "CTBC Brothers", "games": 60, "wins": 35, "losses": 23, "ties": 2, "win_percentage": 0.603, "games_behind": 0, "streak": "W3" },
+                    { "team": "Rakuten Monkeys", "games": 60, "wins": 34, "losses": 24, "ties": 2, "win_percentage": 0.586, "games_behind": 1, "streak": "W1" },
+                    { "team": "Fubon Guardians", "games": 60, "wins": 28, "losses": 30, "ties": 2, "win_percentage": 0.483, "games_behind": 7, "streak": "L2" },
+                    { "team": "Uni-President Lions", "games": 60, "wins": 25, "losses": 33, "ties": 2, "win_percentage": 0.431, "games_behind": 10, "streak": "L1" },
+                    { "team": "Wei Chuan Dragons", "games": 60, "wins": 23, "losses": 35, "ties": 2, "win_percentage": 0.397, "games_behind": 12, "streak": "L4" }
+                ],
+                "second_half": [
+                    { "team": "Rakuten Monkeys", "games": 30, "wins": 18, "losses": 11, "ties": 1, "win_percentage": 0.621, "games_behind": 0, "streak": "W2" },
+                    { "team": "Fubon Guardians", "games": 30, "wins": 17, "losses": 12, "ties": 1, "win_percentage": 0.586, "games_behind": 1, "streak": "W1" },
+                    { "team": "CTBC Brothers", "games": 30, "wins": 15, "losses": 14, "ties": 1, "win_percentage": 0.517, "games_behind": 3, "streak": "L1" },
+                    { "team": "Wei Chuan Dragons", "games": 30, "wins": 14, "losses": 15, "ties": 1, "win_percentage": 0.483, "games_behind": 4, "streak": "W1" },
+                    { "team": "Uni-President Lions", "games": 30, "wins": 11, "losses": 18, "ties": 1, "win_percentage": 0.379, "games_behind": 7, "streak": "L3" }
+                ]
+            },
+            "pitching_leaders": {
+                "era": [
+                    { "name": "José De Paula", "team": "CTBC Brothers", "value": 2.45, "image": "https://via.placeholder.com/80?text=DP" },
+                    { "name": "Tzu-Peng Huang", "team": "Rakuten Monkeys", "value": 2.67, "image": "https://via.placeholder.com/80?text=TH" },
+                    { "name": "Shih-Peng Chen", "team": "Fubon Guardians", "value": 2.89, "image": "https://via.placeholder.com/80?text=SC" },
+                    { "name": "Brock Dykxhoorn", "team": "Uni-President Lions", "value": 3.12, "image": "https://via.placeholder.com/80?text=BD" },
+                    { "name": "Wei-Chung Wang", "team": "Wei Chuan Dragons", "value": 3.25, "image": "https://via.placeholder.com/80?text=WW" }
+                ],
+                "wins": [
+                    { "name": "José De Paula", "team": "CTBC Brothers", "value": 12, "image": "https://via.placeholder.com/80?text=DP" },
+                    { "name": "Tzu-Peng Huang", "team": "Rakuten Monkeys", "value": 10, "image": "https://via.placeholder.com/80?text=TH" },
+                    { "name": "Shih-Peng Chen", "team": "Fubon Guardians", "value": 9, "image": "https://via.placeholder.com/80?text=SC" },
+                    { "name": "Yi-Cheng Wang", "team": "Rakuten Monkeys", "value": 8, "image": "https://via.placeholder.com/80?text=YW" },
+                    { "name": "Shao-Ching Chiang", "team": "Fubon Guardians", "value": 8, "image": "https://via.placeholder.com/80?text=SC" }
+                ],
+                "saves": [
+                    { "name": "C.C. Lee", "team": "CTBC Brothers", "value": 20, "image": "https://via.placeholder.com/80?text=CL" },
+                    { "name": "Bradin Hagens", "team": "Rakuten Monkeys", "value": 18, "image": "https://via.placeholder.com/80?text=BH" },
+                    { "name": "Hsin-Chieh Chen", "team": "Rakuten Monkeys", "value": 15, "image": "https://via.placeholder.com/80?text=HC" },
+                    { "name": "Chun-Yueh Tseng", "team": "Fubon Guardians", "value": 14, "image": "https://via.placeholder.com/80?text=CT" },
+                    { "name": "Yun-Wen Chen", "team": "Uni-President Lions", "value": 12, "image": "https://via.placeholder.com/80?text=YC" }
+                ],
+                "holds": [
+                    { "name": "Chun-Wei Wu", "team": "CTBC Brothers", "value": 25, "image": "https://via.placeholder.com/80?text=CW" },
+                    { "name": "Wei-Yung Wang", "team": "Fubon Guardians", "value": 22, "image": "https://via.placeholder.com/80?text=WW" },
+                    { "name": "Hung-Cheng Lai", "team": "Rakuten Monkeys", "value": 20, "image": "https://via.placeholder.com/80?text=HL" },
+                    { "name": "Ching-Ming Wang", "team": "Uni-President Lions", "value": 18, "image": "https://via.placeholder.com/80?text=CW" },
+                    { "name": "Hua-Wei Lo", "team": "Wei Chuan Dragons", "value": 16, "image": "https://via.placeholder.com/80?text=HL" }
+                ],
+                "strikeouts": [
+                    { "name": "José De Paula", "team": "CTBC Brothers", "value": 145, "image": "https://via.placeholder.com/80?text=DP" },
+                    { "name": "Tzu-Peng Huang", "team": "Rakuten Monkeys", "value": 120, "image": "https://via.placeholder.com/80?text=TH" },
+                    { "name": "Shao-Ching Chiang", "team": "Fubon Guardians", "value": 115, "image": "https://via.placeholder.com/80?text=SC" },
+                    { "name": "Wei-Chung Wang", "team": "Wei Chuan Dragons", "value": 105, "image": "https://via.placeholder.com/80?text=WW" },
+                    { "name": "Jui-Yu Ku", "team": "Uni-President Lions", "value": 98, "image": "https://via.placeholder.com/80?text=JK" }
+                ]
+            },
+            "batting_leaders": {
+                "avg": [
+                    { "name": "Chieh-Hsien Chen", "team": "Uni-President Lions", "value": 0.352, "image": "https://via.placeholder.com/80?text=CC" },
+                    { "name": "Li Lin", "team": "Rakuten Monkeys", "value": 0.345, "image": "https://via.placeholder.com/80?text=LL" },
+                    { "name": "Wei-Chen Wang", "team": "CTBC Brothers", "value": 0.338, "image": "https://via.placeholder.com/80?text=WW" },
+                    { "name": "An-Ko Lin", "team": "Uni-President Lions", "value": 0.331, "image": "https://via.placeholder.com/80?text=AL" },
+                    { "name": "Yen-Wen Kuo", "team": "Rakuten Monkeys", "value": 0.325, "image": "https://via.placeholder.com/80?text=YK" }
+                ],
+                "hits": [
+                    { "name": "Wei-Chen Wang", "team": "CTBC Brothers", "value": 125, "image": "https://via.placeholder.com/80?text=WW" },
+                    { "name": "Chieh-Hsien Chen", "team": "Uni-President Lions", "value": 120, "image": "https://via.placeholder.com/80?text=CC" },
+                    { "name": "Li Lin", "team": "Rakuten Monkeys", "value": 118, "image": "https://via.placeholder.com/80?text=LL" },
+                    { "name": "An-Ko Lin", "team": "Uni-President Lions", "value": 110, "image": "https://via.placeholder.com/80?text=AL" },
+                    { "name": "Yen-Wen Kuo", "team": "Rakuten Monkeys", "value": 108, "image": "https://via.placeholder.com/80?text=YK" }
+                ],
+                "hr": [
+                    { "name": "Chih-Sheng Lin", "team": "Wei Chuan Dragons", "value": 22, "image": "https://via.placeholder.com/80?text=CL" },
+                    { "name": "An-Ko Lin", "team": "Uni-President Lions", "value": 20, "image": "https://via.placeholder.com/80?text=AL" },
+                    { "name": "Yu-Hsien Chu", "team": "Rakuten Monkeys", "value": 18, "image": "https://via.placeholder.com/80?text=YC" },
+                    { "name": "Chih-Hao Chang", "team": "CTBC Brothers", "value": 16, "image": "https://via.placeholder.com/80?text=CD" },
+                    { "name": "Kuo-Hui Kao", "team": "Fubon Guardians", "value": 15, "image": "https://via.placeholder.com/80?text=KK" }
+                ],
+                "rbi": [
+                    { "name": "An-Ko Lin", "team": "Uni-President Lions", "value": 75, "image": "https://via.placeholder.com/80?text=AL" },
+                    { "name": "Chih-Sheng Lin", "team": "Wei Chuan Dragons", "value": 70, "image": "https://via.placeholder.com/80?text=CL" },
+                    { "name": "Yu-Hsien Chu", "team": "Rakuten Monkeys", "value": 68, "image": "https://via.placeholder.com/80?text=YC" },
+                    { "name": "Chun-Hsiu Chen", "team": "Rakuten Monkeys", "value": 65, "image": "https://via.placeholder.com/80?text=CC" },
+                    { "name": "Chih-Hao Chang", "team": "CTBC Brothers", "value": 62, "image": "https://via.placeholder.com/80?text=CD" }
+                ],
+                "sb": [
+                    { "name": "Wei-Chen Wang", "team": "CTBC Brothers", "value": 25, "image": "https://via.placeholder.com/80?text=WW" },
+                    { "name": "Chen-Wei Chen", "team": "Rakuten Monkeys", "value": 22, "image": "https://via.placeholder.com/80?text=CC" },
+                    { "name": "Ching-Kai Lin", "team": "Uni-President Lions", "value": 18, "image": "https://via.placeholder.com/80?text=CL" },
+                    { "name": "Tsung-Hsien Li", "team": "Fubon Guardians", "value": 15, "image": "https://via.placeholder.com/80?text=TL" },
+                    { "name": "Tien-Hsin Kuo", "team": "Wei Chuan Dragons", "value": 12, "image": "https://via.placeholder.com/80?text=TK" }
+                ]
+            }
+        };
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load standings
+            loadStandings('first_half', 'first-half-body');
+            loadStandings('second_half', 'second-half-body');
+            
+            // Load pitching leaders (default to ERA)
+            loadPitchingLeaders('era');
+            
+            // Load batting leaders (default to AVG)
+            loadBattingLeaders('avg');
+            
+            // Set up event listeners
+            document.getElementById('first-half-btn').addEventListener('click', function() {
+                document.getElementById('first-half-standings').classList.remove('hidden');
+                document.getElementById('second-half-standings').classList.add('hidden');
+                document.getElementById('first-half-btn').classList.add('tab-active');
+                document.getElementById('second-half-btn').classList.remove('tab-active');
+            });
+            
+            document.getElementById('second-half-btn').addEventListener('click', function() {
+                document.getElementById('first-half-standings').classList.add('hidden');
+                document.getElementById('second-half-standings').classList.remove('hidden');
+                document.getElementById('first-half-btn').classList.remove('tab-active');
+                document.getElementById('second-half-btn').classList.add('tab-active');
+            });
+            
+            // Pitching tab switchers
+            document.querySelectorAll('.pitching-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    loadPitchingLeaders(category);
+                    
+                    // Update active tab
+                    document.querySelectorAll('.pitching-tab').forEach(t => t.classList.remove('tab-active'));
+                    this.classList.add('tab-active');
+                });
+            });
+            
+            // Batting tab switchers
+            document.querySelectorAll('.batting-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    loadBattingLeaders(category);
+                    
+                    // Update active tab
+                    document.querySelectorAll('.batting-tab').forEach(t => t.classList.remove('tab-active'));
+                    this.classList.add('tab-active');
+                });
+            });
+        });
+
+        function loadStandings(season, elementId) {
+            const standings = data.standing[season];
+            const tbody = document.getElementById(elementId);
+            tbody.innerHTML = '';
+            
+            standings.forEach(team => {
+                const teamClass = getTeamClass(team.team);
+                const row = document.createElement('tr');
+                row.className = `${teamClass} animate-fadeIn`;
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40?text=${team.team.charAt(0)}" alt="${team.team}">
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${team.team}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${team.games}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${team.wins}-${team.losses}-${team.ties}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${team.win_percentage.toFixed(3)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${team.games_behind === 0 ? '-' : team.games_behind}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm ${team.streak.startsWith('W') ? 'text-green-600' : 'text-red-600'} font-semibold">${team.streak}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function loadPitchingLeaders(category) {
+            const leaders = data.pitching_leaders[category];
+            const container = document.getElementById('pitching-cards');
+            container.innerHTML = '';
+            
+            const categoryNames = {
+                'era': 'ERA',
+                'wins': 'Wins',
+                'saves': 'Saves',
+                'holds': 'Holds',
+                'strikeouts': 'Strikeouts'
+            };
+            
+            leaders.forEach((player, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl shadow-md overflow-hidden card-hover transition duration-300 animate-fadeIn';
+                
+                card.innerHTML = `
+                    <div class="p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="text-xs font-semibold text-gray-500">#${index + 1}</div>
+                            <div class="text-xs font-semibold text-gray-500">${categoryNames[category]}</div>
+                        </div>
+                        <div class="mt-2 flex items-center">
+                            <div class="flex-shrink-0 h-14 w-14">
+                                <img class="h-14 w-14 rounded-full object-cover" src="${player.image}" alt="${player.name}">
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-sm font-medium text-gray-900">${player.name}</div>
+                                <div class="text-xs text-gray-500">${player.team}</div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="text-2xl font-bold ${getStatColor(category, player.value)}">
+                                ${category === 'era' ? player.value.toFixed(2) : player.value}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        function loadBattingLeaders(category) {
+            const leaders = data.batting_leaders[category];
+            const container = document.getElementById('batting-cards');
+            container.innerHTML = '';
+            
+            const categoryNames = {
+                'avg': 'AVG',
+                'hits': 'Hits',
+                'hr': 'HR',
+                'rbi': 'RBI',
+                'sb': 'SB'
+            };
+            
+            leaders.forEach((player, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl shadow-md overflow-hidden card-hover transition duration-300 animate-fadeIn';
+                
+                card.innerHTML = `
+                    <div class="p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="text-xs font-semibold text-gray-500">#${index + 1}</div>
+                            <div class="text-xs font-semibold text-gray-500">${categoryNames[category]}</div>
+                        </div>
+                        <div class="mt-2 flex items-center">
+                            <div class="flex-shrink-0 h-14 w-14">
+                                <img class="h-14 w-14 rounded-full object-cover" src="${player.image}" alt="${player.name}">
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-sm font-medium text-gray-900">${player.name}</div>
+                                <div class="text-xs text-gray-500">${player.team}</div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="text-2xl font-bold ${getStatColor(category, player.value)}">
+                                ${category === 'avg' ? player.value.toFixed(3) : player.value}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        function getTeamClass(teamName) {
+            if (teamName.includes('Brothers')) return 'team-brothers';
+            if (teamName.includes('Monkeys')) return 'team-monkeys';
+            if (teamName.includes('Guardians')) return 'team-guardians';
+            if (teamName.includes('Lions')) return 'team-lions';
+            if (teamName.includes('Dragons')) return 'team-dragons';
+            return '';
+        }
+        
+        function getStatColor(category, value) {
+            if (category === 'era') {
+                if (value < 2.50) return 'text-green-600';
+                if (value < 3.50) return 'text-blue-600';
+                return 'text-gray-600';
+            }
+            if (category === 'avg') {
+                if (value > 0.350) return 'text-green-600';
+                if (value > 0.300) return 'text-blue-600';
+                return 'text-gray-600';
+            }
+            return 'text-blue-600';
+        }
+    </script>
+</body>
+</html>

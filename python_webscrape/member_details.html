@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPBL Player Profile - 黃龍義</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .player-view {
+            transition: opacity 0.3s ease;
+        }
+        .player-view.hidden {
+            display: none;
+            opacity: 0;
+        }
+        .tab-button {
+            transition: all 0.2s ease;
+        }
+        .tab-button.active {
+            font-weight: 600;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+        }
+        .player-number {
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+        }
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="gradient-bg text-white shadow-lg">
+            <div class="container mx-auto px-4 py-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-baseball-ball text-2xl"></i>
+                        <h1 class="text-2xl font-bold">CPBL Player Profile</h1>
+                    </div>
+                    <a href="https://www.cpbl.com.tw" class="bg-white text-blue-900 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">
+                        Official CPBL Site
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Player Profile Section -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- Tab Navigation -->
+            <div class="flex border-b border-gray-200 mb-6">
+                <button id="singlePlayerTab" class="tab-button active px-4 py-2 font-medium text-blue-600 border-b-2 border-blue-600">
+                    Player Profile
+                </button>
+                <button id="allPlayersTab" class="tab-button px-4 py-2 font-medium text-gray-500 hover:text-gray-700">
+                    All Players
+                </button>
+            </div>
+
+            <!-- Single Player View -->
+            <div id="singlePlayerView" class="player-view">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <!-- Player Header -->
+                <div class="gradient-bg p-6 md:p-8 text-white">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="relative mb-6 md:mb-0 md:mr-8">
+                            <div class="w-32 h-32 md:w-40 md:h-40 bg-white rounded-full flex items-center justify-center shadow-lg">
+                                <span class="player-number text-6xl md:text-8xl font-bold text-blue-900">30</span>
+                            </div>
+                            <div class="absolute -bottom-2 -right-2 bg-red-500 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl">
+                                CF
+                            </div>
+                        </div>
+                        <div class="text-center md:text-left">
+                            <h1 class="text-3xl md:text-4xl font-bold mb-2">黃龍義</h1>
+                            <p class="text-xl mb-4">Lamigo Monkeys</p>
+                            <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-ruler-vertical mr-2"></i>
+                                    <span>172 cm</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-birthday-cake mr-2"></i>
+                                    <span>1979/02/20</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-map-marker-alt mr-2"></i>
+                                    <span>中華民國</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player Details -->
+                <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Left Column -->
+                    <div>
+                        <div class="mb-8">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-blue-200 pb-2">Player Information</h2>
+                            <div class="space-y-4">
+                                <div class="flex justify-between">
+                                    <span class="font-semibold text-gray-600">Debut:</span>
+                                    <span>2003/03/07</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="font-semibold text-gray-600">Education:</span>
+                                    <span>輔仁大學</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="font-semibold text-gray-600">Batting/Throwing:</span>
+                                    <span>右投右打</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="font-semibold text-gray-600">Draft Position:</span>
+                                    <span>Undrafted</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-8">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-blue-200 pb-2">Career Stats</h2>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="stat-card bg-blue-50 p-4 rounded-lg text-center">
+                                    <div class="text-blue-900 font-bold text-3xl mb-1">15+</div>
+                                    <div class="text-gray-600 text-sm">Years in CPBL</div>
+                                </div>
+                                <div class="stat-card bg-blue-50 p-4 rounded-lg text-center">
+                                    <div class="text-blue-900 font-bold text-3xl mb-1">100+</div>
+                                    <div class="text-gray-600 text-sm">Home Runs</div>
+                                </div>
+                                <div class="stat-card bg-blue-50 p-4 rounded-lg text-center">
+                                    <div class="text-blue-900 font-bold text-3xl mb-1">.280+</div>
+                                    <div class="text-gray-600 text-sm">Career BA</div>
+                                </div>
+                                <div class="stat-card bg-blue-50 p-4 rounded-lg text-center">
+                                    <div class="text-blue-900 font-bold text-3xl mb-1">5x</div>
+                                    <div class="text-gray-600 text-sm">All-Star</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div>
+                        <div class="mb-8">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-blue-200 pb-2">Recent Performance</h2>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex justify-between items-center mb-3">
+                                    <h3 class="font-semibold">Defensive Performance</h3>
+                                    <span class="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">Last Game</span>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Fielding %</span>
+                                        <span class="font-semibold">.985</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Assists</span>
+                                        <span class="font-semibold">3</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Putouts</span>
+                                        <span class="font-semibold">5</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-8">
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex justify-between items-center mb-3">
+                                    <h3 class="font-semibold">Batting Results</h3>
+                                    <span class="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">Season Avg</span>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">AVG</span>
+                                        <span class="font-semibold">.292</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">HR</span>
+                                        <span class="font-semibold">18</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">RBI</span>
+                                        <span class="font-semibold">65</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">OBP</span>
+                                        <span class="font-semibold">.345</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-blue-200 pb-2">Social Media</h2>
+                            <div class="flex space-x-4">
+                                <a href="#" class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 bg-pink-600 text-white rounded-full flex items-center justify-center hover:bg-pink-700 transition">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 bg-blue-400 text-white rounded-full flex items-center justify-center hover:bg-blue-500 transition">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="bg-gray-50 px-6 py-4 border-t">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <p class="text-gray-600 mb-2 md:mb-0">Data provided by CPBL Official</p>
+                        <a href="https://www.cpbl.com.tw/team/person?acnt=0000000016" class="text-blue-600 hover:text-blue-800 font-semibold flex items-center">
+                            View Official Profile
+                            <i class="fas fa-external-link-alt ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Players View -->
+            <div id="allPlayersView" class="player-view hidden">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">CPBL Players</h2>
+                        <div class="relative">
+                            <input type="text" placeholder="Search players..." class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <i class="fas fa-search absolute left-3 top-3.5 text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="playersGrid">
+                        <!-- Player cards will be dynamically inserted here -->
+                    </div>
+
+                    <div class="mt-6 flex justify-between items-center">
+                        <div class="text-gray-600">Showing <span id="showingCount">1-10</span> of <span id="totalCount">50</span> players</div>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 border rounded-lg hover:bg-gray-100">Previous</button>
+                            <button class="px-3 py-1 border rounded-lg bg-blue-600 text-white">1</button>
+                            <button class="px-3 py-1 border rounded-lg hover:bg-gray-100">2</button>
+                            <button class="px-3 py-1 border rounded-lg hover:bg-gray-100">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Related Players -->
+        <section class="container mx-auto px-4 py-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Related Players</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Player Card 1 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition related-player" data-player='{"name":"林智勝","number":"16","team":"Brothers","position":"Infielder","batting_hand":"右投右打","height":"183","birthday":"1982/01/01","first_game":"2004/03/06","education":"文化大學","birthplace":"中華民國"}'>
+                    <div class="bg-blue-900 h-2"></div>
+                    <div class="p-4">
+                        <div class="flex items-center">
+                            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-xl font-bold text-gray-700">16</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg">林智勝</h3>
+                                <p class="text-gray-600 text-sm">Infielder</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Player Card 2 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition related-player" data-player='{"name":"彭政閔","number":"52","team":"Brothers","position":"First Base","batting_hand":"右投右打","height":"183","birthday":"1978/08/06","first_game":"2001/03/10","education":"國立體大","birthplace":"中華民國"}'>
+                    <div class="bg-red-600 h-2"></div>
+                    <div class="p-4">
+                        <div class="flex items-center">
+                            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-xl font-bold text-gray-700">52</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg">彭政閔</h3>
+                                <p class="text-gray-600 text-sm">First Base</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Player Card 3 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition related-player" data-player='{"name":"陳金鋒","number":"9","team":"Monkeys","position":"Outfielder","batting_hand":"右投右打","height":"188","birthday":"1977/10/28","first_game":"2006/03/21","education":"國立體大","birthplace":"中華民國"}'>
+                    <div class="bg-purple-600 h-2"></div>
+                    <div class="p-4">
+                        <div class="flex items-center">
+                            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-xl font-bold text-gray-700">9</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg">陳金鋒</h3>
+                                <p class="text-gray-600 text-sm">Outfielder</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Player Card 4 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition related-player" data-player='{"name":"王柏融","number":"23","team":"Monkeys","position":"Outfielder","batting_hand":"左投左打","height":"181","birthday":"1993/09/09","first_game":"2016/03/19","education":"文化大學","birthplace":"中華民國"}'>
+                    <div class="bg-green-600 h-2"></div>
+                    <div class="p-4">
+                        <div class="flex items-center">
+                            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-xl font-bold text-gray-700">23</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg">王柏融</h3>
+                                <p class="text-gray-600 text-sm">Outfielder</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-baseball-ball text-2xl"></i>
+                        <h2 class="text-xl font-bold">Chinese Professional Baseball League</h2>
+                    </div>
+                    <p class="mt-2 text-blue-100">The premier baseball organization in Taiwan</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="hover:text-blue-300 transition">Teams</a>
+                    <a href="#" class="hover:text-blue-300 transition">Schedule</a>
+                    <a href="#" class="hover:text-blue-300 transition">Stats</a>
+                    <a href="#" class="hover:text-blue-300 transition">News</a>
+                </div>
+            </div>
+            <div class="border-t border-blue-800 mt-6 pt-6 text-center text-blue-200 text-sm">
+                <p>© 2023 CPBL. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching functionality
+            const singlePlayerTab = document.getElementById('singlePlayerTab');
+            const allPlayersTab = document.getElementById('allPlayersTab');
+            const singlePlayerView = document.getElementById('singlePlayerView');
+            const allPlayersView = document.getElementById('allPlayersView');
+
+            singlePlayerTab.addEventListener('click', () => {
+                singlePlayerTab.classList.add('active', 'text-blue-600', 'border-blue-600');
+                singlePlayerTab.classList.remove('text-gray-500');
+                allPlayersTab.classList.remove('active', 'text-blue-600', 'border-blue-600');
+                allPlayersTab.classList.add('text-gray-500');
+                singlePlayerView.classList.remove('hidden');
+                allPlayersView.classList.add('hidden');
+            });
+
+            allPlayersTab.addEventListener('click', () => {
+                allPlayersTab.classList.add('active', 'text-blue-600', 'border-blue-600');
+                allPlayersTab.classList.remove('text-gray-500');
+                singlePlayerTab.classList.remove('active', 'text-blue-600', 'border-blue-600');
+                singlePlayerTab.classList.add('text-gray-500');
+                allPlayersView.classList.remove('hidden');
+                singlePlayerView.classList.add('hidden');
+                loadAllPlayers();
+            });
+
+            // Sample player data - in a real app this would come from an API
+            const samplePlayers = [
+                {
+                    name: "黃龍義",
+                    number: "30",
+                    team: "Monkeys",
+                    position: "中外野手",
+                    batting_hand: "右投右打",
+                    height: "172",
+                    birthday: "1979/02/20",
+                    first_game: "2003/03/07",
+                    education: "輔仁大學",
+                    birthplace: "中華民國"
+                },
+                {
+                    name: "林智勝",
+                    number: "16",
+                    team: "Brothers",
+                    position: "三壘手",
+                    batting_hand: "右投右打",
+                    height: "183",
+                    birthday: "1982/01/01",
+                    first_game: "2004/03/06",
+                    education: "文化大學",
+                    birthplace: "中華民國"
+                },
+                // Add more sample players as needed
+            ];
+
+            function loadAllPlayers() {
+                const playersGrid = document.getElementById('playersGrid');
+                playersGrid.innerHTML = '';
+                
+                samplePlayers.forEach(player => {
+                    const playerCard = document.createElement('div');
+                    playerCard.className = 'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition border border-gray-200';
+                    playerCard.innerHTML = `
+                        <div class="p-4">
+                            <div class="flex items-center">
+                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-xl font-bold text-gray-700">${player.number}</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-lg">${player.name}</h3>
+                                    <p class="text-gray-600 text-sm">${player.position} • ${player.team}</p>
+                                    <p class="text-gray-600 text-sm">${player.height} cm • ${player.batting_hand}</p>
+                                </div>
+                            </div>
+                            <button class="mt-3 w-full py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition">
+                                View Profile
+                            </button>
+                        </div>
+                    `;
+                    playersGrid.appendChild(playerCard);
+                });
+            }
+
+            // Initialize with single player view
+            singlePlayerView.classList.remove('hidden');
+
+            // Related player click handlers
+            document.querySelectorAll('.related-player').forEach(card => {
+                card.addEventListener('click', function() {
+                    const playerData = JSON.parse(this.dataset.player);
+                    
+                    // Update the single player view
+                    document.querySelector('.player-number').textContent = playerData.number;
+                    document.querySelector('h1').textContent = playerData.name;
+                    document.querySelector('p.text-xl').textContent = playerData.team;
+                    
+                    // Update player info
+                    const infoElements = document.querySelectorAll('.space-y-4 > div');
+                    infoElements[0].querySelector('span:last-child').textContent = playerData.first_game;
+                    infoElements[1].querySelector('span:last-child').textContent = playerData.education;
+                    infoElements[2].querySelector('span:last-child').textContent = playerData.batting_hand;
+                    
+                    // Switch to single player view if needed
+                    if (allPlayersView.classList.contains('hidden') === false) {
+                        singlePlayerTab.click();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

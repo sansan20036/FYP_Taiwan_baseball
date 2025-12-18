@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ProBall AI 助理</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" href="https://fav.farm/⚾">
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="chatbot.css" />
+  </head>
+  <body class="theme-light baseball-theme">
+    <div class="bg-canvas" aria-hidden="true"></div>
+
+    <!-- 主要：獨立 Chatbot 頁面只保留聊天 FAB 與面板 -->
+    <button id="chatFab" class="fab chat-fab" aria-label="開啟 AI 助理">
+      <i class="ri-robot-2-line"></i>
+    </button>
+
+    <section id="chatbot" class="chatbot" aria-label="AI 聊天助理" hidden>
+      <header class="chat-header">
+        <div class="chat-title"><i class="ri-robot-1-line"></i> ProBall AI 助理</div>
+        <div class="chat-actions">
+          <button id="chatClose" class="icon-btn" aria-label="清除對話" data-tooltip="清除對話"><i class="ri-close-line"></i></button>
+        </div>
+      </header>
+      <div id="chatBody" class="chat-body" role="log" aria-live="polite">
+        <div class="chat-quickbar" role="toolbar" aria-label="功能快捷列">
+          <a href="players.html" target="_blank" class="qb-item" aria-label="球員"><i class="ri-user-star-line"></i><span>球員</span></a>
+          <a href="team.html" target="_blank" class="qb-item" aria-label="球隊"><i class="ri-team-line"></i><span>球隊</span></a>
+          <a href="matches.html" target="_blank" class="qb-item" aria-label="戰績"><i class="ri-trophy-line"></i><span>戰績</span></a>
+        </div>
+      </div>
+      <div class="chat-input">
+        <button id="quickMenuBtn" class="icon-btn" aria-label="快速設定" data-tooltip="快速設定">
+          ☰
+        </button>
+        <input id="chatText" type="text" placeholder="快捷鍵：/ 聚焦、Ctrl+Shift+L 指令面板、Ctrl+Shift+O 開啟、Esc 關閉" aria-label="輸入訊息" />
+        <button id="chatSend" class="btn btn-accent" aria-label="送出"><i class="ri-send-plane-2-line"></i></button>
+        <div id="quickMenu" class="quick-menu" hidden role="menu" aria-label="快速設定">
+          <button class="quick-item" data-action="theme-toggle" role="menuitem"><i class="ri-contrast-2-line"></i> 切換主題</button>
+          <button class="quick-item" data-action="open-cmd" role="menuitem"><i class="ri-command-line"></i> 指令面板</button>
+          <button class="quick-item" data-action="show-history" role="menuitem"><i class="ri-time-line"></i> 歷史紀錄</button>
+          <button class="quick-item" data-action="preferences" role="menuitem"><i class="ri-settings-3-line"></i> 偏好設定</button>
+          <div class="quick-divider" aria-hidden="true"></div>
+          <button class="quick-item danger" data-action="clear" role="menuitem"><i class="ri-delete-bin-6-line"></i> 清除對話</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Command Palette -->
+    <div id="cmdPalette" class="cmd-palette" hidden role="dialog" aria-modal="true" aria-label="指令面板">
+      <div class="cmd-inner">
+        <input id="cmdInput" class="cmd-input" type="text" placeholder="搜尋指令…" aria-label="搜尋指令" />
+        <div id="cmdList" class="cmd-list" role="listbox"></div>
+      </div>
+    </div>
+
+    <script src="chatbot.js"></script>
+  </body>
+  </html>

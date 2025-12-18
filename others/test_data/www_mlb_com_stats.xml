@@ -1,0 +1,799 @@
+<?xml version='1.0' encoding='utf-8'?>
+<page><url>https://www.mlb.com/stats</url><content>Player
+Team
+Hitting
+Pitching
+Statcast
+Reset Filters
+2025
+caret-down
+Regular Season
+caret-down
+MLB
+caret-down
+All Teams
+caret-down
+Year to Date
+caret-down
+All Positions
+caret-down
+Select Player Pool
+caret-down
+Select a Split
+caret-down
+Standard
+Expanded
+Statcast
+When table is sorted by a rate stat (ex. – AVG, ERA), non-qualified players are hidden by default.
+Read more.
+PLAYER
+PLAYER
+TEAM
+TEAM
+G
+Games Played
+Games in which a player has appeared.
+G
+Games Played
+Games in which a player has appeared.
+AB
+At Bats
+Trips to the plate that do not result in a walk, hit by pitch, sacrifice, or reach on interference.
+AB
+At Bats
+Trips to the plate that do not result in a walk, hit by pitch, sacrifice, or reach on interference.
+R
+Runs
+When a baserunner safely reaches home plate and scores.
+R
+Runs
+When a baserunner safely reaches home plate and scores.
+H
+Hits
+When a batter reaches base safely on a fair ball unless the batter is deemed by the official scorer to have reached on an error or a fielder's choice.
+H
+Hits
+When a batter reaches base safely on a fair ball unless the batter is deemed by the official scorer to have reached on an error or a fielder's choice.
+2B
+Doubles
+When a batter reaches on a hit and stops at second base or only advances farther than second base on an error or a fielder's attempt to put out another baserunner.
+2B
+Doubles
+When a batter reaches on a hit and stops at second base or only advances farther than second base on an error or a fielder's attempt to put out another baserunner.
+3B
+Triples
+When a batter reaches on a hit and stops at third base or only advances farther than third base on an error or a fielder's attempt to put out another baserunner.
+3B
+Triples
+When a batter reaches on a hit and stops at third base or only advances farther than third base on an error or a fielder's attempt to put out another baserunner.
+caret-up
+caret-down
+HR
+Home Runs
+When a batter reaches on a hit, touches all bases, and scores a run without a putout recorded or the benefit of error.
+caret-up
+caret-down
+HR
+Home Runs
+When a batter reaches on a hit, touches all bases, and scores a run without a putout recorded or the benefit of error.
+RBI
+Runs Batted In
+Runs which score because of the batter's safe hit, sac bunt, sac fly, infield out or fielder's choice or is forced to score by a bases loaded walk, hit batter, or interference.
+RBI
+Runs Batted In
+Runs which score because of the batter's safe hit, sac bunt, sac fly, infield out or fielder's choice or is forced to score by a bases loaded walk, hit batter, or interference.
+BB
+Walks
+When a batter is awarded first base after four balls have been called by the umpire or the opposing team opts to intentionally award the batter first base.
+BB
+Walks
+When a batter is awarded first base after four balls have been called by the umpire or the opposing team opts to intentionally award the batter first base.
+SO
+Strikeouts
+When the umpire calls three strikes on the batter.
+SO
+Strikeouts
+When the umpire calls three strikes on the batter.
+SB
+Stolen Bases
+When the runner advances one base unaided by a hit, a putout, an error, a force-out, a fielder's choice, a passed ball, a wild pitch, or a balk.
+SB
+Stolen Bases
+When the runner advances one base unaided by a hit, a putout, an error, a force-out, a fielder's choice, a passed ball, a wild pitch, or a balk.
+CS
+Caught Stealing
+When a runner attempts to steal but is tagged out before safely attaining the next base.
+CS
+Caught Stealing
+When a runner attempts to steal but is tagged out before safely attaining the next base.
+AVG
+Batting Average
+The rate of hits per at bat.
+H/AB
+AVG
+Batting Average
+The rate of hits per at bat.
+H/AB
+OBP
+On-Base Percentage
+The rate at which a batter reached base in his plate appearances.
+(H+BB+HBP)/(AB+BB+HBP+SF)
+OBP
+On-Base Percentage
+The rate at which a batter reached base in his plate appearances.
+(H+BB+HBP)/(AB+BB+HBP+SF)
+SLG
+Slugging Percentage
+The rate of total bases per at bat.
+(1B+2Bx2+3Bx3+HRx4)/AB
+SLG
+Slugging Percentage
+The rate of total bases per at bat.
+(1B+2Bx2+3Bx3+HRx4)/AB
+OPS
+On-Base Plus Slugging
+The sum of on-base percentage and slugging percentage.
+OBP+SLG
+OPS
+On-Base Plus Slugging
+The sum of on-base percentage and slugging percentage.
+OBP+SLG
+1
+Cal
+C Raleigh
+Raleigh
+C
+1
+‌
+‌
+‌
+SEA
+94
+347
+65
+90
+16
+0
+38
+82
+62
+105
+10
+2
+.259
+.376
+.634
+1.010
+2
+Aaron
+A Judge
+Judge
+RF
+2
+‌
+‌
+‌
+NYY
+96
+352
+85
+125
+24
+2
+35
+81
+69
+109
+6
+3
+.355
+.462
+.733
+1.195
+3
+Shohei
+S Ohtani
+Ohtani
+DH
+3
+‌
+‌
+‌
+LAD
+95
+370
+91
+102
+12
+7
+32
+60
+62
+109
+12
+4
+.276
+.382
+.605
+.987
+4
+Eugenio
+E Suárez
+Suárez
+3B
+4
+‌
+‌
+‌
+AZ
+95
+348
+58
+87
+18
+0
+31
+78
+25
+105
+1
+0
+.250
+.320
+.569
+.889
+5
+Kyle
+K Schwarber
+Schwarber
+DH
+5
+‌
+‌
+‌
+PHI
+96
+352
+66
+87
+13
+1
+30
+69
+66
+112
+9
+2
+.247
+.378
+.545
+.923
+6
+Pete
+P Crow-Armstrong
+Crow-Armstrong
+CF
+6
+‌
+‌
+‌
+CHC
+95
+373
+67
+99
+21
+4
+25
+71
+18
+92
+27
+4
+.265
+.302
+.544
+.846
+6
+Seiya
+S Suzuki
+Suzuki
+DH
+6
+‌
+‌
+‌
+CHC
+92
+369
+53
+97
+24
+3
+25
+77
+33
+109
+2
+2
+.263
+.319
+.547
+.866
+8
+Riley
+R Greene
+Greene
+LF
+8
+‌
+‌
+‌
+DET
+95
+366
+53
+104
+21
+1
+24
+78
+27
+125
+1
+1
+.284
+.335
+.544
+.879
+8
+James
+J Wood
+Wood
+LF
+8
+‌
+‌
+‌
+WSH
+95
+356
+59
+99
+19
+0
+24
+69
+59
+116
+12
+4
+.278
+.381
+.534
+.915
+10
+Junior
+J Caminero
+Caminero
+3B
+10
+‌
+‌
+‌
+TB
+91
+357
+55
+90
+19
+0
+23
+60
+21
+78
+5
+1
+.252
+.292
+.499
+.791
+10
+Juan
+J Soto
+Soto
+RF
+10
+‌
+‌
+‌
+NYM
+96
+340
+70
+89
+15
+0
+23
+56
+77
+78
+11
+1
+.262
+.396
+.509
+.905
+12
+Pete
+P Alonso
+Alonso
+1B
+12
+‌
+‌
+‌
+NYM
+97
+361
+53
+101
+26
+1
+21
+77
+46
+96
+1
+2
+.280
+.376
+.532
+.908
+12
+Byron
+B Buxton
+Buxton
+CF
+12
+‌
+‌
+‌
+MIN
+78
+298
+64
+86
+14
+4
+21
+56
+27
+87
+17
+0
+.289
+.351
+.574
+.925
+12
+Corbin
+C Carroll
+Carroll
+RF
+12
+‌
+‌
+‌
+AZ
+80
+322
+62
+79
+15
+10
+21
+47
+31
+93
+11
+4
+.245
+.324
+.550
+.874
+12
+Spencer
+S Torkelson
+Torkelson
+1B
+12
+‌
+‌
+‌
+DET
+91
+325
+55
+76
+20
+0
+21
+59
+44
+92
+1
+1
+.234
+.337
+.489
+.826
+12
+Taylor
+T Ward
+Ward
+LF
+12
+‌
+‌
+‌
+LAA
+94
+361
+53
+81
+21
+2
+21
+65
+38
+108
+2
+1
+.224
+.297
+.468
+.765
+17
+Brent
+B Rooker
+Rooker
+DH
+17
+‌
+‌
+‌
+ATH
+98
+380
+60
+106
+22
+2
+20
+54
+43
+92
+3
+1
+.279
+.355
+.505
+.860
+18
+Jo
+J Adell
+Adell
+CF
+18
+‌
+‌
+‌
+LAA
+89
+292
+36
+71
+13
+0
+19
+54
+23
+77
+3
+0
+.243
+.317
+.483
+.800
+18
+Michael
+M Busch
+Busch
+1B
+18
+‌
+‌
+‌
+CHC
+90
+300
+45
+87
+15
+3
+19
+59
+35
+77
+4
+0
+.290
+.375
+.550
+.925
+18
+Francisco
+F Lindor
+Lindor
+SS
+18
+‌
+‌
+‌
+NYM
+95
+381
+63
+99
+18
+0
+19
+54
+33
+76
+15
+2
+.260
+.330
+.457
+.787
+18
+Brandon
+B Lowe
+Lowe
+2B
+18
+‌
+‌
+‌
+TB
+84
+316
+54
+86
+11
+0
+19
+50
+24
+85
+3
+1
+.272
+.324
+.487
+.811
+18
+Ketel
+K Marte
+Marte
+2B
+18
+‌
+‌
+‌
+AZ
+68
+252
+52
+73
+13
+0
+19
+40
+40
+45
+2
+1
+.290
+.394
+.567
+.961
+18
+Isaac
+I Paredes
+Paredes
+3B
+18
+‌
+‌
+‌
+HOU
+92
+346
+51
+89
+14
+1
+19
+49
+48
+67
+0
+1
+.257
+.357
+.468
+.825
+18
+Kyle
+K Stowers
+Stowers
+LF
+18
+‌
+‌
+‌
+MIA
+91
+304
+46
+89
+13
+3
+19
+54
+34
+97
+4
+1
+.293
+.368
+.543
+.911
+18
+Christian
+C Yelich
+Yelich
+DH
+18
+‌
+‌
+‌
+MIL
+91
+343
+49
+89
+11
+0
+19
+65
+37
+101
+14
+4
+.259
+.339
+.458
+.797
+1
+2
+3
+4
+5
+...
+27
+Next
+Data validation provided by Elias Sports Bureau, the Official Statistician of Major League Baseball</content></page>

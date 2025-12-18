@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>個人化 | ProBall Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" href="https://fav.farm/⚾">
+    <link rel="stylesheet" href="personalize.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  </head>
+  <body class="theme-light baseball-theme personalize-page">
+    <div class="bg-canvas" aria-hidden="true"></div>
+    <div class="bg-decorations" aria-hidden="true">
+      <div class="floating-ball ball-1">⚾</div>
+      <div class="floating-ball ball-2">🥎</div>
+      <div class="floating-ball ball-3">🏟️</div>
+      <!-- 炫酷棒球特效 -->
+      <div class="stadium-lights">
+        <div class="light light-1"></div>
+        <div class="light light-2"></div>
+        <div class="light light-3"></div>
+        <div class="light light-4"></div>
+      </div>
+      <div class="particle-system" id="particleSystem"></div>
+      <div class="baseball-trail">
+        <div class="trail-ball">⚾</div>
+      </div>
+
+    </div>
+    <header class="navbar" role="banner">
+      <div class="navbar__inner container">
+        <div class="navbar__brand" aria-label="回到首頁">
+          <i class="ri-baseball-line"></i>
+          <span>ProBall Analytics</span>
+        </div>
+        <nav class="navbar__nav" role="navigation" aria-label="主選單">
+          <a class="nav__link" href="app.html">首頁</a>
+          <a class="nav__link" href="matches.html">賽事</a>
+          <a class="nav__link" href="players.html">球員</a>
+          <a class="nav__link" href="models.html">模型預測</a>
+          <a class="nav__link is-active" href="personalize.html">個人化</a>
+        </nav>
+        <div class="navbar__tools">
+          <div class="search">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <input id="prefSearchInput" type="search" placeholder="搜尋球隊 / 球員 / 賽事" aria-label="搜尋球隊/球員/賽事" />
+          </div>
+
+          <a class="avatar avatar-badged" href="#" aria-label="使用者選單">
+            <img id="headerAvatar" src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=200&auto=format&fit=crop" alt="使用者頭像" />
+            <img id="headerTeamBadge" class="team-mini-badge" src="https://upload.wikimedia.org/wikipedia/en/e/ea/New_York_Yankees_logo.svg" alt="球隊徽章" />
+          </a>
+        </div>
+      </div>
+      <div class="navbar__sub">
+        <div class="container sub-inner">
+          <div class="scoreboard">
+            <div class="scoreboard-text" id="welcomeMarquee">WELCOME TO YOUR PERSONAL STADIUM</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="page-header container">
+        <div class="page-title">
+          <h1><i class="ri-user-star-line"></i> 個人化設定與專屬內容</h1>
+          <p>根據你的興趣與喜好，打造專屬於你的棒球儀表板</p>
+        </div>
+      </section>
+
+      <section class="personalize container" aria-labelledby="personalizeTitle">
+        <div class="section-header">
+          <h2 id="personalizeTitle"><i class="ri-sparkling-2-line"></i> 個人專屬區</h2>
+          <div class="section-actions">
+            <button class="chip" id="editProfileBtn"><i class="ri-edit-2-line"></i> 編輯資料</button>
+          </div>
+        </div>
+
+        <div class="personal-hero">
+          <div class="profile">
+            <div class="avatar-xl">
+              <img id="profileAvatar" class="lazy" data-src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=200&auto=format&fit=crop" alt="使用者頭像" />
+              <span class="badge-emoji" aria-hidden="true">🥎</span>
+            </div>
+            <div class="profile-meta">
+              <div class="nickname">
+                <span id="userNickname">Your Name</span>
+                <i class="ri-baseball-bat-line" aria-hidden="true"></i>
+              </div>
+              <div class="slogan" id="userSlogan">⚡ 挑戰全壘打王！</div>
+              <div class="favorite-team">
+                <img id="favTeamLogo" class="team-badge lazy" data-src="https://upload.wikimedia.org/wikipedia/en/e/ea/New_York_Yankees_logo.svg" alt="偏好球隊 Logo" />
+                <span id="favTeamName">New York Yankees</span>
+              </div>
+            </div>
+          </div>
+
+          <ul class="achievements" aria-label="個人成就徽章">
+            <li class="achv-card" title="看過 50 場比賽">
+              <span class="emoji">🏆</span>
+              <div class="text">
+                <div class="label">看過比賽</div>
+                <div class="value"><span id="achvGames">50</span> 場</div>
+              </div>
+            </li>
+            <li class="achv-card" title="收藏 10 位球員">
+              <span class="emoji">⚾</span>
+              <div class="text">
+                <div class="label">收藏球員</div>
+                <div class="value"><span id="achvPlayers">10</span> 位</div>
+              </div>
+            </li>
+            <li class="achv-card" title="連續登入 7 天">
+              <span class="emoji">🔥</span>
+              <div class="text">
+                <div class="label">連續登入</div>
+                <div class="value"><span id="achvStreak">7</span> 天</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="container" aria-labelledby="recommendTitle">
+        <div class="section-header">
+          <h2 id="recommendTitle"><i class="ri-compass-3-line"></i> 為你推薦</h2>
+        </div>
+        <div class="recommend-grid" id="recommendGrid" aria-live="polite"></div>
+      </section>
+
+      <!-- 個人化數據牆 -->
+      <section class="datawall container" aria-labelledby="datawallTitle">
+        <div class="section-header">
+          <h2 id="datawallTitle"><i class="ri-bar-chart-2-line"></i> 個人化數據牆</h2>
+          <div class="section-actions">
+            <button class="chip" id="syncDataBtn"><i class="ri-refresh-line"></i> 同步最新</button>
+          </div>
+        </div>
+        <div class="wall-grid">
+          <div class="wall-block">
+            <div class="block-title"><i class="ri-user-heart-line"></i> 我的收藏球員</div>
+            <div class="player-track" id="playerTrack" aria-label="收藏球員數據" role="list"></div>
+          </div>
+          <div class="wall-block">
+            <div class="block-title"><i class="ri-timeline-view"></i> 我的比賽關注</div>
+            <div class="recent-matches" id="recentMatches" role="list"></div>
+          </div>
+          <div class="wall-block" style="grid-column: 1 / -1;">
+            <div class="block-title"><i class="ri-line-chart-line"></i> 最常追的球隊勝率曲線</div>
+            <canvas id="teamWinline" height="140"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- 互動專區 -->
+      <section class="interact container" aria-labelledby="interactTitle">
+        <div class="section-header">
+          <h2 id="interactTitle"><i class="ri-chat-3-line"></i> 互動專區</h2>
+        </div>
+        <div class="interact-grid">
+          <div class="panel">
+            <div class="panel-title"><i class="ri-discuss-line"></i> 我的評論牆</div>
+            <div id="commentWall" class="comment-wall" role="list"></div>
+            <div class="comment-input">
+              <input id="commentText" type="text" placeholder="發表你的看法..." maxlength="160" />
+              <button id="sendComment" class="btn btn-accent"><i class="ri-send-plane-line"></i> 發送</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title"><i class="ri-team-line"></i> 球迷聊天室</div>
+            <div id="fanChat" class="fan-chat" role="log" aria-live="polite"></div>
+            <div class="comment-input">
+              <input id="chatText" type="text" placeholder="和同隊球迷聊聊..." maxlength="160" />
+              <button id="sendChat" class="btn btn-outline"><i class="ri-message-2-line"></i> 送出</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title"><i class="ri-medal-line"></i> 點數系統</div>
+            <div class="points">
+              <div class="points-score">目前點數：<strong id="pointScore">0</strong></div>
+              <div class="actions">
+                <button class="btn btn-outline" id="ptWatch"><i class="ri-play-circle-line"></i> 看比賽 +5</button>
+                <button class="btn btn-outline" id="ptComment"><i class="ri-chat-1-line"></i> 留言 +2</button>
+                <button class="btn btn-outline" id="ptShare"><i class="ri-share-line"></i> 分享 +3</button>
+              </div>
+              <div class="badges" id="pointBadges" aria-label="已獲得徽章"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 個人目標追蹤 -->
+      <section class="goals container" aria-labelledby="goalsTitle">
+        <div class="section-header">
+          <h2 id="goalsTitle"><i class="ri-flag-line"></i> 個人目標追蹤</h2>
+        </div>
+        <div class="goal-grid" id="goalGrid"></div>
+        <div id="celebrate" class="celebrate" hidden aria-hidden="true"></div>
+      </section>
+
+      <!-- 個人化主題 -->
+      <section class="theme-tools container" aria-labelledby="themeToolsTitle">
+        <div class="section-header">
+          <h2 id="themeToolsTitle"><i class="ri-paint-brush-line"></i> 個人化主題</h2>
+        </div>
+        <div class="theme-grid">
+          <div class="panel">
+            <div class="panel-title"><i class="ri-contrast-2-line"></i> 主題色</div>
+            <div class="swatches" id="swatches">
+              <button class="swatch" data-primary="#ef4444" data-secondary="#f59e0b" title="紅襪風格"></button>
+              <button class="swatch" data-primary="#2563eb" data-secondary="#60a5fa" title="道奇風格"></button>
+              <button class="swatch" data-primary="#16a34a" data-secondary="#22c55e" title="綠色活力"></button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title"><i class="ri-brush-line"></i> 動態背景</div>
+            <div class="backgrounds">
+              <button class="btn btn-outline" data-bg="grass">草地</button>
+              <button class="btn btn-outline" data-bg="mound">投手丘</button>
+              <button class="btn btn-outline" data-bg="stands">觀眾席</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title"><i class="ri-sun-foggy-line"></i> 日/夜模式</div>
+            <button id="modeToggle" class="btn btn-accent"><i class="ri-sun-line"></i> 切換模式</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 我的棒球日記 -->
+      <section class="diary container" aria-labelledby="diaryTitle">
+        <div class="section-header">
+          <h2 id="diaryTitle"><i class="ri-booklet-line"></i> 我的棒球日記</h2>
+        </div>
+        <div class="diary-editor">
+          <textarea id="diaryText" rows="3" placeholder="今天的心得... 例如：今天大谷翔平雙響炮，爽！"></textarea>
+          <div class="editor-actions">
+            <input id="diaryImage" type="file" accept="image/*,image/gif" />
+            <button id="saveDiary" class="btn btn-accent"><i class="ri-save-3-line"></i> 儲存</button>
+          </div>
+        </div>
+        <div class="diary-list" id="diaryList"></div>
+      </section>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <div class="container footer__inner">
+        <div class="footer__brand">
+          <i class="ri-baseball-line"></i>
+          <span>ProBall Analytics</span>
+        </div>
+        <nav class="footer__nav" aria-label="頁尾連結">
+          <a href="#contact">聯絡我們</a>
+          <a href="#terms">使用條款</a>
+          <a href="#privacy">隱私政策</a>
+          <a href="#api">API 申請</a>
+          <a href="#social">社群連結</a>
+        </nav>
+        <div class="footer__copy">© <span id="year"></span> ProBall Analytics</div>
+      </div>
+    </footer>
+
+    <script src="personalize.js"></script>
+  </body>
+</html> 

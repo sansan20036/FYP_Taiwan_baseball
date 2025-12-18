@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>球隊 | ProBall Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" href="https://fav.farm/⚾">
+    <!-- 與首頁一致的主題樣式 -->
+    <link rel="stylesheet" href="app.css" />
+    <style>
+      /* 頁面區塊內文的補充樣式（不覆蓋你的 app.css reset/component） */
+      :root{--radius:14px}
+      .main{padding-top:72px;} /* 頂端導覽高度保留 */
+      .section{padding:28px 0;}
+      .team-grid{display:grid;gap:1rem;grid-template-columns:repeat(3,1fr)}
+      @media (max-width:900px){.team-grid{grid-template-columns:1fr 1fr}}
+      @media (max-width:640px){.team-grid{grid-template-columns:1fr}}
+
+      .card{background:var(--card,rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1rem}
+      .team-head{display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap}
+      .team-logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#1f2937,#0f172a);border:1px solid rgba(255,255,255,.12);display:grid;place-items:center;overflow:hidden}
+      .team-logo img{width:100%;height:100%;object-fit:contain}
+      .muted{color:var(--muted,#94a3b8)}
+      .row{display:flex;gap:.5rem;flex-wrap:wrap}
+      .pill{display:inline-block;padding:.18rem .5rem;border:1px solid rgba(255,255,255,.16);border-radius:999px;color:var(--muted,#94a3b8);font-size:.8rem}
+      .btn{display:inline-flex;gap:.5rem;align-items:center;padding:.55rem .8rem;border-radius:10px}
+      .btn.primary{background:var(--primary);color:#fff}
+      .btn.ghost{border:1px solid rgba(255,255,255,.16);color:inherit}
+      table{width:100%;border-collapse:collapse;margin:.5rem 0}
+      th,td{padding:.6rem;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+      details{margin:1rem 0}
+      summary{cursor:pointer}
+      .tag{font-size:.75rem;color:var(--muted,#94a3b8);margin-left:.4rem}
+      .is-target{outline:2px solid var(--accent,#FFB703); box-shadow:0 0 0 6px rgba(255,183,3,.15)}
+      /* 頂部快速索引 */
+      .index{display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 12px 0}
+      .chip{padding:.35rem .6rem;border:1px solid rgba(255,255,255,.16);border-radius:999px;cursor:pointer}
+      .chip:hover{background:rgba(255,255,255,.06)}
+    </style>
+  </head>
+  <body class="theme-light baseball-theme">
+    <!-- 與首頁一致的導覽列 -->
+    <header class="navbar" role="banner">
+      <div class="navbar__inner container">
+        <a href="app.html" class="navbar__brand" aria-label="回到首頁">
+          <i class="ri-baseball-line"></i>
+          <span>ProBall Analytics</span>
+        </a>
+        <nav class="navbar__nav" role="navigation" aria-label="主選單">
+          <a class="nav__link" href="app.html#home">首頁</a>
+          <a class="nav__link" href="matches.html">賽事</a>
+          <a class="nav__link is-active" href="team.html">球隊</a>
+          <a class="nav__link" href="players.html">球員</a>
+          <a class="nav__link" href="models.html">模型預測</a>
+          <a class="nav__link" href="personalize.html">個人化</a>
+        </nav>
+        <div class="navbar__tools">
+          <div class="search">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <input id="teamSearchInput" type="search" placeholder="搜尋球隊 / 球員" aria-label="搜尋球隊或球員" />
+            <div id="searchSuggest" class="suggest" hidden></div>
+          </div>
+          <button class="icon-btn" aria-label="通知">
+            <i class="ri-notification-3-line"></i>
+          </button>
+          <button id="themeToggleBtn" type="button" class="icon-btn theme-toggle" aria-label="切換主題" role="switch" aria-checked="false" data-theme-toggle>
+            <i class="ri-sun-line"></i>
+          </button>
+          <button class="avatar" aria-label="使用者選單">
+            <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=200&auto=format&fit=crop" alt="使用者頭像" />
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="teamsPage" class="main" tabindex="-1">
+      <section class="container section" aria-labelledby="title">
+        <div class="section-header">
+          <h2 id="title"><i class="ri-team-line"></i> CPBL 六隊</h2>
+          <div class="section-actions">
+            <!-- 快速索引（與首頁路由一致，可帶 ?team= 參數） -->
+            <nav class="index" aria-label="快速索引">
+              <a class="chip" href="?team=ACN#ACN">中信兄弟</a>
+              <a class="chip" href="?team=ADD#ADD">統一7-ELEVEn獅</a>
+              <a class="chip" href="?team=AJL#AJL">樂天桃猿</a>
+              <a class="chip" href="?team=AEO#AEO">富邦悍將</a>
+              <a class="chip" href="?team=AAA#AAA">味全龍</a>
+              <a class="chip" href="?team=AKP#AKP">台鋼雄鷹</a>
+            </nav>
+          </div>
+        </div>
+
+        <div id="teams" class="team-grid" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <!-- 與首頁一致的頁尾/快捷鍵/浮動元件 -->
+    <footer class="footer" role="contentinfo">
+      <div class="container footer__inner">
+        <div class="footer__brand">
+          <i class="ri-baseball-line"></i>
+          <span>ProBall Analytics</span>
+        </div>
+        <nav class="footer__nav" aria-label="頁尾連結">
+          <a href="#contact">聯絡我們</a>
+          <a href="#terms">使用條款</a>
+          <a href="#privacy">隱私政策</a>
+          <a href="#api">API 申請</a>
+          <a href="#social">社群連結</a>
+        </nav>
+        <div class="footer__copy">© <span id="year"></span> ProBall Analytics</div>
+      </div>
+    </footer>
+
+    <button id="scrollTopBtn" class="fab" aria-label="回到頂端" hidden>
+      <i class="ri-arrow-up-line"></i>
+    </button>
+
+    <button id="chatFab" class="fab chat-fab" aria-label="開啟 AI 助理">
+      <i class="ri-robot-2-line"></i>
+    </button>
+
+    <section id="chatbot" class="chatbot" aria-label="AI 聊天助理" hidden>
+      <header class="chat-header">
+        <div class="chat-title"><i class="ri-robot-2-line"></i> ProBall AI 助理</div>
+        <div class="chat-actions">
+          <button id="chatClose" class="icon-btn" aria-label="清除對話" data-tooltip="清除對話"><i class="ri-close-line"></i></button>
+        </div>
+      </header>
+      <div id="chatBody" class="chat-body" role="log" aria-live="polite"></div>
+      <div class="chat-input">
+        <input id="chatText" type="text" placeholder="輸入訊息，例如：今天有哪些賽事？" aria-label="輸入訊息" />
+        <button id="chatSend" class="btn btn-accent" aria-label="送出"><i class="ri-send-plane-2-line"></i></button>
+      </div>
+    </section>
+
+    <!-- 資料渲染 + 與首頁串連 -->
+    <script>
+      // 六隊資料（含 logo）—— 與你先前版相同
+      const data = [
+        {
+          code:"ACN", nameZh:"中信兄弟", nameEn:"Brothers",
+          logo:"https://twbsball.dils.tku.edu.tw/wiki/images/f/f0/Logo_brothers.png",
+          history:"兄弟象(1990-2013) – 中信兄弟(2014 - 至今)",
+          leader:"劉志威", manager:"平野惠一",
+          ballpark:"台中洲際棒球場",
+          website:"http://www.brothers.tw/",
+          address:"台北市南港區經貿二路188號5樓",
+          phone:"(02)2788-3158", fax:"(02)2786-3330", email:"admin@brothers.tw",
+          coaches:[
+            ["一軍總教練","平野惠一","10"],["一軍牛棚教練","艾迪頓","53"],["一軍外野/跑壘教練","黃稚峰","22"],
+            ["一軍打擊教練","莎菈","25"],["一軍守備教練","潘志芳","63"],["一軍助理打擊教練","詹姆斯","80"],
+            ["一軍投手教練","王建民","40"],["一軍投捕教練","王峻杰","45"],["一軍巡迴打擊教練","丹尼爾","5"],
+            ["一軍首席/打擊教練","陳江和","31"],["一軍體能教練","蔡崇恩","42"],["一軍體能教練","陳弘桂","51"]
+          ],
+          players:{
+            "投手":[["12","林暉盛"],["14","魏碩成"],["15","王凱程"],["19","鄭凱文"],["20","江忠城"],["32","羅戈"],["34","李振昌"],["38","李博登"],["50","蔡齊哲"],["58","呂彥青"],["62","陳琥"],["81","陳冠穎"],["89","韋禮加"],["94","吳俊偉"]],
+            "捕手":[["0","林吳晉瑋"],["48","陳統恩"]],
+            "內野手":[["9","王威晨","三壘手"],["28","張仁瑋","二壘手"],["29","陳俊秀","一壘手"],["61","王政順","三壘手"],["66","黃韋盛","一壘手"],["74","許基宏","一壘手"],["90","江坤宇","游擊手"],["98","岳東華","二壘手"]],
+            "外野手":[["13","許庭綸","中外野手"],["39","詹子賢","左外野手"],["88","宋晟睿","左外野手"],["92","岳政華","中外野手"]]
+          }
+        },
+        {
+          code:"ADD", nameZh:"統一7-ELEVEn獅", nameEn:"U-Lions",
+          logo:"https://twbsball.dils.tku.edu.tw/wiki/images/7/7a/Logo_lions.png",
+          history:"統一獅(1990-2007) – 統一7-ELEVEn獅(2008 - 至今 )",
+          leader:"蘇泰安", manager:"林岳平",
+          ballpark:"台南棒球場",
+          website:"https://www.uni-lions.com.tw/",
+          address:"台南市南區健康路一段257號",
+          phone:"(06)215-3399", fax:"(06)215-3300", email:"service@uni-lions.com.tw",
+          coaches:[
+            ["一軍總教練","林岳平","11"],["一、二軍打擊兼跑壘教練","郭俊佑","96"],["一軍內野教練","周廣勝","70"],
+            ["一軍牛棚教練","羅錦龍","71"],["一軍外野兼跑壘教練","莊駿凱","80"],["一軍打擊教練","馬修爾","22"],
+            ["一軍打擊教練","潘武雄","55"],["一軍投手教練","潘威倫","18"],["一軍投手教練","霍斯曼","98"],
+            ["一軍首席教練","高志綱","34"],["一軍捕手教練","陳俊輝","82"],["一軍運科投手教練","曾浩哲","85"],
+            ["一軍體能教練","吳秉軒","94"]
+          ],
+          players:{
+            "投手":[["12","陳韻文"],["21","蒙德茲"],["28","髙塩將樹"],["29","鍾允華"],["37","邱浩鈞"],["41","王鏡銘"],["42","獅帝芬"],["57","吳承諭"],["58","胡智爲"],["62","李軍"],["69","辛俊昇"],["88","奧德銳"]],
+            "捕手":[["31","林岱安"],["36","柯育民"],["65","陳重羽"]],
+            "內野手":[["2","林子豪","三壘手"],["10","許哲晏","游擊手"],["15","陳聖平","游擊手"],["35","潘傑楷","三壘手"],["39","林祖傑","游擊手"],["66","陳重廷","游擊手"],["67","林泓弦","游擊手"]],
+            "外野手":[["14","邱智呈","右外野手"],["20","林佳緯","左外野手"],["24","陳傑憲","中外野手"],["32","蘇智傑","左外野手"],["51","胡金龍","左外野手"],["77","林安可","右外野手"]]
+          }
+        },
+        {
+          code:"AJL", nameZh:"樂天桃猿", nameEn:"Monkeys",
+          logo:"https://twbsball.dils.tku.edu.tw/wiki/images/a/a7/Logo_monkeys.png",
+          history:"第一金剛(2003) – La new熊(2004-2010) – Lamigo 桃猿(2011-2019) – 樂天桃猿(2020 - 至今)",
+          leader:"牧野幸輝", manager:"古久保健二",
+          ballpark:"桃園國際棒球場",
+          website:"https://monkeys.rakuten.com.tw/",
+          address:"桃園市中壢區領航北路一段1號",
+          phone:"(03)425-0927", fax:"(03)425-0929", email:"mky-RS_monkeyscs@rakuten.com",
+          coaches:[
+            ["一軍總教練","古久保健二","87"],["一軍牛棚教練","林英傑","43"],["一軍打擊教練","林政億","90"],
+            ["一軍守備教練","翁克堯","96"],["一軍投手教練","川岸強","73"],["一軍投捕教練","許躍騰","50"],
+            ["一軍首席兼打擊教練","曾豪駒","99"],["一軍運動表現教練","広瀬大輔","68"],["一軍綜合守備教練","鄭兆行","41"],
+            ["一軍體能教練","洪全億","42"],["一軍體能教練","劉品辰","59"]
+          ],
+          players:{
+            "投手":[["00","蘇俊璋"],["9","陳柏豪"],["17","陳冠宇"],["19","陳克羿"],["21","魔神樂"],["22","朱承洋"],["46","邱駿威"],["49","威能帝"],["54","林子崴"],["63","賴胤豪"],["64","王志煊"],["69","黃子鵬"],["77","莊昕諺"],["88","波賽樂"]],
+            "捕手":[["2","宋嘉翔"],["11","林泓育"],["28","張閔勛"]],
+            "內野手":[["6","林承飛","游擊手"],["15","林子偉","二壘手"],["39","林立","二壘手"],["79","林智平","三壘手"],["85","許賀捷","二壘手"],["94","馬傑森","游擊手"],["95","李勛傑","一壘手"]],
+            "外野手":[["35","成晉","右外野手"],["36","余德龍","左外野手"],["65","林政華","中外野手"],["98","陳晨威","中外野手"]]
+          }
+        },
+        {
+          code:"AEO", nameZh:"富邦悍將", nameEn:"Guardians",
+          logo:"https://twbsball.dils.tku.edu.tw/wiki/images/d/dd/Logo_fubon.png",
+          history:"俊國熊(1993-1995) – 興農熊(1996上半季) – 興農牛(1996下半季 – 2012) – 義大犀牛(2013-2016) – 富邦悍將(2017 - 至今)",
+          leader:"林華韋", manager:"陳金鋒",
+          ballpark:"新莊棒球場",
+          website:"https://www.fubonguardians.com/",
+          address:"新北市新莊區和興街66號",
+          phone:"02-6635-9588", fax:"02-6635-8559", email:"fubonguardians@gmail.com",
+          coaches:[
+            ["一軍總教練","陳金鋒","52"],["一軍內野教練","葉竹軒","45"],["一軍內野教練","施金典","68"],
+            ["一軍牛棚教練","郭勇志","40"],["一軍外野教練","詹智堯","8"],["一軍打擊教練","蔡建偉","36"],
+            ["一軍打擊教練","鮑伊","88"],["一軍投手教練","許銘傑","91"],["一軍首席教練","陳連宏","70"],
+            ["一軍捕手教練","林琨笙","20"],["一軍體能教練","杜正文","53"],["一軍體能教練","陳柏穎","92"]
+          ],
+          players:{
+            "投手":[["12","江國豪"],["13","廖任磊"],["15","范柏絜"],["18","黃保羅"],["32","賴鴻誠"],["34","王尉永"],["38","李吳永勤"],["44","魔力藍"],["55","力亞士"],["60","曾峻岳"],["80","游霆崴"],["94","林栚呈"]],
+            "捕手":[["43","豊暐"],["59","魏全"],["95","戴培峰"]],
+            "內野手":[["2","林澤彬","二壘手"],["4","高捷","二壘手"],["5","王念好","三壘手"],["6","葉子霆","游擊手"],["31","黃兆維","一壘手"],["62","林岳谷","游擊手"],["78","董子恩","三壘手"],["97","池恩齊","游擊手"]],
+            "外野手":[["0","潘瑋祥","中外野手"],["7","陳真","左外野手"],["33","張洺瑀","左外野手"],["65","蔡佳諺","中外野手"],["77","周佳樂","中外野手"]]
+          }
+        },
+        {
+          code:"AAA", nameZh:"味全龍", nameEn:"Dragons",
+          logo:"https://twbsball.dils.tku.edu.tw/wiki/images/0/09/Logo_dragons.png",
+          history:"味全龍(1990-1999, 2019 - 至今)",
+          leader:"丁仲緯", manager:"葉君璋",
+          ballpark:"天母棒球場",
+          website:"https://www.wdragons.com/CWS",
+          address:"台北市士林區忠誠路二段77號",
+          phone:"(02)7755-1999", fax:"", email:"service@wdragons.com",
+          coaches:[
+            ["一軍總教練","葉君璋","27"],["一軍內野守備教練","陳志偉","86"],["一軍牛棚教練","郭勝安","91"],
+            ["一軍打擊教練","克魯茲","14"],["一軍打擊教練","張建銘","66"],["一軍守備統籌教練","劉榮華","76"],
+            ["一軍助理跑壘教練","高孝儀","95"],["一軍投手教練","黃亦志","92"],["一軍投手統籌教練","羅曼","30"],
+            ["一軍首席教練","林瑋恩","54"],["一軍首席教練","高須洋介","70"],["一軍捕手教練","劉家豪","94"],
+            ["一軍野手統籌教練","丘昌榮","93"],["一軍體能教練","王昊","80"],["一軍體能教練","邱世杰","97"]
+          ],
+          players:{
+            "投手":[["5","陳禹勳"],["17","郭郁政"],["29","鎛銳"],["37","鋼龍"],["39","呂偉晟"],["42","趙璟榮"],["45","陳志杰"],["67","曹祐齊"],["71","林子昱"],["74","張鈞守"],["75","黃暐傑"],["77","林鋅杰"],["99","林凱威"]],
+            "捕手":[["4","吉力吉撈．鞏冠"],["9","林辰勳"],["63","蔣少宏"]],
+            "內野手":[["3","瑪仕革斯．俄霸律尼","一壘手"],["21","李凱威","二壘手"],["23","劉俊緯","游擊手"],["25","張政禹","游擊手"],["44","陳思仲","二壘手"],["46","劉基鴻","三壘手"],["88","周委宏","二壘手"]],
+            "外野手":[["2","郭天信","中外野手"],["11","朱育賢","左外野手"],["24","王順和","中外野手"],["34","張祐銘","右外野手"],["81","張祐嘉","左外野手"]]
+          }
+        },
+        {
+          code:"AKP", nameZh:"台鋼雄鷹", nameEn:"TSG Hawks",
+          logo:"https://twbsball.dils.tku.edu.tw/wiki/images/c/ce/TSG_Hawks.jpg",
+          history:"TSG Hawks(2023 - Now)",
+          leader:"劉東洋", manager:"洪一中",
+          ballpark:"高雄市立澄清湖棒球場",
+          website:"https://www.tsghawks.com/",
+          address:"高雄市三民區九如一路67號",
+          phone:"(07)385-5081", fax:"(07)385-3460", email:"gm@TSGhawks.com",
+          coaches:[
+            ["一軍總教練","洪一中","2"],["一軍內野守備兼跑壘教練","邱俊文","76"],["一軍牛棚教練","葉詠捷","72"],
+            ["一軍外野守備兼跑壘教練","黃甘霖","53"],["一軍打擊教練","路易士","23"],["一軍打擊教練","蔡昱詳","63"],
+            ["一軍作戰資訊整合教練","高建三","92"],["一軍投手統籌教練","横田久則","34"],["一軍首席兼內野守備教練","鄧蒔陽","68"],
+            ["一軍捕手教練","鄭漢禮","89"],["一軍體能教練","吳承翰","51"],["一軍體能總監教練","里隆文","61"]
+          ],
+          players:{
+            "投手":[["14","林詩翔"],["19","施子謙"],["20","江承諺"],["30","艾速特"],["40","後勁"],["46","黃群"],["52","韋宏亮"],["55","伍祐城"],["66","陳柏清"],["69","櫻井周斗"],["74","許育銘"],["93","張誠恩"],["95","王躍霖"]],
+            "捕手":[["33","陳致嘉"],["78","陳世嘉"]],
+            "內野手":[["1","曾子祐","游擊手"],["5","顏郁軒","一壘手"],["6","王博玄","二壘手"],["7","郭永維","游擊手"],["16","林家鋐","二壘手"],["39","吳念庭","三壘手"],["44","曾昱磬","三壘手"],["59","郭阜林","三壘手"],["71","杜家明","三壘手"],["94","魔鷹","一壘手"]],
+            "外野手":[["9","王柏融","左外野手"],["24","紀慶然","右外野手"],["50","高聖恩","中外野手"]]
+          }
+        }
+      ];
+
+      // 呈現
+      const grid = document.getElementById('teams');
+      data.forEach(t => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.id = t.code;
+        card.innerHTML = `
+          <div class="team-head">
+            <div class="team-logo"><img src="${t.logo}" alt="${t.nameZh} 隊徽" loading="lazy" decoding="async" referrerpolicy="no-referrer"></div>
+            <div>
+              <h3>${t.nameZh} <span class="muted">${t.nameEn}</span></h3>
+              <div class="row">
+                <span class="pill">主場：${t.ballpark}</span>
+                <span class="pill">領隊：${t.leader}</span>
+                <span class="pill">總教練：${t.manager}</span>
+              </div>
+              <div class="muted" style="margin-top:.35rem">${t.history}</div>
+            </div>
+          </div>
+
+          <details>
+            <summary>查看詳情</summary>
+            <div style="margin-top:1rem">
+              <div class="row">
+                <a class="btn primary" href="${t.website}" target="_blank" rel="noopener"><i class="ri-external-link-line"></i> 官方網站</a>
+                <span class="pill">電話：${t.phone||"—"}</span>
+                <span class="pill">傳真：${t.fax||"—"}</span>
+                <span class="pill">Email：${t.email||"—"}</span>
+              </div>
+              <p class="muted" style="margin:.6rem 0 0 0">地址：${t.address||"—"}</p>
+
+              <h4 style="margin-top:1rem">教練團</h4>
+              <table aria-label="教練團">
+                <thead><tr><th>職稱</th><th>姓名</th><th>背號</th></tr></thead>
+                <tbody>
+                  ${t.coaches.map(c=>`<tr><td>${c[0]}</td><td>${c[1]}</td><td>${c[2]||""}</td></tr>`).join("")}
+                </tbody>
+              </table>
+
+              <h4>球員名單</h4>
+              ${Object.entries(t.players).map(([grp, list]) => `
+                <details ${grp==="投手"?"open":""}><summary><strong>${grp}</strong><span class="tag">（${list.length}人）</span></summary>
+                  <table><thead><tr><th>背號</th><th>姓名</th>${list.some(i=>i[2])?'<th>守位</th>':''}</tr></thead><tbody>
+                    ${list.map(p=>`<tr><td>${p[0]}</td><td>${p[1]}</td>${p[2]?`<td>${p[2]}</td>`:""}</tr>`).join("")}
+                  </tbody></table>
+                </details>
+              `).join("")}
+            </div>
+          </details>
+        `;
+        grid.appendChild(card);
+      });
+
+      // 與首頁連動：?team= 或 #hash => 自動展開定位
+      function matchTeam(val){
+        if(!val) return null;
+        const key = decodeURIComponent(val).trim().toLowerCase();
+        return data.find(t =>
+          t.code.toLowerCase() === key ||
+          t.nameZh.toLowerCase().includes(key) ||
+          t.nameEn.toLowerCase().includes(key)
+        );
+      }
+      const url = new URL(location.href);
+      const param = url.searchParams.get('team') || location.hash.replace('#','');
+      const target = matchTeam(param);
+      if(target){
+        const card = document.getElementById(target.code);
+        if(card){
+          (card.querySelector('details')||{}).open = true;
+          card.classList.add('is-target');
+          const y = card.getBoundingClientRect().top + window.scrollY - 64;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+          document.title = `${target.nameZh} | ProBall Analytics`;
+          if(!location.hash || location.hash.slice(1)!==target.code){
+            history.replaceState(null,'',`?team=${target.code}#${target.code}`);
+          }
+        }
+      }
+    </script>
+
+    <!-- 與首頁共用的互動腳本（主題切換、懸浮鈕、搜尋等） -->
+    <script src="app.js"></script>
+  </body>
+</html>

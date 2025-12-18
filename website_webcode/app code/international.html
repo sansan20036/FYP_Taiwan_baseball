@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>國際賽 | ProBall Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" href="https://fav.farm/⚾">
+    <link rel="stylesheet" href="international.css" />
+  </head>
+  <body class="intl theme-dark">
+    <header class="navbar" role="banner">
+      <div class="navbar__inner container">
+        <a href="app.html" class="navbar__brand" aria-label="回到首頁">
+          <i class="ri-baseball-line"></i>
+          <span>ProBall Analytics</span>
+        </a>
+        <nav class="navbar__nav" role="navigation" aria-label="國際賽導覽">
+          <a class="nav__link" href="matches.html">賽事首頁</a>
+          <a class="nav__link" href="#teams">球隊</a>
+          <a class="nav__link" href="#ranking">排名</a>
+          <a class="nav__link is-active" href="#schedule">賽程</a>
+          <a class="nav__link" href="#stats">數據</a>
+          <a class="nav__link" href="#highlights">精華影片</a>
+        </nav>
+        <div class="navbar__tools">
+          <div class="lang-switch" role="group" aria-label="語言切換">
+            <button data-lang="zh" class="is-active">中</button>
+            <button data-lang="en">EN</button>
+            <button data-lang="ja">日本語</button>
+            <button data-lang="es">ES</button>
+          </div>
+          <a class="btn btn-primary" href="#me">我的球隊</a>
+          <a class="btn" href="#favorites">收藏比賽</a>
+          <a class="btn btn-accent" href="#recommend">推薦比賽</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="hero">
+        <div class="container hero__inner">
+          <div class="hero__flags" aria-label="焦點對戰">
+            <div class="flag home" id="flagHome">🇺🇸 USA</div>
+            <span class="vs">VS</span>
+            <div class="flag away" id="flagAway">🇯🇵 JPN</div>
+          </div>
+          <div class="hero__meta">
+            <div class="time-place">
+              <i class="ri-time-line"></i>
+              <span id="matchTime">7/20 19:00</span>
+              <span class="dot">•</span>
+              <i class="ri-map-pin-2-line"></i>
+              <span id="matchVenue">東京巨蛋</span>
+            </div>
+            <div class="hero__actions">
+              <button class="btn btn-accent" id="followBtn"><i class="ri-star-line"></i> 追蹤</button>
+              <button class="btn btn-primary" id="ticketBtn"><i class="ri-ticket-2-line"></i> 購票</button>
+              <button class="btn" id="remindBtn"><i class="ri-notification-3-line"></i> 提醒我</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="scoreboard container" aria-label="即時比分">
+        <div class="board">
+          <div class="board__header">
+            <span>隊伍</span>
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+            <span>R</span>
+          </div>
+          <div class="board__row home">
+            <span class="team">USA</span>
+            <span>0</span><span>1</span><span>0</span><span>0</span><span>2</span><span>0</span><span>1</span><span>0</span><span>—</span>
+            <span class="total">4</span>
+          </div>
+          <div class="board__row away">
+            <span class="team">JPN</span>
+            <span>0</span><span>0</span><span>1</span><span>0</span><span>0</span><span>1</span><span>0</span><span>0</span><span>—</span>
+            <span class="total">2</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="upcoming" aria-label="即將比賽">
+        <div class="container">
+          <div class="section__head">
+            <h2><i class="ri-calendar-event-line"></i> 即將比賽</h2>
+          </div>
+          <div class="controls" aria-label="篩選與搜尋">
+            <div class="control-group">
+              <i class="ri-search-2-line"></i>
+              <input id="ctrlSearch" type="search" placeholder="搜尋國家 / 球隊 / 球場" />
+            </div>
+            <select id="ctrlFilterRegion" aria-label="區域">
+              <option value="all">全部區域</option>
+              <option value="asia">亞洲</option>
+              <option value="americas">美洲</option>
+              <option value="europe">歐洲</option>
+            </select>
+            <select id="ctrlSort" aria-label="排序">
+              <option value="hot">熱度最高</option>
+              <option value="time">時間最近</option>
+              <option value="alpha">國家名稱</option>
+            </select>
+          </div>
+          <div class="upcoming__grid" id="upcomingList"></div>
+        </div>
+      </section>
+
+      <section class="ranking" id="ranking" aria-label="世界棒球排名">
+        <div class="container">
+          <div class="section__head">
+            <h2><i class="ri-trophy-line"></i> 世界棒球排名</h2>
+          </div>
+          <table class="rank-table" id="rankTable" aria-describedby="世界排名表"></table>
+        </div>
+      </section>
+
+      <section class="highlights" id="highlights" aria-label="精彩與互動">
+        <div class="container">
+          <div class="highlight__grid">
+            <article class="card video">
+              <header class="card__head"><i class="ri-movie-line"></i> 精彩影片</header>
+              <div class="card__body" id="videoList"></div>
+            </article>
+            <article class="card interact">
+              <header class="card__head"><i class="ri-chat-3-line"></i> 社群互動</header>
+              <div class="vote" aria-label="投票 MVP">
+                <div class="vote__question">誰是本場 MVP？</div>
+                <div class="vote__options" id="voteOptions"></div>
+                <div class="vote__result" id="voteResult"></div>
+              </div>
+              <div class="comments">
+                <div class="comments__list" id="commentList"></div>
+                <div class="comments__input">
+                  <input id="commentInput" type="text" placeholder="發表留言（支援自動翻譯）" maxlength="120" />
+                  <button id="sendComment" class="btn btn-primary"><i class="ri-send-plane-2-line"></i></button>
+                </div>
+              </div>
+            </article>
+            <article class="card recommend" id="recommend">
+              <header class="card__head"><i class="ri-robot-2-line"></i> 個人化推薦</header>
+              <div class="rec__grid" id="recGrid"></div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <div class="partners">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/02/World_Baseball_Classic_logo.svg" alt="WBC" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/2/25/Major_League_Baseball_logo.svg" alt="MLB" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/Nippon_Professional_Baseball_Organization_logo.svg" alt="NPB" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/62/CPBL_logo.svg" alt="CPBL" />
+        </div>
+        <div class="footer-bottom">
+          <div class="links">
+            <a href="#lang">語言</a>
+            <a href="#contact">聯絡資訊</a>
+            <a href="#privacy">隱私條款</a>
+          </div>
+          <p>&copy; <span id="year"></span> ProBall Analytics</p>
+        </div>
+      </div>
+    </footer>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="international.js"></script>
+  </body>
+</html> 

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBLP Member Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .player-view {
+            transition: opacity 0.3s ease;
+        }
+        .player-view.hidden {
+            display: none;
+            opacity: 0;
+        }
+        .tab-button {
+            transition: all 0.2s ease;
+        }
+        .tab-button.active {
+            font-weight: 600;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+        }
+        .player-number {
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+        }
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="min-h-screen">
+
+        <main class="container mx-auto px-4 py-8">
+            <!-- Tab Navigation -->
+            <div class="flex border-b border-gray-200 mb-6">
+            <!-- All Players View -->
+            <div id="allPlayersView" class="player-view hidden">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">CPBL Players</h2>
+                        <div class="relative">
+                            <input type="text" placeholder="Search players..." class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <i class="fas fa-search absolute left-3 top-3.5 text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <!-- <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="playersGrid">
+                        <!-- Player cards will be dynamically inserted here -->
+                    <!-- </div> -->
+                     
+                            <!-- Main Content -->
+
+                    <div class="mt-6 flex justify-between items-center">
+                        <div class="text-gray-600">Showing <span id="showingCount">1-10</span> of <span id="totalCount">50</span> players</div>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 border rounded-lg hover:bg-gray-100">Previous</button>
+                            <button class="px-3 py-1 border rounded-lg bg-blue-600 text-white">1</button>
+                            <button class="px-3 py-1 border rounded-lg hover:bg-gray-100">2</button>
+                            <button class="px-3 py-1 border rounded-lg hover:bg-gray-100">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                
+            </div>
+        <main class="container mx-auto px-4 py-8">
+            <div id="players-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Player cards will be injected here -->
+
+
+
+                <!-- important -->
+            </div>
+        </main> 
+
+            <!-- Tab Navigation -->
+
+                <!-- JSON data loading and rendering -->
+    <script>
+    // Helper: fetch the JSON file and render all players
+    async function loadAndRenderPlayers() {
+        // Fetch the JSON data
+        let data;
+        try {
+            const resp = await fetch('members_details.json');
+            data = await resp.json();
+        } catch (e) {
+            document.getElementById('players-list').innerHTML = '<div class="col-span-3 text-center text-red-600">Failed to load player data.</div>';
+            return;
+        }
+
+        // If the JSON is an array, use as is. If it's an object with keys, convert to array.
+        let players = [];
+        if (Array.isArray(data)) {
+            players = data;
+        } else if (typeof data === 'object') {
+            // Try to detect if it's a dict of players or a single player
+            if (data.length === undefined && Object.keys(data).length > 0) {
+                // If keys are player names or IDs, convert to array
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        players.push(data[key]);
+                    }
+                }
+            } else {
+                players = [data];
+            }
+        }
+
+        // Render all players
+        const container = document.getElementById('players-list');
+        container.innerHTML = '';
+        players.forEach((player, idx) => {
+            container.appendChild(renderPlayerCard(player, idx));
+        });
+    }
+
+    // Helper: render a single player card
+    function renderPlayerCard(player, idx) {
+    const name = player.name || player['姓名'] || player['Name'] || `Player ${idx+1}`;
+    const number = player.number || player['背號'] || player['Number'] || '';
+    const team = player.team || player['球隊'] || player['Team'] || '';
+    const position = player.position || player['位置'] || player['Position'] || '';
+    const batting_hand = player.batting_hand || player['打擊率'] || player['Batting_Hand'] || '';
+    const height = player.height || player['身高'] || player['Height'] || '';
+    const birthday = player.birthday || player['生日'] || player['Birthday'] || '';
+    const first_game = player.first_game || player['初登板'] || player['First_Game'] || '';
+    const education = player.education || player['學歷'] || player['Education'] || '';
+    const birthplace = player.birthplace || player['出生地'] || player['Birthplace'] || '';
+    const pitch_record = player.pitch_record || player['投球成績'] || player['Pitch_Record'] || [];
+    const defensive_performance = player.defensive_performance || player['守備成績'] || player['Defensive_Performance'] || [];
+    const batting_result = player.batting_result || player['打擊成績'] || player['Batting_Result'] || [];
+
+
+    const card = document.createElement('div');
+    card.className = `
+      player-card
+      bg-gradient-to-br from-white via-gray-50 to-gray-100
+      rounded-2xl shadow-lg p-6
+      flex flex-col space-y-4
+      border border-gray-200
+      transition-all duration-300 ease-in-out
+      hover:shadow-2xl hover:scale-105 hover:-translate-y-1
+    `;
+
+    // Header: name, number, team, photo
+    const header = document.createElement('div');
+    header.className = "flex items-center space-x-4";
+
+    const info = document.createElement('div');
+    info.innerHTML = `
+        <div class="text-xl font-bold">${name} <span class="text-gray-500 text-base font-normal">${number ? '#' + number : ''}</span></div>
+        <div class="text-blue-700 font-semibold">${team}</div>
+    `;
+    header.appendChild(info);
+    card.appendChild(header);
+
+    // Stats container (hidden by default)
+    const statsContainer = document.createElement('div');
+    statsContainer.className = "hidden space-y-4 mt-2";
+
+
+
+
+    // Toggle button
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition";
+    toggleBtn.textContent = "Show Stats";
+    toggleBtn.addEventListener('click', () => {
+        // send variable to show player profile page
+        // Open a new page and pass the variable through the URL
+        //window.location.href = `show_player_profile.html?value=${encodeURIComponent(name)}`;
+        window.open(`show_player_profile.html?player_name=${encodeURIComponent(name)}`, "_blank");
+    });
+
+    card.appendChild(toggleBtn);
+    card.appendChild(statsContainer);
+
+    return card;
+}
+
+    // Helper: render a table section with a title
+    function renderTableSection(title, data) {
+        const section = document.createElement('div');
+        section.className = "mt-2";
+        section.innerHTML = `<div class="font-semibold text-blue-800 mb-2">${title}</div>`;
+        const table = document.createElement('div');
+        table.className = "scroll-x";
+        table.appendChild(renderTable(data));
+        section.appendChild(table);
+        return section;
+    }
+
+    // Helper: render a table from 2D arraypppp
+    function renderTable(data) {
+        const table = document.createElement('table');
+        table.className = "table-auto min-w-full text-xs border border-gray-200";
+        // Header
+        if (data.length > 0) {
+            const thead = document.createElement('thead');
+            const tr = document.createElement('tr');
+            data[0].forEach(cell => {
+                const th = document.createElement('th');
+                th.className = "px-2 py-1 bg-blue-50 border-b border-gray-200 font-semibold";
+                th.textContent = cell;
+                tr.appendChild(th);
+            });
+            thead.appendChild(tr);
+            table.appendChild(thead);
+        }
+        // Body
+        if (data.length > 1) {
+            const tbody = document.createElement('tbody');
+            for (let i = 1; i < data.length; ++i) {
+                const tr = document.createElement('tr');
+                data[i].forEach(cell => {
+                    const td = document.createElement('td');
+                    td.className = "px-2 py-1 border-b border-gray-100";
+                    td.textContent = cell;
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            }
+            table.appendChild(tbody);
+        }
+        return table;
+    }
+
+    // Start loading on page load
+    window.addEventListener('DOMContentLoaded', loadAndRenderPlayers);
+    </script>
+        </main>
+
+<!-- ProBall Chatbot (auto-inject widget) -->
+<script src="chatbot.js"></script>
+</body>
+</html>

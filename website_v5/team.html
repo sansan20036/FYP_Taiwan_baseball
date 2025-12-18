@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ProBall Analytics | 球隊</title>
+
+    <!-- 與首頁一致的字型、圖示與主樣式 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" href="https://fav.farm/⚾">
+    <link rel="stylesheet" href="app.css" />
+  </head>
+
+  <body class="theme-light baseball-theme">
+    <div id="teamDrawer" class="drawer" aria-hidden="true">
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  
+  <aside class="drawer-panel">
+    <header class="drawer-header">
+      <div class="header-content">
+        <h2 id="drawerTitle">球隊名稱</h2>
+        <span id="drawerSubtitle" class="muted">Team Code</span>
+      </div>
+      <button class="icon-btn" id="drawerCloseBtn" aria-label="關閉">
+        <i class="ri-close-line"></i>
+      </button>
+    </header>
+    
+    <div id="drawerBody" class="drawer-body">
+      </div>
+  </aside>
+</div>
+    
+    <!-- 啟動畫面 / 背景 / 捲動進度條（與首頁一致，可由 app.js 控制顯示/隱藏） -->
+    <div id="splash" class="splash" aria-label="啟動畫面" aria-live="polite" hidden></div>
+    <div class="bg-canvas" aria-hidden="true"></div>
+    <div class="scroll-progress" aria-hidden="true"><span></span></div>
+
+    <!-- 導覽列（同步首頁結構與樣式） -->
+    <header class="navbar" role="banner">
+      <div class="navbar__inner container">
+        <a href="index.html" class="navbar__brand" aria-label="回到首頁">
+          <i class="ri-baseball-line"></i><span>ProBall Analytics</span>
+        </a>
+        <nav class="navbar__nav" role="navigation" aria-label="主選單">
+          <a class="nav__link" href="app.html#home">首頁</a>
+          <a class="nav__link" href="matches.html">賽事</a>
+          <a class="nav__link is-active" href="team.html" aria-current="page">球隊</a>
+          <a class="nav__link" href="players.html">球員</a>
+          <a class="nav__link" href="simulation.html">模型預測</a>
+          <a class="nav__link" href="personalize.html">個人化</a>
+        </nav>
+        <div class="navbar__tools">
+          <div class="search">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <input id="teamSearchInput" type="search" placeholder="搜尋球隊 / 主場 / 教練" aria-label="搜尋球隊或主場" />
+            <div id="searchSuggest" class="suggest" hidden></div>
+          </div>
+          <button class="icon-btn" aria-label="通知">
+            <i class="ri-notification-3-line"></i>
+          </button>
+          <button id="themeToggleBtn" type="button" class="icon-btn theme-toggle" aria-label="切換主題" role="switch" aria-checked="false" data-theme-toggle>
+            <i class="ri-sun-line"></i>
+          </button>
+          <button class="avatar" aria-label="使用者選單">
+            <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=200&auto=format&fit=crop" alt="使用者頭像" />
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="teamsPage" class="main">
+      <section class="container" aria-labelledby="teamsTitle">
+        <div class="section-header">
+          <h2 id="teamsTitle"><i class="ri-team-line"></i> 球隊一覽</h2>
+          <div class="section-actions">
+            <button id="btnCopyLink" class="chip" title="複製目前篩選連結"><i class="ri-links-line"></i> 複製連結</button>
+            <button id="btnClear" class="chip" title="清除搜尋"><i class="ri-eraser-line"></i> 清除</button>
+          </div>
+        </div>
+
+        <!-- 統計小摘要 -->
+        <div class="info-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px">
+          <div class="info-card">
+            <div class="label"><i class="ri-database-2-line"></i> 載入資料</div>
+            <div class="value"><span id="countLoaded">0</span> 隊</div>
+          </div>
+          <div class="info-card">
+            <div class="label"><i class="ri-filter-3-line"></i> 篩選結果</div>
+            <div class="value"><span id="countFiltered">0</span> 隊</div>
+          </div>
+        </div>
+
+        <!-- 球隊格狀清單 -->
+        <div id="teamsGrid" class="team-grid container" style="display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr))" aria-live="polite"></div>
+        <div id="emptyView" class="empty" style="display:none">沒有符合條件的球隊</div>
+      </section>
+    </main>
+
+    <!-- 頁尾（同步首頁） -->
+    <footer class="footer" role="contentinfo">
+      <div class="container footer__inner">
+        <div class="footer__brand"><i class="ri-baseball-line"></i><span>ProBall Analytics</span></div>
+        <nav class="footer__nav" aria-label="頁尾連結">
+          <a href="#contact">聯絡我們</a>
+          <a href="#terms">使用條款</a>
+          <a href="#privacy">隱私政策</a>
+          <a href="#api">API 申請</a>
+          <a href="#social">社群連結</a>
+        </nav>
+        <div class="footer__copy">© <span id="year"></span> ProBall Analytics</div>
+      </div>
+    </footer>
+
+    <!-- 回頂端 / 聊天（同步首頁） -->
+    <button id="scrollTopBtn" class="fab" aria-label="回到頂端" hidden><i class="ri-arrow-up-line"></i></button>
+    <button id="chatFab" class="fab chat-fab" aria-label="開啟 AI 助理"><i class="ri-robot-2-line"></i></button>
+    <section id="chatbot" class="chatbot" aria-label="AI 聊天助理" hidden>
+      <header class="chat-header">
+        <div class="chat-title"><i class="ri-robot-2-line"></i> ProBall AI 助理</div>
+        <div class="chat-actions"><button id="chatClose" class="icon-btn" aria-label="清除對話"><i class="ri-close-line"></i></button></div>
+      </header>
+      <div id="chatBody" class="chat-body" role="log" aria-live="polite"></div>
+      <div class="chat-input">
+        <input id="chatText" type="text" placeholder="輸入訊息，例如：今天有哪些賽事？" aria-label="輸入訊息" />
+        <button id="chatSend" class="btn btn-accent" aria-label="送出"><i class="ri-send-plane-2-line"></i></button>
+      </div>
+    </section>
+
+    <!-- Toast（同步首頁） -->
+    <div id="themeToast" class="toast" aria-live="polite" hidden></div>
+    <div id="homeToast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <!-- 頁面專屬腳本：載入 teams.json + 搜尋/建議 + 快捷鍵 -->
+    <script>
+    (function(){
+      // DOM 元素選取
+      const drawer = document.getElementById('teamDrawer');
+      const drawerOverlay = document.getElementById('drawerOverlay');
+      const drawerCloseBtn = document.getElementById('drawerCloseBtn');
+      const drawerBody = document.getElementById('drawerBody');
+      
+      const $ = s => document.querySelector(s);
+      const grid = $('#teamsGrid');
+      const emptyView = $('#emptyView');
+      const input = $('#teamSearchInput');
+      const suggest = $('#searchSuggest');
+      const countLoaded = $('#countLoaded');
+      const countFiltered = $('#countFiltered');
+      const themeBtn = $('#themeToggleBtn');
+      const toast = $('#homeToast');
+
+      const state = { data: [], filtered: [], keyword: '' };
+
+      // --- 核心功能：讀取資料 ---
+      async function loadTeams(){
+        const res = await fetch('teams.json', { cache: 'no-store' });
+        if(!res.ok) throw new Error('無法載入 teams.json');
+        return await res.json();
+      }
+
+      // --- 核心功能：渲染單張卡片 ---
+      function renderCard(t) {
+        const el = document.createElement('article');
+        el.className = 'team-card';
+        el.id = t.code;
+        
+        // 主題色
+        const mainColor = t.themeColor || '#666';
+        el.style.borderTop = `6px solid ${mainColor}`;
+        const radarCanvasId = `chart-${t.code}`;
+
+        // 計算戰績與近況
+        const stats = t.stats || { w:0, l:0, t:0, form:[] };
+        const total = stats.w + stats.l;
+        const pct = total > 0 ? (stats.w / total).toFixed(3) : '.000';
+        
+        // 產生近況燈號 (W=綠, L=紅, 其他=灰)
+        const formHtml = (stats.form || []).map(r => {
+          const color = r === 'W' ? '#10b981' : (r === 'L' ? '#ef4444' : '#cbd5e1');
+          return `<span class="form-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};margin-right:4px;" title="${r}"></span>`;
+        }).join('');
+
+        el.innerHTML = `
+          <div class="card-header" style="text-align:center; padding-top:1rem;">
+            <img class="team-logo" src="${t.logo}" alt="${t.nameZh}" style="width:80px;height:80px;object-fit:contain;margin-bottom:0.5rem;">
+            <h3 class="team-name" style="margin:0;font-size:1.25rem;">${t.nameZh}</h3>
+            <span class="muted" style="font-size:0.9rem;">${t.nameEn || ''}</span>
+            
+            <div class="team-standing" style="margin-top:8px; background:#f8fafc; padding:6px; border-radius:8px;">
+               <strong style="color:#333; font-size:1.1rem;">${stats.w}-${stats.l}-${stats.t}</strong> 
+               <span style="color:#666;font-size:0.85em;">(${pct})</span>
+               <div class="recent-form" style="margin-top:4px;">${formHtml}</div>
+            </div>
+          </div>
+
+          <div class="chart-container" style="position:relative; height:220px; width:100%; margin:10px 0;">
+            <canvas id="${radarCanvasId}"></canvas>
+          </div>
+
+          <ul class="team-stats">
+            <li><span>主場</span><strong>${t.ballpark || '—'}</strong></li>
+            <li><span>總教練</span><strong>${t.manager || '—'}</strong></li>
+          </ul>
+
+          <div class="team-actions">
+            <button class="btn btn-accent action-view-details" style="background-color:${mainColor}; border-color:${mainColor}">
+              <i class="ri-article-line"></i> 查看球隊詳情
+            </button>
+          </div>
+        `;
+
+        // 綁定點擊事件
+        el.querySelector('.action-view-details').addEventListener('click', () => openTeamDrawer(t));
+        return el;
+      }
+
+      // --- 核心功能：開啟側邊抽屜 ---
+      function openTeamDrawer(t) {
+        const mainColor = t.themeColor || '#666';
+
+        // 組裝抽屜內容
+        drawerBody.innerHTML = `
+          <div class="drawer-hero" style="background: linear-gradient(135deg, ${mainColor}, ${adjustColor(mainColor, -40)}); padding:24px; border-radius:0 0 24px 24px; color:white; display:flex; align-items:center; gap:16px; margin:-24px -24px 24px -24px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+            <img src="${t.logo}" alt="logo" style="width:64px;height:64px;background:white;border-radius:50%;padding:4px;object-fit:contain;">
+            <div>
+              <h2 style="margin:0;font-size:1.75rem;">${t.nameZh}</h2>
+              <p style="margin:0;opacity:0.9;">${t.nameEn} · ${t.ballpark || '主場未知'}</p>
+            </div>
+          </div>
+
+          <div class="info-section" style="background:#f8fafc; padding:16px; border-radius:12px; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom:1px dashed #ddd; padding-bottom:8px;">
+              <span class="muted">總教練</span>
+              <strong>${t.manager || '—'}</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span class="muted">領隊</span>
+              <span>${t.leader || '—'}</span>
+            </div>
+            ${t.website ? `<a href="${t.website}" target="_blank" style="display:block; text-align:center; color:${mainColor}; margin-top:10px; text-decoration:none; font-weight:600;">前往官方網站 &rarr;</a>` : ''}
+          </div>
+
+          <div class="roster-filter" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:12px; margin-bottom:16px;">
+            <button class="filter-chip active" onclick="filterRoster('all', this)">全部</button>
+            <button class="filter-chip" onclick="filterRoster('投手', this)">投手</button>
+            <button class="filter-chip" onclick="filterRoster('捕手', this)">捕手</button>
+            <button class="filter-chip" onclick="filterRoster('內野', this)">內野手</button>
+            <button class="filter-chip" onclick="filterRoster('外野', this)">外野手</button>
+            <button class="filter-chip" onclick="filterRoster('教練', this)">教練團</button>
+          </div>
+
+          <div class="roster-group" data-type="教練">
+            <h4 class="roster-title" style="margin-bottom:10px; font-weight:700; color:#475569; display:flex; align-items:center; gap:8px;">
+              <i class="ri-vip-crown-line"></i> 教練團
+            </h4>
+            <div class="badges-container" style="display:flex; flex-wrap:wrap; gap:8px;">
+              ${renderBadges(t.coaches || [], mainColor, true)}
+            </div>
+          </div>
+          
+          ${renderPlayerGroups(t.players || {}, mainColor)}
+          
+          <div style="height: 60px;"></div>
+        `;
+
+        drawer.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      // --- 輔助功能：產生名牌 (Badge) ---
+      function renderBadges(list, color, isCoach = false) {
+        if(!list || list.length === 0) return '<div class="muted">無資料</div>';
+        
+        return list.map(item => {
+          const roleOrNum = item[0] || '?';
+          const name = item[1] || '未知';
+          const profileUrl = `show_player_profile.html?player_name=${encodeURIComponent(name)}`;
+          
+          // 教練樣式：職稱(淺灰底) + 姓名(白底)
+          if (isCoach) {
+             return `
+              <a href="${profileUrl}" class="badge-link" style="text-decoration:none; display:inline-flex; border:1px solid #e2e8f0; border-radius:6px; overflow:hidden; background:white; color:#333; align-items:stretch;">
+                <span class="badge-label" style="background:#f1f5f9; color:#64748b; font-size:0.8rem; font-weight:700; padding:6px 10px; display:flex; align-items:center;">${roleOrNum}</span>
+                <span class="badge-name" style="padding:6px 12px; font-size:0.95rem; font-weight:500; display:flex; align-items:center;">${name}</span>
+              </a>
+            `;
+          }
+
+          // 球員樣式：背號(主題色淡底) + 姓名
+          return `
+            <a href="${profileUrl}" class="badge-link" style="text-decoration:none; display:inline-flex; border:1px solid #e2e8f0; border-radius:99px; overflow:hidden; background:white; color:#333;">
+              <span class="badge-label" style="background:${color}22; color:${color}; font-weight:800; padding:4px 10px; min-width:32px; text-align:center; display:flex; align-items:center; justify-content:center;">${roleOrNum}</span>
+              <span class="badge-name" style="padding:4px 12px; font-weight:500;">${name}</span>
+            </a>
+          `;
+        }).join('');
+      }
+
+      // --- 輔助功能：產生球員分組 ---
+      function renderPlayerGroups(players, color) {
+        const groups = Object.keys(players || {});
+        if(groups.length === 0) return '';
+
+        return groups.map(groupName => {
+          const list = players[groupName];
+          return `
+            <div class="roster-group" data-type="${groupName}">
+              <h4 class="roster-title" style="margin:20px 0 10px 0; font-weight:700; color:#475569; display:flex; align-items:center; gap:8px;">
+                <i class="ri-user-line"></i> ${groupName} <span style="font-size:0.8em; color:#94a3b8; font-weight:normal;">(${list.length})</span>
+              </h4>
+              <div class="badges-container" style="display:flex; flex-wrap:wrap; gap:8px;">
+                ${renderBadges(list, color)}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // --- 全域功能：陣容篩選 ---
+      window.filterRoster = function(type, btnElement) {
+        const chips = document.querySelectorAll('.filter-chip');
+        chips.forEach(c => c.classList.remove('active'));
+        if(btnElement) btnElement.classList.add('active');
+
+        const groups = document.querySelectorAll('.roster-group');
+        groups.forEach(g => {
+          const groupType = g.getAttribute('data-type');
+          if (type === 'all' || groupType.includes(type)) {
+            g.style.display = 'block';
+          } else {
+            g.style.display = 'none';
+          }
+        });
+      };
+
+      // --- 繪圖功能：雷達圖 (深灰色五角形風格) ---
+      function drawRadarChart(team) {
+        const ctx = document.getElementById(`chart-${team.code}`);
+        if (!ctx) return;
+
+        // 從 JSON 讀取雷達數值，若無則用預設
+        const dataValues = team.radar || [70, 70, 70, 70, 70];
+
+        new Chart(ctx, {
+          type: 'radar',
+          data: {
+            // 順序：打擊, 戰術, 速度, 守備, 投手
+            labels: ['打擊', '戰術', '速度', '守備', '投手'], 
+            datasets: [{
+              label: '戰力指標',
+              data: dataValues,
+              backgroundColor: 'rgba(60, 60, 60, 0.7)', // 深灰色填滿
+              borderColor: 'rgba(60, 60, 60, 1)',      // 深灰色邊框
+              borderWidth: 2,
+              pointBackgroundColor: 'rgba(60, 60, 60, 1)',
+              pointRadius: 0, // 不顯示頂點圓圈 (圖形更銳利)
+              pointHoverRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: { enabled: true }
+            },
+            scales: {
+              r: {
+                angleLines: {
+                  display: true,
+                  color: 'rgba(0,0,0,0.05)' 
+                },
+                grid: {
+                  color: 'rgba(0,0,0,0.05)', 
+                  circular: false   // ★關鍵：設為 false 顯示為「五角形」
+                },
+                pointLabels: {
+                  font: { size: 12, family: "'Noto Sans TC', sans-serif" },
+                  color: '#888' 
+                },
+                ticks: {
+                  display: false, // ★關鍵：隱藏刻度數字
+                  maxTicksLimit: 5,
+                  backdropColor: 'transparent'
+                },
+                suggestedMin: 30,
+                suggestedMax: 100
+              }
+            }
+          }
+        });
+      }
+
+      // --- 頁面初始化 ---
+      function renderList(list) {
+        grid.innerHTML = '';
+        if (!list.length) {
+          emptyView.style.display = '';
+          countFiltered.textContent = '0';
+          return;
+        }
+        emptyView.style.display = 'none';
+        
+        list.forEach(t => grid.appendChild(renderCard(t)));
+
+        setTimeout(() => {
+          list.forEach(t => drawRadarChart(t));
+        }, 0);
+
+        countFiltered.textContent = String(list.length);
+      }
+
+      function adjustColor(col, amount) { return col; } // 簡單回傳
+
+      // 關閉抽屜邏輯
+      function closeDrawer() {
+        drawer.classList.remove('is-open');
+        document.body.style.overflow = '';
+      }
+      drawerCloseBtn.addEventListener('click', closeDrawer);
+      drawerOverlay.addEventListener('click', closeDrawer);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && drawer.classList.contains('is-open')) closeDrawer();
+      });
+
+      // 搜尋功能
+      // --- 修改後的搜尋邏輯：支援搜尋球員與教練 ---
+      function filterData(k){
+        const kw = (k||'').trim().toLowerCase();
+        state.keyword = kw;
+        
+        // 如果沒輸入關鍵字，回傳全部
+        if(!kw) return state.data.slice();
+
+        return state.data.filter(t => {
+          // 1. 搜尋球隊基本資料 (原本的邏輯：隊名、代號、球場、總教練)
+          const teamBasicInfo = [t.code, t.nameZh, t.nameEn, t.ballpark, t.manager]
+                                .filter(Boolean).join(' ').toLowerCase();
+          if (teamBasicInfo.includes(kw)) return true;
+
+          // 2. 搜尋教練團 (t.coaches 是 Array)
+          // 結構: ["職稱", "姓名", "背號"] -> 我們檢查 c[1] (姓名)
+          const hasCoach = (t.coaches || []).some(c => (c[1] || '').toLowerCase().includes(kw));
+          if (hasCoach) return true;
+
+          // 3. 搜尋球員名單 (t.players 是 Object)
+          // t.players 結構: { "投手": [[背號,姓名...], ...], "捕手": [...] }
+          const playerGroups = Object.values(t.players || {});
+          
+          // 檢查每一個分組(group)裡的每一個球員(p)
+          const hasPlayer = playerGroups.some(group => {
+            return group.some(p => (p[1] || '').toLowerCase().includes(kw));
+          });
+          
+          return hasPlayer;
+        });
+      }
+      
+      input.addEventListener('input', ()=>{
+        state.filtered = filterData(input.value);
+        renderList(state.filtered);
+      });
+      
+      $('#btnClear')?.addEventListener('click', ()=>{ 
+        input.value=''; input.dispatchEvent(new Event('input')); input.focus(); 
+      });
+
+      // 啟動
+      (async function init(){
+        try{
+          state.data = await loadTeams();
+          countLoaded.textContent = String(state.data.length);
+          state.filtered = state.data.slice();
+          renderList(state.filtered);
+        }catch(err){
+          console.error(err);
+          grid.innerHTML = '<div class="empty">無法讀取 teams.json</div>';
+        }
+      })();
+
+    })();
+</script>
+
+    <!-- 新版 Chatbot（與其他頁面一致的 UI/快捷鍵/功能） -->
+    <script src="chatbot.js"></script>
+
+    <!-- 與首頁共用的互動腳本（主題切換、滾動特效等；Chatbot 會由 chatbot.js 接管） -->
+    <script src="app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </body>
+</html>

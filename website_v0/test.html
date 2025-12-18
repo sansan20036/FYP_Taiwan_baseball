@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Redirect Iframes</title>
+</head>
+<body>
+  <h1>Redirect Two Iframes</h1>
+
+  <iframe id="frame1" src="file1.html" width="45%" height="200"></iframe>
+  <iframe id="frame2" src="file2.html" width="45%" height="200"></iframe>
+
+  <br><br>
+  <button onclick="redirectFrames()">Go to New Pages</button>
+
+  <script>
+    function redirectFrames() {
+      document.getElementById("frame1").src = "newpage1.html";
+      document.getElementById("frame2").src = "newpage2.html";
+    }
+  </script>
+</body>
+</html>

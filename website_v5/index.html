@@ -1,0 +1,1504 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ProBall Analytics | 專業運動數據平台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+     <link rel="icon" href="https://fav.farm/⚾">
+     <link rel="stylesheet" href="app.css" />
+     <link rel="stylesheet" href="chatbot.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <style>
+          :root {
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: #f3f4f8;
+      color: #1f2230;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    header.topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 20px clamp(16px, 5vw, 48px) 0;
+    }
+
+    .topbar__title h1 {
+      margin: 0;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+    }
+
+    .topbar__title p {
+      margin: 4px 0 0;
+      color: #5d647c;
+      font-size: 0.95rem;
+    }
+
+    .topbar__controls {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button#refresh {
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: 1px solid #2664f5;
+      background: linear-gradient(135deg, #336ef6, #5792ff);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button#refresh:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(45, 112, 255, 0.25);
+    }
+
+    button#refresh:disabled {
+      opacity: 0.6;
+      cursor: progress;
+      box-shadow: none;
+    }
+
+    .topbar__status {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 200px;
+      font-size: 0.9rem;
+      color: #4b5065;
+    }
+
+    main {
+      padding: 0 clamp(16px, 5vw, 48px) 48px;
+      display: grid;
+      gap: 24px;
+    }
+
+    section.panel {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid rgba(22, 30, 64, 0.08);
+      box-shadow: 0 12px 24px -20px rgba(28, 37, 77, 0.6);
+      padding: 20px clamp(16px, 5vw, 32px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel__header h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .panel__header .en {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #7780a0;
+    }
+
+    .empty-state {
+      font-size: 0.95rem;
+      color: #6a7089;
+    }
+
+    .magazine {
+      display: grid;
+      gap: 20px;
+    }
+
+    .magazine__current {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(180px, 220px) 1fr;
+      align-items: center;
+    }
+
+    .magazine__cover {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      background: #d8dbea center/cover no-repeat;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px -18px rgba(0, 0, 0, 0.6);
+    }
+
+    
+    .magazine__cover::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+      pointer-events: none;
+    }
+
+    .magazine__info {
+      display: grid;
+      gap: 8px;
+    }
+
+    .magazine__title {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .magazine__period {
+      font-size: 0.95rem;
+      color: #5f6785;
+    }
+
+    .magazine__desc {
+      margin: 0;
+      color: #444b63;
+      line-height: 1.55;
+    }
+
+    .magazine__history {
+      display: grid;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+
+    .magazine__history ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+    }
+
+    .magazine__history li {
+      color: #4860d0;
+    }
+
+    .standing {
+      display: grid;
+      gap: 18px;
+    }
+
+    .standing__card {
+      border: 1px solid rgba(47, 61, 136, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(245, 247, 255, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%);
+    }
+
+    .standing__card h3 {
+      margin: 0 0 12px;
+      font-size: 1.05rem;
+      color: #303658;
+    }
+
+    .standing__card table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .standing__card th,
+    .standing__card td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid rgba(41, 56, 125, 0.08);
+    }
+
+    .standing__card th {
+      font-weight: 600;
+      color: #4c5275;
+    }
+
+    .standing__card tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .team-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .team-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #d2d6e6 center/contain no-repeat;
+      flex-shrink: 0;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .topfive-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .topfive {
+      border: 1px solid rgba(47, 61, 136, 0.1);
+      border-radius: 12px;
+      padding: 14px;
+      background: #f8f9ff;
+      display: grid;
+      gap: 12px;
+    }
+
+    .topfive__metric {
+      font-weight: 600;
+      color: #2e3a7c;
+      font-size: 1rem;
+    }
+
+    .topfive table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    .topfive th,
+    .topfive td {
+      padding: 6px 6px;
+      text-align: left;
+      border-bottom: 1px solid rgba(33, 42, 84, 0.08);
+    }
+
+    .topfive tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .news {
+      display: grid;
+      gap: 20px;
+    }
+
+    .news__focus {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: minmax(220px, 320px) 1fr;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(51, 106, 255, 0.08), rgba(100, 132, 255, 0.12));
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .news__image {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 12px;
+      background: #d9def1 center/cover no-repeat;
+      overflow: hidden;
+    }
+
+    .news__details {
+      display: grid;
+      gap: 8px;
+    }
+
+    .news__title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .news__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: #4b5272;
+    }
+
+    .news__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .news__tags a {
+      font-size: 0.8rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(51, 102, 255, 0.12);
+      color: #3157c7;
+    }
+
+    .news__desc {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #3d4260;
+      line-height: 1.6;
+    }
+
+    .news__list {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .news__card {
+      display: grid;
+      gap: 10px;
+      border: 1px solid rgba(41, 61, 116, 0.12);
+      border-radius: 12px;
+      padding: 12px;
+      background: #fcfdff;
+    }
+
+    .news__card .news__image {
+      aspect-ratio: 16 / 9;
+    }
+
+    @media (max-width: 840px) {
+      header.topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .magazine__current,
+      .news__focus {
+        grid-template-columns: 1fr;
+      }
+
+      .news__focus {
+        padding: 16px 14px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      button#refresh {
+        width: 100%;
+      }
+
+      .topfive-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+    /* loading animation styles */
+    #loading_animation {
+      position: fixed; /* cover whole page */
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #fff; /* optional background */
+      z-index: 9999; /* keep on top */
+      transition: opacity 1s ease; /* fade duration */
+    }
+    #loading_animation.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #loading_animation iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    </style>
+
+  </head>
+  <body class="theme-light baseball-theme home-page">
+
+    <!-- start of animation -->
+    <div id="loading_animation" width="100%" height="100%" >
+
+
+      <iframe src="loading_animation.html" frameborder="0" width="100%" height="100%">
+      </iframe>
+        <script>
+      // Wait 1.5 second, then fade out
+      setTimeout(() => {
+        document.getElementById("loading_animation").classList.add("fade-out");
+      }, 1500);
+      </script>
+    </div>
+    <!-- end of animation --> 
+
+    <!-- start of header --> 
+    <div>
+      <iframe src="header.html" frameborder="0" width="100%" height="80px" style="border:none;">
+      </iframe>
+
+
+    </div> 
+    <!-- end of header -->
+
+
+    
+  <header class="topbar">
+    <div class="topbar__title">
+      <h1>中華職業棒球大聯盟</h1>
+      <p>
+        CPBL Home Highlights
+      </p>
+    </div>
+    <div class="topbar__controls">
+      <button id="refresh" type="button">Refresh</button>
+      <div class="topbar__status">
+        <span id="status">Waiting for data...</span>
+        <span id="updatedAt">Last updated: never</span>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="panel" aria-labelledby="magazineHeading">
+      <div class="panel__header">
+        <h2 id="magazineHeading">職業棒球雜誌 <span class="en">magazines</span></h2>
+      </div>
+      <div id="magazineContent" class="magazine"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="standingHeading">
+      <div class="panel__header">
+        <h2 id="standingHeading">球隊戰績 <span class="en">standing</span></h2>
+      </div>
+      <div id="standingContent" class="standing"></div>
+      <!-- === Upper Season Chart Section === -->
+      <div class="panel-card" id="upperSeasonPanel" style="grid-column:1 / -1;">
+        <h3 class="panel-title">上半季戰績</h3>
+        
+    <!-- Toggle buttons row -->
+    <div class="season-toggle-row" 
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;"><!-- tightened -->
+
+      <!-- Left-aligned upper season button -->
+      <button id="toggleUpperChartBtn" class="btn btn-accent" type="button" style="display: flex; align-items: center; gap: 6px;">
+        <i class="ri-bar-chart-line"></i> 顯示上半季戰績圖表
+      </button>
+
+      <!-- Centered lower season button -->
+      <div style="flex: 1; text-align: center;">
+        <button id="toggleLowerChartBtn" class="btn btn-accent" type="button" style="display: inline-flex; align-items: center; gap: 6px;">
+          <i class="ri-bar-chart-line"></i> 顯示下半季戰績圖表
+        </button>
+      </div>
+    </div>
+
+
+
+        
+
+        <!-- Hidden chart container -->
+        <div id="upperSeasonChartContainer" style="display:none;">
+          <div style="min-height:300px;">
+            <canvas id="leagueTrendChart" height="280"></canvas>
+          </div>
+          <div id="teamLegend" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;justify-content:center;"></div>
+        </div>
+      </div>
+      
+
+
+    </section>
+
+    <section class="panel" aria-labelledby="pitchingHeading">
+      <div class="panel__header">
+        <h2 id="pitchingHeading">投手TOP5 <span class="en">pitching leaders</span></h2>
+      </div>
+
+      <!-- ★ Button to show team radar (pitching) -->
+      <div style="display:flex;align-items:center;gap:8px;margin-top:-8px;">
+        <button id="togglePitchRadarsBtn" class="btn btn-accent" type="button" style="display:inline-flex;align-items:center;gap:6px;">
+          <i class="ri-shapes-line"></i> 顯示各隊雷達圖（投手）
+        </button>
+      </div>
+      <!-- ★ Container for team radars (pitching) -->
+      <div id="pitchingRadarContainer" style="display:none;margin-top:10px;"></div>
+
+      <div id="pitchingContent" class="topfive-grid"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="battingHeading">
+      <div class="panel__header">
+        <h2 id="battingHeading">打擊TOP5 <span class="en">batting leaders</span></h2>
+      </div>
+
+      <!-- ★ Button to show team radar (batting) -->
+      <div style="display:flex;align-items:center;gap:8px;margin-top:-8px;">
+        <button id="toggleBattingRadarsBtn" class="btn btn-accent" type="button" style="display:inline-flex;align-items:center;gap:6px;">
+          <i class="ri-shapes-line"></i> 顯示各隊雷達圖（打者）
+        </button>
+      </div>
+      <!-- ★ Container for team radars (batting) -->
+      <div id="battingRadarContainer" style="display:none;margin-top:10px;"></div>
+
+      <div id="battingContent" class="topfive-grid"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="newsHeading">
+      <div class="panel__header">
+        <h2 id="newsHeading">最新消息 <span class="en">news</span></h2>
+      </div>
+      <div id="newsContent" class="news"></div>
+    </section>
+  </main>
+
+
+
+  
+<script>
+(function () {
+  // Use same-origin endpoint so it works no matter which PORT you run the server on.
+  const ENDPOINT = new URL('/home', window.location.href).toString();
+  const AUTO_REFRESH_MS = 120000;
+
+  const els = {
+    status: document.getElementById('status'),
+    updatedAt: document.getElementById('updatedAt'),
+    refresh: document.getElementById('refresh'),
+    magazine: document.getElementById('magazineContent'),
+    standing: document.getElementById('standingContent'),
+    pitching: document.getElementById('pitchingContent'),
+    batting: document.getElementById('battingContent'),
+    news: document.getElementById('newsContent'),
+    // ★ radar UI
+    pitchingRadarBtn: document.getElementById('togglePitchRadarsBtn'),
+    pitchingRadarWrap: document.getElementById('pitchingRadarContainer'),
+    battingRadarBtn: document.getElementById('toggleBattingRadarsBtn'),
+    battingRadarWrap: document.getElementById('battingRadarContainer'),
+  };
+
+  let refreshTimer;
+  let season_rank_chart = [];
+  let upper_season_rank = [];
+  let lower_season_rank = [];
+  let latestData = null; // ★ keep last payload for radar charts
+  // store created radar charts to destroy on re-render
+  window.__pitchRadarCharts = [];
+  window.__batRadarCharts = [];
+
+  const createAnchor = (url, text, className) => {
+    const el = document.createElement(url ? 'a' : 'span');
+    if (className) el.className = className;
+    el.textContent = text || '';
+    if (url) {
+      el.href = url;
+      el.target = '_blank';
+      el.rel = 'noopener noreferrer';
+    }
+    return el;
+  };
+
+  const createEmpty = (message) => {
+    const p = document.createElement('p');
+    p.className = 'empty-state';
+    p.textContent = message;
+    return p;
+  };
+
+  const setBackgroundImage = (el, url) => {
+    if (url) el.style.backgroundImage = `url('${url}')`;
+  };
+
+  const renderMagazine = (data) => {
+    const container = els.magazine;
+    container.innerHTML = '';
+    if (!data || (!data.current && (!Array.isArray(data.history) || !data.history.length))) {
+      container.appendChild(createEmpty('No magazine data available right now.'));
+      return;
+    }
+
+    if (data.current) {
+      const current = document.createElement('div');
+      current.className = 'magazine__current';
+
+      const cover = document.createElement(data.current.url ? 'a' : 'div');
+      cover.className = 'magazine__cover';
+      setBackgroundImage(cover, data.current.image);
+      if (data.current.url) {
+        cover.href = data.current.url;
+        cover.target = '_blank';
+        cover.rel = 'noopener noreferrer';
+      }
+      cover.title = data.current.title || 'Magazine cover';
+
+      const info = document.createElement('div');
+      info.className = 'magazine__info';
+      info.appendChild(createAnchor(data.current.url, data.current.title || 'Current magazine', 'magazine__title'));
+      if (data.current.period) {
+        const period = document.createElement('div');
+        period.className = 'magazine__period';
+        period.textContent = data.current.period;
+        info.appendChild(period);
+      }
+      if (data.current.description) {
+        const desc = document.createElement('p');
+        desc.className = 'magazine__desc';
+        desc.textContent = data.current.description;
+        info.appendChild(desc);
+      }
+
+      current.appendChild(cover);
+      current.appendChild(info);
+      container.appendChild(current);
+    }
+
+    if (Array.isArray(data.history) && data.history.length) {
+      const history = document.createElement('div');
+      history.className = 'magazine__history';
+      const heading = document.createElement('div');
+      heading.textContent = 'Recent issues';
+      history.appendChild(heading);
+      const list = document.createElement('ul');
+      data.history.forEach((issue) => {
+        const li = document.createElement('li');
+        li.appendChild(createAnchor(issue.url, issue.title, ''));
+        list.appendChild(li);
+      });
+      history.appendChild(list);
+      container.appendChild(history);
+    }
+  };
+
+  const renderStandings = (data) => {
+    const container = els.standing;
+    container.innerHTML = '';
+    const hasRows = Array.isArray(data) && data.some((season) => Array.isArray(season.rows) && season.rows.length);
+    if (!hasRows) {
+      container.appendChild(createEmpty('No standings available.'));
+      return;
+    }
+
+    data.forEach((season) => {
+      if (!season || !Array.isArray(season.rows) || !season.rows.length) return;
+      const card = document.createElement('article');
+      card.className = 'standing__card';
+
+      const title = document.createElement('h3');
+      title.textContent = season.label || 'Standings';
+      card.appendChild(title);
+
+      const table = document.createElement('table');
+      const thead = document.createElement('thead');
+      thead.innerHTML =
+        '<tr><th>#</th><th>Team</th><th>G</th><th>W-L-T</th><th>PCT</th><th>GB</th><th>Streak</th></tr>';
+      table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      season.rows.forEach((row) => {
+        const tr = document.createElement('tr');
+
+        const rankTd = document.createElement('td');
+        rankTd.textContent = row.rank || '-';
+        tr.appendChild(rankTd);
+
+        const teamTd = document.createElement('td');
+        teamTd.className = 'team-cell';
+        if (row.logo) {
+          const logo = document.createElement('span');
+          logo.className = 'team-logo';
+          setBackgroundImage(logo, row.logo);
+          teamTd.appendChild(logo);
+        }
+        teamTd.appendChild(createAnchor(row.teamUrl, row.team || 'Team', 'team-name'));
+        tr.appendChild(teamTd);
+
+        const gamesTd = document.createElement('td');
+        gamesTd.textContent = row.games || '';
+        tr.appendChild(gamesTd);
+
+        const recordTd = document.createElement('td');
+        recordTd.textContent = row.record || '';
+        tr.appendChild(recordTd);
+
+        const pctTd = document.createElement('td');
+        pctTd.textContent = row.winRate || '';
+        tr.appendChild(pctTd);
+
+        const gbTd = document.createElement('td');
+        gbTd.textContent = row.gamesBehind || '';
+        tr.appendChild(gbTd);
+
+        const streakTd = document.createElement('td');
+        streakTd.textContent = row.streak || '';
+        tr.appendChild(streakTd);
+
+        tbody.appendChild(tr);
+      });
+
+      // store season data for chart/list toggles
+      season_rank_chart.push(season);
+      if (season.label.includes('上半季')) upper_season_rank = season;
+      if (season.label.includes('下半季')) lower_season_rank = season;
+
+      table.appendChild(tbody);
+      card.appendChild(table);
+      container.appendChild(card);
+
+      /** Build 3 horizontal bar charts for W/L/T sorted by PCT **/
+function render_season_chart(seasonData, titleText) {
+  const container = document.getElementById("upperSeasonChartContainer");
+  const legendContainer = document.getElementById("teamLegend");
+  const canvasHost = document.getElementById("leagueTrendChart");
+  if (!container) return;
+
+  // Clear old content
+  container.style.display = "block";
+  container.innerHTML = "";
+  if (window.leagueChartWins) { window.leagueChartWins.destroy(); }
+  if (window.leagueChartLosses) { window.leagueChartLosses.destroy(); }
+  if (window.leagueChartTies) { window.leagueChartTies.destroy(); }
+
+  if (!seasonData?.rows?.length) {
+    container.innerHTML = "<p class='empty-state'>No season data to display.</p>";
+    return;
+  }
+
+  const rows = [...seasonData.rows].sort(
+    (a, b) => parseFloat(b.winRate || 0) - parseFloat(a.winRate || 0)
+  );
+
+  const teamColors = {
+    "中信兄弟": "#FFD700",
+    "樂天桃猿": "#E60039",
+    "統一7-ELEVEn獅": "#FF7F27",
+    "台鋼雄鷹": "#009879",
+    "味全龍": "#D60000",
+    "富邦悍將": "#0066CC",
+  };
+
+  const teams = rows.map((r) => r.team);
+  const wins = rows.map((r) => parseInt((r.record || "0-0-0").split("-")[0]));
+  const losses = rows.map((r) => parseInt((r.record || "0-0-0").split("-")[1]));
+  const ties = rows.map((r) => parseInt((r.record || "0-0-0").split("-")[2]));
+
+  // === Create wrapper ===
+  const title = document.createElement("h3");
+  title.textContent = titleText || "球隊戰績圖表";
+  title.style.margin = "6px 0 4px"; /* tightened */
+  title.style.fontWeight = "700";
+  container.appendChild(title);
+
+  const chartWrapper = document.createElement("div");
+  chartWrapper.style.display = "grid";
+  chartWrapper.style.gridTemplateColumns = "repeat(3, 1fr)";
+  chartWrapper.style.gap = "16px";
+  chartWrapper.style.alignItems = "start";
+  container.appendChild(chartWrapper);
+
+  // === Helper to make chart ===
+  const makeChart = (label, data, colorFn) => {
+    const canvas = document.createElement("canvas");
+    chartWrapper.appendChild(canvas);
+
+    const bgColors = teams.map((t) => colorFn(t));
+    return new Chart(canvas.getContext("2d"), {
+      type: "bar",
+      data: {
+        labels: teams,
+        datasets: [{
+          label,
+          data,
+          backgroundColor: bgColors,
+          borderWidth: 0,
+        }],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          title: { display: true, text: label, font: { size: 16 } },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `${ctx.label}: ${ctx.parsed.x}`,
+            },
+          },
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: { precision: 0 },
+            grid: { color: "rgba(0,0,0,.1)" },
+          },
+          y: {
+            grid: { display: false },
+            ticks: { color: "#3d4260", font: { size: 12 } },
+          },
+        },
+      },
+    });
+  };
+
+  // === Create all 3 ===
+  window.leagueChartWins = makeChart("勝場 (W)", wins, (t) => teamColors[t] || "#007bff");
+  window.leagueChartLosses = makeChart("敗場 (L)", losses, (t) => teamColors[t] + "88");
+  window.leagueChartTies = makeChart("和局 (T)", ties, (t) => teamColors[t] + "55");
+
+  // === Stats summary (PCT / GB / Streak) ===
+  const summary = document.createElement("table");
+  summary.style.marginTop = "12px";
+  summary.style.width = "100%";
+  summary.innerHTML = `
+    <thead>
+      <tr style="text-align:left; background:#f4f6fc;">
+        <th style="padding:6px;">排名</th>
+        <th>球隊</th>
+        <th style="text-align:right;">PCT</th>
+        <th style="text-align:right;">GB</th>
+        <th style="text-align:right;">Streak</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows
+        .map(
+          (r, i) => `
+        <tr>
+          <td style="padding:4px;">${i + 1}</td>
+          <td style="color:${teamColors[r.team] || "#222"};font-weight:600;">${r.team}</td>
+          <td style="text-align:right;">${r.winRate || ""}</td>
+          <td style="text-align:right;">${r.gamesBehind || ""}</td>
+          <td style="text-align:right;">${r.streak || ""}</td>
+        </tr>
+      `
+        )
+        .join("")}
+    </tbody>
+  `;
+  container.appendChild(summary);
+}
+    });
+  };
+
+  const renderTopFive = (container, groups, emptyMessage) => {
+    container.innerHTML = '';
+    if (!Array.isArray(groups) || !groups.length) {
+      container.appendChild(createEmpty(emptyMessage));
+      return;
+    }
+    groups.forEach((group) => {
+      const card = document.createElement('article');
+      card.className = 'topfive';
+      const metric = document.createElement('div');
+      metric.className = 'topfive__metric';
+      metric.textContent = group.metric || 'Leaderboard';
+      card.appendChild(metric);
+
+      const table = document.createElement('table');
+      const thead = document.createElement('thead');
+      thead.innerHTML = '<tr><th>#</th><th>Player</th><th>Team</th><th>Stat</th></tr>';
+      table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      (group.players || []).forEach((player) => {
+        const tr = document.createElement('tr');
+
+        const rankTd = document.createElement('td');
+        rankTd.textContent = player.rank || '';
+        tr.appendChild(rankTd);
+
+        const nameTd = document.createElement('td');
+        const player_url_own = 'show_player_profile.html?player_name=' + player.player;
+        nameTd.appendChild(createAnchor(player_url_own, player.player || '', ''));
+        tr.appendChild(nameTd);
+
+        const teamTd = document.createElement('td');
+        teamTd.textContent = player.team || '';
+        tr.appendChild(teamTd);
+
+        const valueTd = document.createElement('td');
+        valueTd.textContent = player.value || '';
+        tr.appendChild(valueTd);
+
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      card.appendChild(table);
+      container.appendChild(card);
+    });
+  };
+
+  const renderNews = (data) => {
+    const container = els.news;
+    container.innerHTML = '';
+    const hasFocus = data && data.focus;
+    const hasItems = data && Array.isArray(data.items) && data.items.length;
+    if (!hasFocus && !hasItems) {
+      container.appendChild(createEmpty('No news posted yet.'));
+      return;
+    }
+    if (hasFocus) {
+      const focus = document.createElement('article');
+      focus.className = 'news__focus';
+      const img = document.createElement(data.focus.url ? 'a' : 'div');
+      img.className = 'news__image';
+      setBackgroundImage(img, data.focus.image);
+      if (data.focus.url) {
+        img.href = data.focus.url;
+        img.target = '_blank';
+        img.rel = 'noopener noreferrer';
+      }
+      const details = document.createElement('div');
+      details.className = 'news__details';
+      const title = document.createElement('h3');
+      title.className = 'news__title';
+      title.appendChild(createAnchor(data.focus.url, data.focus.title || 'Featured news', ''));
+      details.appendChild(title);
+      if (data.focus.description) {
+        const desc = document.createElement('p');
+        desc.className = 'news__desc';
+        desc.textContent = data.focus.description;
+        details.appendChild(desc);
+      }
+      focus.appendChild(img);
+      focus.appendChild(details);
+      container.appendChild(focus);
+    }
+  };
+
+  const scheduleRefresh = () => {
+    if (refreshTimer) clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(loadData, AUTO_REFRESH_MS);
+  };
+
+  const loadData = async () => {
+    if (refreshTimer) clearTimeout(refreshTimer);
+    els.refresh.disabled = true;
+    els.status.textContent = 'Fetching latest data...';
+    try {
+      const response = await fetch(ENDPOINT, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`Server returned ${response.status}`);
+      const json = await response.json();
+      latestData = json; // ★ keep for radars
+      renderMagazine(json.magazines);
+      renderStandings(json.standings);
+      renderTopFive(els.pitching, json.pitchingTop5, 'No pitching leaderboard data.');
+      renderTopFive(els.batting, json.battingTop5, 'No batting leaderboard data.');
+      renderNews(json.news);
+      els.status.textContent = 'Data refreshed.';
+      const timestamp = json.fetchedAt ? new Date(json.fetchedAt) : new Date();
+      els.updatedAt.textContent = `Last updated: ${timestamp.toLocaleString()}`;
+    } catch (err) {
+      console.error(err);
+      els.status.textContent = `Error fetching data: ${err.message}`;
+      els.updatedAt.textContent = 'Last updated: failed';
+    } finally {
+      els.refresh.disabled = false;
+      scheduleRefresh();
+    }
+  };
+
+  /** TEAM COLORS (kept consistent) **/
+  const teamColors = {
+    "中信兄弟": "#FFD700",
+    "樂天桃猿": "#E60039",
+    "統一7-ELEVEn獅": "#FF7F27",
+    "台鋼雄鷹": "#009879",
+    "味全龍": "#D60000",
+    "富邦悍將": "#0066CC",
+  };
+
+  /** Utility to alpha a hex color **/
+  function hexWithAlpha(hex, a = 1) {
+    if (!hex) return `rgba(0,0,0,${a})`;
+    const m = hex.replace('#','');
+    const bigint = parseInt(m.length === 3 ? m.split('').map(x=>x+x).join('') : m, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `rgba(${r},${g},${b},${a})`;
+  }
+
+  /** Build ranked horizontal list with W/L/T “lines” and metrics on right **/
+  function render_season_chart(seasonData, titleText) {
+    const container = document.getElementById("upperSeasonChartContainer");
+    if (!container) return;
+
+    // Ensure host elements exist: we’ll hide the canvas and render a list
+    let listHost = document.getElementById("teamRankList");
+    if (!listHost) {
+      // hide the canvas if present
+      const canvas = document.getElementById("leagueTrendChart");
+      if (canvas) canvas.style.display = "none";
+
+      listHost = document.createElement('div');
+      listHost.id = "teamRankList";
+      container.appendChild(listHost);
+    }
+    listHost.innerHTML = "";
+
+    // LEGEND container still available
+    let legendContainer = document.getElementById("teamLegend");
+    if (!legendContainer) {
+      legendContainer = document.createElement('div');
+      legendContainer.id = "teamLegend";
+      container.appendChild(legendContainer);
+    }
+    legendContainer.innerHTML = "";
+
+    // Validate + sort by PCT (winRate) desc
+    const rows = (seasonData?.rows || []).slice();
+    if (!rows.length) {
+      container.style.display = "block";
+      listHost.innerHTML = "<p class='empty-state'>No season data to display.</p>";
+      return;
+    }
+    rows.sort((a,b) => parseFloat(b.winRate||0) - parseFloat(a.winRate||0));
+
+    // Compute a width scale based on each team total games (for W/L/T bars)
+    const totals = rows.map(r => {
+      const [W=0,L=0,T=0] = (r.record||"0-0-0").split("-").map(Number);
+      return { W, L, T, total: (W+L+T) || 1 };
+    });
+    const maxTotal = Math.max(...totals.map(t => t.total));
+
+    // Title
+    const heading = document.createElement('div');
+    heading.style.display = "flex";
+    heading.style.alignItems = "center";
+    heading.style.gap = "12px";
+    heading.style.margin = "6px 0 4px"; // tightened
+    heading.style.fontWeight = "700";
+    heading.style.fontSize = "1.05rem";
+    heading.textContent = titleText || "球隊戰績圖表";
+    listHost.appendChild(heading);
+
+    // Header row (grid labels)
+    const header = document.createElement('div');
+    header.style.display = "grid";
+    header.style.gridTemplateColumns = "40px minmax(160px,1fr) minmax(260px,2fr) 90px 70px 90px";
+    header.style.fontSize = ".85rem";
+    header.style.color = "#5f6785";
+    header.style.marginBottom = "6px";
+    header.innerHTML = `
+      <span>#</span>
+      <span>Team</span>
+      <span>W / L / T</span>
+      <span style="text-align:right;">PCT</span>
+      <span style="text-align:right;">GB</span>
+      <span style="text-align:right;">Streak</span>
+    `;
+    listHost.appendChild(header);
+
+    // Each row
+    rows.forEach((r, idx) => {
+      const color = teamColors[r.team] || "#708090";
+      const [W=0, L=0, T=0] = (r.record || "0-0-0").split("-").map(Number);
+      const total = (W+L+T) || 1;
+
+      // widths normalized to the largest total (keeps visual comparability)
+      const wW = Math.max(2, Math.round((W / maxTotal) * 100));
+      const wL = Math.max(2, Math.round((L / maxTotal) * 100));
+      const wT = Math.max(2, Math.round((T / maxTotal) * 100));
+
+      const rowEl = document.createElement('div');
+      rowEl.className = "rank-line";
+      rowEl.style.display = "grid";
+      rowEl.style.gridTemplateColumns = "40px minmax(160px,1fr) minmax(260px,2fr) 90px 70px 90px";
+      rowEl.style.alignItems = "center";
+      rowEl.style.gap = "12px";
+      rowEl.style.padding = "10px 10px";
+      rowEl.style.borderRadius = "10px";
+      rowEl.style.border = "1px solid rgba(41,56,125,.08)";
+      rowEl.style.background = "linear-gradient(180deg, rgba(245,247,255,.55), rgba(255,255,255,.6))";
+      rowEl.style.marginBottom = "8px";
+
+      const rank = document.createElement('div');
+      rank.textContent = String(idx + 1);
+      rank.style.fontWeight = "700";
+
+      const teamCell = document.createElement('div');
+      teamCell.style.display = "flex";
+      teamCell.style.alignItems = "center";
+      teamCell.style.gap = "10px";
+      // logo
+      const logo = document.createElement('span');
+      logo.className = "team-logo";
+      logo.style.width = "28px";
+      logo.style.height = "28px";
+      logo.style.borderRadius = "50%";
+      logo.style.background = `${hexWithAlpha(color, .15)}`;
+      logo.style.border = "1px solid rgba(0,0,0,.05)";
+      if (r.logo) logo.style.background = `#fff url('${r.logo}') center/contain no-repeat`;
+      const name = document.createElement('span');
+      name.textContent = r.team || "Team";
+      name.style.fontWeight = "600";
+      name.style.color = color;
+      teamCell.appendChild(logo);
+      teamCell.appendChild(name);
+
+      // W/L/T bars area
+      const bands = document.createElement('div');
+      bands.style.display = "flex";
+      bands.style.alignItems = "center";
+      bands.style.gap = "10px";
+
+      const bandWrap = (label, width, bg, text) => {
+        const wrap = document.createElement('div');
+        wrap.style.display = 'flex';
+        wrap.style.alignItems = 'center';
+        wrap.style.gap = '6px';
+
+        const bar = document.createElement('div');
+        bar.style.height = "8px";
+        bar.style.width = `${width}px`;
+        bar.style.minWidth = "20px";
+        bar.style.borderRadius = "6px";
+        bar.style.background = bg;
+
+        const t = document.createElement('span');
+        t.style.fontSize = ".85rem";
+        t.style.color = "#3d4260";
+        t.textContent = `${label}:${text}`;
+
+        wrap.appendChild(bar);
+        wrap.appendChild(t);
+        return wrap;
+      };
+
+      // team color variants for W/L/T
+      const wColor = hexWithAlpha(color, .95);  // solid for wins
+      const lColor = hexWithAlpha(color, .35);  // lighter for losses
+      const tColor = hexWithAlpha(color, .20);  // lightest for ties
+
+      bands.appendChild(bandWrap('W', wW, wColor, W));
+      bands.appendChild(bandWrap('L', wL, lColor, L));
+      bands.appendChild(bandWrap('T', wT, tColor, T));
+
+      // Right metrics
+      const pct = document.createElement('div');
+      pct.textContent = r.winRate ?? '';
+      pct.style.textAlign = 'right';
+      pct.style.fontVariantNumeric = "tabular-nums";
+      pct.style.fontWeight = "600";
+
+      const gb = document.createElement('div');
+      gb.textContent = r.gamesBehind ?? '';
+      gb.style.textAlign = 'right';
+      gb.style.fontVariantNumeric = "tabular-nums";
+
+      const streak = document.createElement('div');
+      streak.textContent = r.streak ?? '';
+      streak.style.textAlign = 'right';
+      streak.style.fontVariantNumeric = "tabular-nums";
+
+      rowEl.appendChild(rank);
+      rowEl.appendChild(teamCell);
+      rowEl.appendChild(bands);
+      rowEl.appendChild(pct);
+      rowEl.appendChild(gb);
+      rowEl.appendChild(streak);
+
+      listHost.appendChild(rowEl);
+
+      // legend (team color chips)
+      const chip = document.createElement('div');
+      chip.style.display = 'inline-flex';
+      chip.style.alignItems = 'center';
+      chip.style.gap = '6px';
+      chip.style.margin = '4px 10px 0 0';
+      chip.innerHTML = `<span style="width:14px;height:14px;border-radius:4px;background:${color};display:inline-block;border:1px solid rgba(0,0,0,.15);"></span><span style="font-size:.85rem;">${r.team}</span>`;
+      legendContainer.appendChild(chip);
+    });
+
+    container.style.display = "block";
+  }
+
+  /** Toggle Buttons (upper / lower) **/
+  document.addEventListener("DOMContentLoaded", () => {
+    const upperBtn = document.getElementById("toggleUpperChartBtn");
+    const lowerBtn = document.getElementById("toggleLowerChartBtn");
+    const container = document.getElementById("upperSeasonChartContainer");
+    let showUpper = false;
+    let showLower = false;
+
+    upperBtn?.addEventListener("click", () => {
+      showUpper = !showUpper;
+      if (showUpper) {
+        // if lower is on, turn it off to avoid confusion (optional)
+        if (showLower) { showLower = false; if (lowerBtn) lowerBtn.innerHTML = `<i class="ri-bar-chart-line"></i> 顯示下半季戰績圖表`; }
+        upperBtn.innerHTML = `<i class="ri-eye-off-line"></i> 隱藏上半季戰績圖表`;
+        render_season_chart(upper_season_rank, "2025 上半季 球隊戰績（PCT 排序）");
+      } else {
+        upperBtn.innerHTML = `<i class="ri-bar-chart-line"></i> 顯示上半季戰績圖表`;
+        if (container) container.style.display = "none";
+      }
+    });
+
+    lowerBtn?.addEventListener("click", () => {
+      showLower = !showLower;
+      if (showLower) {
+        if (showUpper) { showUpper = false; if (upperBtn) upperBtn.innerHTML = `<i class="ri-bar-chart-line"></i> 顯示上半季戰績圖表`; }
+        lowerBtn.innerHTML = `<i class="ri-eye-off-line"></i> 隱藏下半季戰績圖表`;
+        render_season_chart(lower_season_rank, "2025 下半季 球隊戰績（PCT 排序）");
+      } else {
+        lowerBtn.innerHTML = `<i class="ri-bar-chart-line"></i> 顯示下半季戰績圖表`;
+        if (container) container.style.display = "none";
+      }
+    });
+  });
+
+  els.refresh.addEventListener('click', loadData);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) clearTimeout(refreshTimer);
+    else loadData();
+  });
+
+  /** ---------- ★ Radar Charts for Teams (Pitching & Batting) ---------- **/
+  function destroyCharts(arr) {
+    (arr || []).forEach(c => { try { c.destroy(); } catch(e){} });
+    arr.length = 0;
+  }
+
+  function gridWrap(el, minWidth = 260) {
+    el.style.display = 'grid';
+    el.style.gridTemplateColumns = `repeat(auto-fit, minmax(${minWidth}px, 1fr))`;
+    el.style.gap = '14px';
+  }
+
+  // build { team -> {metricKey: numericValue} } from Top5 groups
+  function buildTeamMetricMap(groups, metricKeyMap) {
+    // groups: [{metric: '防禦率', players:[{team, value}, ...]}, ...]
+    const teamMap = {}; // { team: { ERA: number, W: number, SV: number, HLD: number, SO: number } }
+    const ensureTeam = (t) => { if(!teamMap[t]) teamMap[t] = {}; return teamMap[t]; };
+
+    (groups || []).forEach(g => {
+      const m = (g.metric || '').trim();
+      const key = metricKeyMap[m];
+      if (!key) return;
+      (g.players || []).forEach(p => {
+        const t = (p.team || '').trim();
+        const v = Number(String(p.value).replace(/[^\d.\-]/g,'')); // coerce numeric
+        if (!t || isNaN(v)) return;
+        ensureTeam(t)[key] = v;
+      });
+    });
+
+    return teamMap;
+  }
+
+  // normalize 0-100 by metric (optionally invert)
+  function normalizeTeamMap(teamMap, keys, invertKeys = new Set()) {
+    const maxByKey = {};
+    keys.forEach(k => {
+      maxByKey[k] = 0;
+      Object.values(teamMap).forEach(obj => {
+        const v = Number(obj[k] ?? 0);
+        if (v > maxByKey[k]) maxByKey[k] = v;
+      });
+    });
+    // ERA-like invert: higher score = better
+    Object.entries(teamMap).forEach(([team, obj]) => {
+      keys.forEach(k => {
+        const raw = Number(obj[k] ?? 0);
+        const max = maxByKey[k] || 1;
+        let score = (raw / max) * 100;
+        if (invertKeys.has(k)) score = ((max - raw) / max) * 100;
+        obj[k] = Math.max(0, Math.min(100, score));
+      });
+    });
+    return teamMap;
+  }
+
+  function colorSet(hex) {
+    return {
+      border: hexWithAlpha(hex, 0.9),
+      fill: hexWithAlpha(hex, 0.2),
+      point: hexWithAlpha(hex, 0.9),
+    };
+  }
+
+  function renderTeamRadars(container, teamMap, axisLabels, keyOrder, titlePrefix) {
+    container.innerHTML = '';
+    gridWrap(container, 280);
+    const charts = [];
+    const teams = Object.keys(teamMap).sort(); // stable order
+
+    teams.forEach(team => {
+      const cWrap = document.createElement('div');
+      cWrap.style.border = '1px solid rgba(47,61,136,0.12)';
+      cWrap.style.borderRadius = '12px';
+      cWrap.style.background = '#fcfdff';
+      cWrap.style.padding = '10px';
+
+      const h = document.createElement('div');
+      h.textContent = `${titlePrefix}：${team}`;
+      h.style.fontWeight = '600';
+      h.style.margin = '4px 0 8px';
+      cWrap.appendChild(h);
+
+      const canvas = document.createElement('canvas');
+      cWrap.appendChild(canvas);
+      container.appendChild(cWrap);
+
+      const color = teamColors[team] || '#4a6cf7';
+      const cs = colorSet(color);
+      const dataVals = keyOrder.map(k => Number(teamMap[team][k] ?? 0));
+
+      const chart = new Chart(canvas.getContext('2d'), {
+        type: 'radar',
+        data: {
+          labels: axisLabels,
+          datasets: [{
+            label: team,
+            data: dataVals,
+            borderColor: cs.border,
+            backgroundColor: cs.fill,
+            pointBackgroundColor: cs.point,
+            pointRadius: 3,
+            borderWidth: 2,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            r: {
+              min: 0,
+              max: 100,
+              ticks: { display: false },
+              grid: { color: 'rgba(0,0,0,0.12)' },
+              angleLines: { color: 'rgba(0,0,0,0.12)' },
+              pointLabels: { font: { size: 11 } }
+            }
+          },
+        },
+      });
+      charts.push(chart);
+      // make height reasonable
+      cWrap.style.height = '300px';
+    });
+
+    return charts;
+  }
+
+  // ★ Hook up buttons
+  els.pitchingRadarBtn?.addEventListener('click', () => {
+    if (!latestData?.pitchingTop5?.length) return;
+    const wrap = els.pitchingRadarWrap;
+    const isHidden = wrap.style.display === 'none' || wrap.style.display === '';
+    if (isHidden) {
+      // build team map for pitching
+      // mapping of Chinese metric -> internal key
+      const map = {
+        "防禦率": "ERA",
+        "勝投": "W",
+        "救援成功": "SV",
+        "中繼成功": "HLD",
+        "奪三振": "SO",
+      };
+      const order = ["ERA","W","SV","HLD","SO"];
+      const labels = ["防禦率","勝投","救援","中繼","三振"];
+      const teamMap = buildTeamMetricMap(latestData.pitchingTop5, map);
+      // invert ERA (lower is better)
+      const chartsData = normalizeTeamMap(teamMap, order, new Set(["ERA"]));
+      destroyCharts(window.__pitchRadarCharts);
+      wrap.style.display = 'block';
+      window.__pitchRadarCharts = renderTeamRadars(wrap, chartsData, labels, order, "投手雷達圖");
+      els.pitchingRadarBtn.innerHTML = `<i class="ri-eye-off-line"></i> 隱藏各隊雷達圖（投手）`;
+    } else {
+      wrap.style.display = 'none';
+      destroyCharts(window.__pitchRadarCharts);
+      els.pitchingRadarBtn.innerHTML = `<i class="ri-shapes-line"></i> 顯示各隊雷達圖（投手）`;
+    }
+  });
+
+  els.battingRadarBtn?.addEventListener('click', () => {
+    if (!latestData?.battingTop5?.length) return;
+    const wrap = els.battingRadarWrap;
+    const isHidden = wrap.style.display === 'none' || wrap.style.display === '';
+    if (isHidden) {
+      // build team map for batting
+      const map = {
+        "打擊率": "AVG",
+        "安打": "H",
+        "全壘打": "HR",
+        "打點": "RBI",
+        "盜壘": "SB",
+      };
+      const order = ["AVG","H","HR","RBI","SB"];
+      const labels = ["打擊率","安打","全壘打","打點","盜壘"];
+      const teamMap = buildTeamMetricMap(latestData.battingTop5, map);
+      // AVG is a rate typically < 1; normalization handles the scale
+      const chartsData = normalizeTeamMap(teamMap, order);
+      destroyCharts(window.__batRadarCharts);
+      wrap.style.display = 'block';
+      window.__batRadarCharts = renderTeamRadars(wrap, chartsData, labels, order, "打者雷達圖");
+      els.battingRadarBtn.innerHTML = `<i class="ri-eye-off-line"></i> 隱藏各隊雷達圖（打者）`;
+    } else {
+      wrap.style.display = 'none';
+      destroyCharts(window.__batRadarCharts);
+      els.battingRadarBtn.innerHTML = `<i class="ri-shapes-line"></i> 顯示各隊雷達圖（打者）`;
+    }
+  });
+  /** ---------- ★ END Radar Section ---------- **/
+
+  loadData();
+})();
+</script>
+
+
+
+
+  <!-- chat bottt here -->
+    <div class="bg-canvas" aria-hidden="true"></div>
+
+    <!-- 主要：獨立 Chatbot 頁面只保留聊天 FAB 與面板 -->
+    <button id="chatFab" class="fab chat-fab" aria-label="開啟 AI 助理">
+      <i class="ri-robot-2-line"></i>
+    </button>
+
+    <section id="chatbot" class="chatbot" aria-label="AI 聊天助理" hidden>
+      <header class="chat-header">
+        <div class="chat-title"><i class="ri-robot-2-line"></i> ProBall AI 助理</div>
+        <div class="chat-actions">
+          <button id="chatClose" class="icon-btn" aria-label="清除對話" data-tooltip="清除對話"><i class="ri-close-line"></i></button>
+        </div>
+      </header>
+      <div id="chatBody" class="chat-body" role="log" aria-live="polite"></div>
+      <div class="chat-input">
+        <input id="chatText" type="text" placeholder="輸入訊息，例如：今天有哪些賽事？" aria-label="輸入訊息" />
+        <button id="chatSend" class="btn btn-accent" aria-label="送出"><i class="ri-send-plane-2-line"></i></button>
+      </div>
+    </section>
+
+    <!-- Command Palette -->
+    <div id="cmdPalette" class="cmd-palette" hidden role="dialog" aria-modal="true" aria-label="指令面板">
+      <div class="cmd-inner">
+        <input id="cmdInput" class="cmd-input" type="text" placeholder="搜尋指令…" aria-label="搜尋指令" />
+        <div id="cmdList" class="cmd-list" role="listbox"></div>
+      </div>
+    </div>
+
+    <script src="chatbot.js"></script>
+
+
+  </body>
+</html>

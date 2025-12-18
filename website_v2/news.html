@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ProBall Analytics | 最新消息</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="app.css" />
+
+    <style>
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        background: #f3f4f8;
+        color: #1f2230;
+      }
+      a { color: inherit; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      main { padding: 24px clamp(16px, 5vw, 48px) 48px; display: grid; gap: 24px; }
+      section.panel {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(22, 30, 64, 0.08);
+        box-shadow: 0 12px 24px -20px rgba(28, 37, 77, 0.6);
+        padding: 20px clamp(16px, 5vw, 32px);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .panel__header h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+      .panel__header .en {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #7780a0;
+      }
+      .empty-state { font-size: 0.95rem; color: #6a7089; }
+
+      /* News styles extracted from index.html */
+      .news { display: grid; gap: 20px; }
+      .news__focus {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: minmax(220px, 320px) 1fr;
+        align-items: center;
+        background: linear-gradient(135deg, rgba(51, 106, 255, 0.08), rgba(100, 132, 255, 0.12));
+        border-radius: 14px;
+        padding: 16px;
+      }
+      .news__image {
+        position: relative;
+        display: block;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        border-radius: 12px;
+        background: #d9def1 center/cover no-repeat;
+        overflow: hidden;
+      }
+      .news__details { display: grid; gap: 8px; }
+      .news__title { font-size: 1.1rem; font-weight: 600; margin: 0; }
+      .news__meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.85rem; color: #4b5272; }
+      .news__tags { display: flex; flex-wrap: wrap; gap: 6px; }
+      .news__tags a { font-size: 0.8rem; padding: 2px 8px; border-radius: 999px; background: rgba(51, 102, 255, 0.12); color: #3157c7; }
+      .news__desc { margin: 0; font-size: 0.95rem; color: #3d4260; line-height: 1.6; }
+      .news__list { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+      .news__card { display: grid; gap: 10px; border: 1px solid rgba(41, 61, 116, 0.12); border-radius: 12px; padding: 12px; background: #fcfdff; }
+      .news__card .news__image { aspect-ratio: 16 / 9; }
+
+      @media (max-width: 840px) {
+        .news__focus { grid-template-columns: 1fr; padding: 16px 14px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel" aria-labelledby="newsHeading">
+        <div class="panel__header">
+          <h2 id="newsHeading">最新消息 <span class="en">news</span></h2>
+        </div>
+        <div id="newsContent" class="news"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        const ENDPOINT = 'http://localhost:3000/home';
+
+        const els = {
+          news: document.getElementById('newsContent'),
+        };
+
+        const createAnchor = (url, text, className) => {
+          const el = document.createElement(url ? 'a' : 'span');
+          if (className) el.className = className;
+          el.textContent = text || '';
+          if (url) {
+            el.href = url;
+            el.target = '_blank';
+            el.rel = 'noopener noreferrer';
+          }
+          return el;
+        };
+
+        const createEmpty = (message) => {
+          const p = document.createElement('p');
+          p.className = 'empty-state';
+          p.textContent = message;
+          return p;
+        };
+
+        const setBackgroundImage = (el, url) => {
+          if (url) {
+            el.style.backgroundImage = `url('${url}')`;
+          }
+        };
+
+        const renderNews = (data) => {
+          const container = els.news;
+          container.innerHTML = '';
+          const hasFocus = data && data.focus;
+          const hasItems = data && Array.isArray(data.items) && data.items.length;
+          if (!hasFocus && !hasItems) {
+            container.appendChild(createEmpty('No news posted yet.'));
+            return;
+          }
+
+          if (hasFocus) {
+            const focus = document.createElement('article');
+            focus.className = 'news__focus';
+
+            const img = document.createElement(data.focus.url ? 'a' : 'div');
+            img.className = 'news__image';
+            setBackgroundImage(img, data.focus.image);
+            if (data.focus.url) {
+              img.href = data.focus.url;
+              img.target = '_blank';
+              img.rel = 'noopener noreferrer';
+            }
+            img.title = data.focus.title || 'News image';
+
+            const details = document.createElement('div');
+            details.className = 'news__details';
+
+            const title = document.createElement('h3');
+            title.className = 'news__title';
+            const titleLink = createAnchor(data.focus.url, data.focus.title || 'Featured news', '');
+            title.appendChild(titleLink);
+            details.appendChild(title);
+
+            if (data.focus.date || (data.focus.tags && data.focus.tags.length)) {
+              const meta = document.createElement('div');
+              meta.className = 'news__meta';
+              if (data.focus.date) {
+                const date = document.createElement('span');
+                date.textContent = data.focus.date;
+                meta.appendChild(date);
+              }
+              if (Array.isArray(data.focus.tags) && data.focus.tags.length) {
+                const tags = document.createElement('div');
+                tags.className = 'news__tags';
+                data.focus.tags.forEach((tag) => {
+                  tags.appendChild(createAnchor(tag.url, tag.title, ''));
+                });
+                meta.appendChild(tags);
+              }
+              details.appendChild(meta);
+            }
+
+            if (data.focus.description) {
+              const desc = document.createElement('p');
+              desc.className = 'news__desc';
+              desc.textContent = data.focus.description;
+              details.appendChild(desc);
+            }
+
+            focus.appendChild(img);
+            focus.appendChild(details);
+            container.appendChild(focus);
+          }
+
+          if (hasItems) {
+            const list = document.createElement('div');
+            list.className = 'news__list';
+            data.items.forEach((item) => {
+              const card = document.createElement('article');
+              card.className = 'news__card';
+
+              const img = document.createElement(item.url ? 'a' : 'div');
+              img.className = 'news__image';
+              setBackgroundImage(img, item.image);
+              if (item.url) {
+                img.href = item.url;
+                img.target = '_blank';
+                img.rel = 'noopener noreferrer';
+              }
+              card.appendChild(img);
+
+              const title = document.createElement('h4');
+              title.className = 'news__title';
+              title.appendChild(createAnchor(item.url, item.title || 'News', ''));
+              card.appendChild(title);
+
+              list.appendChild(card);
+            });
+            container.appendChild(list);
+          }
+        };
+
+        const loadNews = async () => {
+          els.news.innerHTML = '';
+          try {
+            const response = await fetch(ENDPOINT, { cache: 'no-store' });
+            if (!response.ok) {
+              throw new Error(`Server returned ${response.status}`);
+            }
+            const json = await response.json();
+            renderNews(json.news);
+          } catch (err) {
+            console.error(err);
+            els.news.appendChild(createEmpty('Unable to load data.'));
+          }
+        };
+
+        loadNews();
+      })();
+    </script>
+  </body>
+  </html>

@@ -1,0 +1,1015 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CPBL 賽程 SCHEDULE</title>
+  <style>
+
+    html {
+  zoom: 80%;
+}
+    :root {
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: #f1f2f8;
+      color: #1d2233;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    header.topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      padding: 24px clamp(16px, 6vw, 54px) 0;
+      flex-wrap: wrap;
+    }
+
+    .topbar__title h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      letter-spacing: 0.02em;
+    }
+
+    .topbar__title p {
+      margin: 6px 0 0;
+      color: #5c627a;
+      font-size: 0.95rem;
+    }
+
+    .topbar__controls {
+      display: flex;
+      align-items: flex-end;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .status-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 220px;
+      font-size: 0.9rem;
+      color: #4d5270;
+      line-height: 1.3;
+    }
+
+    button.primary {
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid #2564f1;
+      background: linear-gradient(135deg, #336df7, #5a91ff);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button.primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(40, 94, 255, 0.25);
+    }
+
+    button.primary:disabled {
+      opacity: 0.6;
+      cursor: progress;
+      box-shadow: none;
+    }
+
+    main {
+      padding: 0 clamp(16px, 6vw, 54px) 54px;
+      display: grid;
+      gap: 24px;
+    }
+
+    section.panel {
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid rgba(28, 34, 68, 0.08);
+      box-shadow: 0 14px 34px -24px rgba(22, 34, 84, 0.6);
+      padding: 24px clamp(16px, 5vw, 38px);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .panel__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .panel__header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .panel__header .en {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #7a82a2;
+    }
+
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filters select,
+    .filters button.secondary {
+      border-radius: 10px;
+      border: 1px solid rgba(44, 70, 166, 0.25);
+      padding: 8px 12px;
+      background: #f7f8ff;
+      font-size: 0.95rem;
+      color: #2f365a;
+      min-width: 110px;
+      cursor: pointer;
+    }
+
+    .filters select:focus {
+      outline: 2px solid rgba(51, 102, 255, 0.35);
+      outline-offset: 1px;
+    }
+
+    .filters button.secondary {
+      background: #eef1ff;
+      border-color: rgba(44, 70, 166, 0.18);
+      font-weight: 600;
+    }
+
+    .filters button.secondary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .calendar {
+      display: grid;
+      gap: 14px;
+    }
+
+    .calendar__weekdays,
+    .calendar__grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .calendar__weekdays div {
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #4c5373;
+      text-transform: uppercase;
+    }
+
+    .calendar__cell {
+      position: relative;
+      min-height: 140px;
+      border-radius: 14px;
+      padding: 14px 12px;
+      background: linear-gradient(180deg, rgba(248, 249, 255, 0.9) 0%, rgba(255, 255, 255, 0.96) 100%);
+      border: 1px solid rgba(41, 56, 128, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .calendar__cell.other-month {
+      opacity: 0.55;
+      background: rgba(247, 248, 254, 0.6);
+    }
+
+    .calendar__cell.today {
+      border: 1.5px solid #3c6ff9;
+      box-shadow: 0 0 0 1px rgba(60, 111, 249, 0.15);
+    }
+
+    /* focus cell (from chatbot intent) */
+    .calendar__cell.is-focus {
+      outline: 3px solid rgba(60, 111, 249, 0.45);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 4px rgba(60, 111, 249, 0.12);
+    }
+
+    .cell__date {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      color: #2b3153;
+    }
+
+    .cell__date span {
+      font-size: 0.8rem;
+      color: #6a7091;
+    }
+
+    .cell__games {
+      display: grid;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .game-card {
+      display: grid;
+      gap: 6px;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid rgba(32, 51, 122, 0.08);
+      padding: 8px 10px;
+      box-shadow: 0 8px 18px -18px rgba(12, 22, 64, 0.6);
+    }
+
+    .game-card.final {
+      border-color: rgba(36, 153, 98, 0.2);
+    }
+
+    .game-card.live {
+      border-color: rgba(226, 62, 62, 0.3);
+      box-shadow: 0 0 0 1px rgba(226, 62, 62, 0.2);
+    }
+
+    /* highlight games that match chatbot team query */
+    .game-card.focus-team {
+      border-color: rgba(255, 153, 0, 0.45);
+      box-shadow: 0 0 0 2px rgba(255, 153, 0, 0.18);
+    }
+
+    .game-card.postponed,
+    .game-card.cancelled {
+      border-color: rgba(124, 134, 170, 0.16);
+      background: rgba(244, 245, 252, 0.9);
+    }
+
+    .game-card__field {
+      font-size: 0.8rem;
+      color: #667097;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .game-card__teams {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .team-name {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.3;
+    }
+
+    .team-logo {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #d7dbef center/contain no-repeat;
+      flex-shrink: 0;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .score {
+      font-variant-numeric: tabular-nums;
+      font-size: 1rem;
+      color: #29325b;
+      min-width: 44px;
+      text-align: center;
+    }
+
+    .score.placeholder {
+      color: #6f7698;
+      font-weight: 500;
+    }
+
+    .game-card__meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: #5a6183;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .badge.final {
+      background: rgba(36, 153, 98, 0.12);
+      color: #187650;
+    }
+
+    .badge.live {
+      background: rgba(226, 62, 62, 0.12);
+      color: #c02525;
+    }
+
+    .badge.scheduled {
+      background: rgba(51, 102, 255, 0.14);
+      color: #2f58c9;
+    }
+
+    .badge.postponed,
+    .badge.cancelled,
+    .badge.suspended {
+      background: rgba(120, 128, 160, 0.18);
+      color: #4d5472;
+    }
+
+    .empty-state {
+      font-size: 0.95rem;
+      color: #656c92;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 0;
+      background: linear-gradient(180deg, rgba(248, 249, 255, 0.7) 0%, rgba(255, 255, 255, 0.85) 100%);
+      border: 1px dashed rgba(92, 101, 146, 0.2);
+      border-radius: 14px;
+    }
+
+    @media (max-width: 840px) {
+      header.topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .status-block {
+        min-width: initial;
+      }
+
+      .calendar__cell {
+        min-height: 120px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .filters {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filters select,
+      .filters button.secondary {
+        width: 100%;
+      }
+
+      .calendar__weekdays,
+      .calendar__grid {
+        gap: 8px;
+      }
+
+      .calendar__cell {
+        padding: 12px 10px;
+      }
+
+      button.primary {
+        width: 100%;
+      }
+    }
+
+
+    /* loading animation styles */
+    #loading_animation {
+      position: fixed; /* cover whole page */
+      zoom: 125%;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #fff; /* optional background */
+      z-index: 9999; /* keep on top */
+      transition: opacity 1s ease; /* fade duration */
+    }
+    #loading_animation.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #loading_animation iframe {
+      
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+    <!-- start of animation -->
+    <div id="loading_animation" width="100%" height="100%" >
+
+
+      <iframe src="loading_animation.html" frameborder="0" width="100%" height="100%">
+      </iframe>
+        <script>
+      // Wait 1.5 second, then fade out
+      setTimeout(() => {
+        document.getElementById("loading_animation").classList.add("fade-out");
+      }, 1500);
+      </script>
+    </div>
+    <!-- end of animation --> 
+
+        <!-- start of header --> 
+    <div>
+      <iframe src="header.html" frameborder="0" width="100%" height="80px" style="border:none;">
+      </iframe>
+    </div> 
+    <!-- end of header -->
+  
+  <header class="topbar">
+    <div class="topbar__title">
+      <h1>CPBL 賽程 SCHEDULE</h1>
+      <p>中華職業棒球大聯盟</p>
+    </div>
+    <div class="topbar__controls">
+      <button id="refresh" type="button" class="primary">Refresh</button>
+      <div class="status-block">
+        <span id="status">Waiting for data...</span>
+        <span id="updatedAt">Last updated: never</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel" aria-labelledby="scheduleHeading">
+      <div class="panel__header">
+        <h2 id="scheduleHeading">日程表 <span class="en">calendar</span></h2>
+        <div class="filters">
+          <div class="month-controls">
+            <button id="prevMonth" type="button" class="secondary">⇐</button>
+            <button id="nextMonth" type="button" class="secondary">⇒</button>
+          </div>
+          <div id="monthLabel" class="month-label">�</div>
+          <select id="kindSelect" aria-label="????"></select>
+          <select id="locationSelect" aria-label="??"></select>
+        </div>
+      </div>
+      <div id="calendar" class="calendar" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      // Use same-origin endpoint so it works no matter which PORT you run the server on.
+      const ENDPOINT = new URL('/schedule', window.location.href).toString();
+      const AUTO_REFRESH_MS = 300000; // 5 minutes
+
+      // --- Chatbot -> Matches intent bridge ---
+      // Chatbot will store the latest "match intent" in localStorage, then navigate here.
+      const MATCH_INTENT_KEY = 'proball-match-intent';
+
+      const TEAM_ALIASES = [
+        { canon: '中信兄弟', aliases: ['兄弟', '中信', '中信兄弟', '象'] },
+        { canon: '統一', aliases: ['統一', '統一獅', '統一7', '統一7-elevens獅', '7-elevens', '7eleven'] },
+        { canon: '富邦', aliases: ['富邦', '悍將', '富邦悍將'] },
+        { canon: '味全', aliases: ['味全', '味全龍', '龍'] },
+        { canon: '樂天', aliases: ['樂天', '桃猿', '樂天桃猿'] },
+        { canon: '台鋼', aliases: ['台鋼', '雄鷹', '台鋼雄鷹'] },
+      ];
+
+      function readAndConsumeMatchIntent() {
+        try {
+          const raw = localStorage.getItem(MATCH_INTENT_KEY);
+          if (!raw) return null;
+          localStorage.removeItem(MATCH_INTENT_KEY);
+          const intent = JSON.parse(raw);
+          if (!intent || typeof intent.raw !== 'string') return null;
+          return intent;
+        } catch (_e) {
+          return null;
+        }
+      }
+
+      function extractTeamsFromText(text) {
+        const q = String(text || '');
+        const found = [];
+        TEAM_ALIASES.forEach((t) => {
+          const hit = t.aliases.some((a) => a && q.includes(a));
+          if (hit) found.push(t.canon);
+        });
+        return Array.from(new Set(found));
+      }
+
+      function extractFocusDateFromText(text) {
+        const q = String(text || '');
+        const now = new Date();
+        if (q.includes('今天')) return now;
+        if (q.includes('明天')) return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        if (q.includes('後天')) return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);
+
+        const full = q.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+        if (full) {
+          const y = Number(full[1]);
+          const m = Number(full[2]);
+          const d = Number(full[3]);
+          if (Number.isFinite(y) && Number.isFinite(m) && Number.isFinite(d)) {
+            return new Date(y, m - 1, d);
+          }
+        }
+        const md = q.match(/(?:^|[^\d])(\d{1,2})[\/\-](\d{1,2})(?:$|[^\d])/);
+        if (md) {
+          const m = Number(md[1]);
+          const d = Number(md[2]);
+          if (Number.isFinite(m) && Number.isFinite(d)) {
+            return new Date(now.getFullYear(), m - 1, d);
+          }
+        }
+        return null;
+      }
+
+      const initialIntent = readAndConsumeMatchIntent();
+      const initialFocusDate = initialIntent ? extractFocusDateFromText(initialIntent.raw) : null;
+      const initialTeams = initialIntent ? extractTeamsFromText(initialIntent.raw) : [];
+
+      const state = {
+        year: initialFocusDate ? initialFocusDate.getFullYear() : new Date().getFullYear(),
+        month: initialFocusDate ? initialFocusDate.getMonth() : new Date().getMonth(),
+        kindCode: 'A',
+        location: '',
+        options: { locations: [], kindCodes: [] },
+        games: [],
+        gameMap: new Map(),
+        datasetKey: null,
+        focusDateKey: initialFocusDate ? toDateKey(initialFocusDate) : null,
+        queryTeams: initialTeams,
+      };
+
+      const els = {
+        refresh: document.getElementById('refresh'),
+        status: document.getElementById('status'),
+        updatedAt: document.getElementById('updatedAt'),
+        calendar: document.getElementById('calendar'),
+        monthLabel: document.getElementById('monthLabel'),
+        prevMonth: document.getElementById('prevMonth'),
+        nextMonth: document.getElementById('nextMonth'),
+        kindSelect: document.getElementById('kindSelect'),
+        locationSelect: document.getElementById('locationSelect'),
+      };
+
+      let refreshTimer;
+
+      const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+      function scheduleAutoRefresh() {
+        if (refreshTimer) {
+          clearTimeout(refreshTimer);
+        }
+        refreshTimer = setTimeout(() => loadData({ force: true }), AUTO_REFRESH_MS);
+      }
+
+      function setStatus(message) {
+        els.status.textContent = message;
+      }
+
+      function formatMonthLabel(year, month) {
+        const date = new Date(year, month, 1);
+        return date.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long' });
+      }
+
+      function toDateKey(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+
+      function shouldHighlightTeam(game) {
+        if (!Array.isArray(state.queryTeams) || !state.queryTeams.length) return false;
+        const away = String(game.away || '');
+        const home = String(game.home || '');
+        return state.queryTeams.some((t) => away.includes(t) || home.includes(t));
+      }
+
+      function scrollToFocusCellOnce() {
+        if (!state.focusDateKey) return;
+        const key = state.focusDateKey;
+        // Clear first so it only auto-scrolls once.
+        state.focusDateKey = null;
+        requestAnimationFrame(() => {
+          const el = Array.from(document.querySelectorAll('[data-date-key]'))
+            .find((node) => node && node.dataset && node.dataset.dateKey === key);
+          if (el && typeof el.scrollIntoView === 'function') {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        });
+      }
+
+      function absoluteUrl(path) {
+        if (!path) return '';
+        if (path.startsWith('http://') || path.startsWith('https://')) {
+          return path;
+        }
+        return `https://www.cpbl.com.tw${path}`;
+      }
+
+      function normalizeGame(game) {
+        const dateKey = (game.GameDate || '').slice(0, 10);
+        const start = game.GameDateTimeS ? new Date(game.GameDateTimeS) : null;
+        return {
+          id: `${game.KindCode}-${game.GameSno}-${dateKey}`,
+          dateKey,
+          start,
+          startText: start ? start.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false }) : '',
+          field: game.FieldAbbe || '',
+          away: game.VisitingTeamName || '',
+          home: game.HomeTeamName || '',
+          awayLogo: absoluteUrl(game.VisitingClubSmallImgPath),
+          homeLogo: absoluteUrl(game.HomeClubSmallImgPath),
+          awayScore: typeof game.VisitingScore === 'number' ? game.VisitingScore : null,
+          homeScore: typeof game.HomeScore === 'number' ? game.HomeScore : null,
+          statusCode: game.GameResult || '',
+          isLive: game.IsPlayBall === 'Y',
+          presentStatus: game.PresentStatus,
+          multyGame: game.MultyGame || '',
+          boxUrl: buildBoxUrl(game),
+        };
+      }
+
+      function buildBoxUrl(game) {
+        const params = new URLSearchParams({
+          year: new Date(game.GameDate || `${state.year}-01-01`).getFullYear(),
+          kindCode: game.KindCode,
+          gameSno: String(game.GameSno),
+        });
+        if (game.PresentStatus === 0) {
+          params.append('presentStatus', '0');
+        }
+        return `https://www.cpbl.com.tw/box?${params.toString()}`;
+      }
+
+      function buildGameMap(games) {
+        const map = new Map();
+        games.forEach((raw) => {
+          const normalized = normalizeGame(raw);
+          if (!normalized.dateKey) return;
+          if (!map.has(normalized.dateKey)) {
+            map.set(normalized.dateKey, []);
+          }
+          map.get(normalized.dateKey).push(normalized);
+        });
+        map.forEach((list) => {
+          list.sort((a, b) => {
+            if (a.start && b.start) return a.start - b.start;
+            if (a.start) return -1;
+            if (b.start) return 1;
+            return a.id.localeCompare(b.id);
+          });
+        });
+        return map;
+      }
+
+      function describeStatus(game) {
+        if (game.statusCode === '0') return { label: 'Final', className: 'final' };
+        if (game.statusCode === '1') return { label: 'Postponed', className: 'postponed' };
+        if (game.statusCode === '2') return { label: 'Cancelled', className: 'cancelled' };
+        if (game.statusCode === '4') return { label: 'Suspended', className: 'suspended' };
+        if (game.isLive) return { label: 'Live', className: 'live' };
+        return { label: 'Scheduled', className: 'scheduled' };
+      }
+
+      function renderCalendar() {
+        els.monthLabel.textContent = formatMonthLabel(state.year, state.month);
+
+        if (!state.games.length) {
+          els.calendar.innerHTML = '';
+          const empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.textContent = 'No schedule data to show for this selection. Try refreshing.';
+          els.calendar.appendChild(empty);
+          return;
+        }
+
+        const firstOfMonth = new Date(state.year, state.month, 1);
+        const firstWeekday = firstOfMonth.getDay();
+        const gridStart = new Date(state.year, state.month, 1 - firstWeekday);
+        const todayKey = toDateKey(new Date());
+
+        const weekdaysRow = document.createElement('div');
+        weekdaysRow.className = 'calendar__weekdays';
+        dayLabels.forEach((label) => {
+          const div = document.createElement('div');
+          div.textContent = label;
+          weekdaysRow.appendChild(div);
+        });
+
+        const grid = document.createElement('div');
+        grid.className = 'calendar__grid';
+
+        for (let i = 0; i < 42; i += 1) {
+          const currentDate = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + i);
+          const cell = document.createElement('div');
+          cell.className = 'calendar__cell';
+
+          if (currentDate.getMonth() !== state.month) {
+            cell.classList.add('other-month');
+          }
+          if (toDateKey(currentDate) === todayKey) {
+            cell.classList.add('today');
+          }
+
+          const dateHeader = document.createElement('div');
+          dateHeader.className = 'cell__date';
+          dateHeader.innerHTML = `<strong>${currentDate.getDate()}</strong><span>${dayLabels[currentDate.getDay()]}</span>`;
+          cell.appendChild(dateHeader);
+
+          const gamesWrapper = document.createElement('div');
+          gamesWrapper.className = 'cell__games';
+          const dateKey = toDateKey(currentDate);
+          cell.dataset.dateKey = dateKey;
+          if (state.focusDateKey && dateKey === state.focusDateKey) {
+            cell.classList.add('is-focus');
+          }
+          const games = state.gameMap.get(dateKey) || [];
+
+          if (!games.length) {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'score placeholder';
+            placeholder.textContent = '';
+            gamesWrapper.appendChild(placeholder);
+          } else {
+            games.forEach((game) => {
+              gamesWrapper.appendChild(createGameCard(game));
+            });
+          }
+
+          cell.appendChild(gamesWrapper);
+          grid.appendChild(cell);
+        }
+
+        els.calendar.innerHTML = '';
+        els.calendar.appendChild(weekdaysRow);
+        els.calendar.appendChild(grid);
+        scrollToFocusCellOnce();
+      }
+
+      function createGameCard(game) {
+        const card = document.createElement('article');
+        const status = describeStatus(game);
+        card.className = `game-card ${status.className}`;
+        if (shouldHighlightTeam(game)) {
+          card.classList.add('focus-team');
+        }
+
+        const field = document.createElement('div');
+        field.className = 'game-card__field';
+        const tags = [];
+        if (game.multyGame && game.multyGame !== 'N') {
+          tags.push(game.multyGame.replace('Y', 'G'));
+        }
+        field.innerHTML = `<span>${game.field || '�'}</span><span>${tags.join(' � ')}</span>`;
+        card.appendChild(field);
+
+        const teams = document.createElement('div');
+        teams.className = 'game-card__teams';
+
+        const away = document.createElement('span');
+        away.className = 'team-name';
+        const awayLogo = document.createElement('span');
+        awayLogo.className = 'team-logo';
+        if (game.awayLogo) {
+          awayLogo.style.backgroundImage = `url('${game.awayLogo}')`;
+        }
+        away.appendChild(awayLogo);
+        away.appendChild(document.createTextNode(game.away));
+
+        const score = document.createElement('span');
+        score.className = 'score';
+        if (status.className === 'final') {
+          score.textContent = `${game.awayScore} ⚔ ${game.homeScore}`;
+        } else if (status.className === 'live' && game.awayScore !== null && game.homeScore !== null) {
+          score.textContent = `${game.awayScore} ⚔ ${game.homeScore}`;
+        } else {
+          score.classList.add('placeholder');
+          score.textContent = 'VS';
+        }
+
+        const home = document.createElement('span');
+        home.className = 'team-name';
+        const homeLogo = document.createElement('span');
+        homeLogo.className = 'team-logo';
+        if (game.homeLogo) {
+          homeLogo.style.backgroundImage = `url('${game.homeLogo}')`;
+        }
+        home.appendChild(homeLogo);
+        home.appendChild(document.createTextNode(game.home));
+
+        teams.appendChild(away);
+        teams.appendChild(score);
+        teams.appendChild(home);
+
+        if (game.boxUrl) {
+          const linkWrapper = document.createElement('a');
+          linkWrapper.href = game.boxUrl;
+          linkWrapper.target = '_blank';
+          linkWrapper.rel = 'noopener noreferrer';
+          linkWrapper.appendChild(teams);
+          card.appendChild(linkWrapper);
+        } else {
+          card.appendChild(teams);
+        }
+
+        const meta = document.createElement('div');
+        meta.className = 'game-card__meta';
+        meta.innerHTML = `<span>${game.startText || '�:�'}</span>`;
+
+        const badge = document.createElement('span');
+        badge.className = `badge ${status.className}`;
+        badge.textContent = status.label;
+        meta.appendChild(badge);
+
+        card.appendChild(meta);
+        return card;
+      }
+
+      function populateFilters() {
+        const { kindCodes, locations } = state.options;
+
+        if (els.kindSelect.childElementCount === 0) {
+          kindCodes.forEach((item) => {
+            const option = document.createElement('option');
+            option.value = item.value;
+            option.textContent = `${item.text} (${item.value})`;
+            els.kindSelect.appendChild(option);
+          });
+        }
+        els.kindSelect.value = state.kindCode;
+
+        els.locationSelect.innerHTML = '';
+        const allOption = document.createElement('option');
+        allOption.value = '';
+        allOption.textContent = '沒有選擇選項';
+        els.locationSelect.appendChild(allOption);
+        locations.forEach((item) => {
+          const option = document.createElement('option');
+          option.value = item.Value;
+          option.textContent = item.Text;
+          els.locationSelect.appendChild(option);
+        });
+        els.locationSelect.value = state.location;
+      }
+
+      async function loadData({ force } = {}) {
+        const datasetKey = `${state.year}-${state.kindCode}-${state.location || 'all'}`;
+        if (!force && state.datasetKey === datasetKey && state.games.length) {
+          renderCalendar();
+          return;
+        }
+
+        if (refreshTimer) {
+          clearTimeout(refreshTimer);
+        }
+
+        els.refresh.disabled = true;
+        els.prevMonth.disabled = true;
+        els.nextMonth.disabled = true;
+        els.kindSelect.disabled = true;
+        els.locationSelect.disabled = true;
+        setStatus('Fetching schedule data...');
+
+        try {
+          const params = new URLSearchParams({
+            year: String(state.year),
+            kindCode: state.kindCode,
+          });
+          if (state.location) {
+            params.append('location', state.location);
+          }
+
+          const response = await fetch(`${ENDPOINT}?${params.toString()}`, { cache: 'no-store' });
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}`);
+          }
+          const json = await response.json();
+
+          state.options = json.options || state.options;
+          state.games = Array.isArray(json.games) ? json.games : [];
+          state.gameMap = buildGameMap(state.games);
+          state.datasetKey = datasetKey;
+          state.kindCode = json.filters?.kindCode || state.kindCode;
+          state.location = json.filters?.location || '';
+
+          populateFilters();
+          renderCalendar();
+
+          setStatus(`Showing ${state.games.length} games for ${state.year}.`);
+          const updated = json.fetchedAt ? new Date(json.fetchedAt) : new Date();
+          els.updatedAt.textContent = `Last updated: ${updated.toLocaleString('zh-TW')}`;
+        } catch (err) {
+          console.error(err);
+          state.games = [];
+          state.gameMap = new Map();
+          state.datasetKey = null;
+          els.calendar.innerHTML = '';
+          const empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.textContent = `Unable to load schedule: ${err.message}`;
+          els.calendar.appendChild(empty);
+          setStatus(`Error fetching data: ${err.message}`);
+          els.updatedAt.textContent = 'Last updated: failed';
+        } finally {
+          els.refresh.disabled = false;
+          els.prevMonth.disabled = false;
+          els.nextMonth.disabled = false;
+          els.kindSelect.disabled = false;
+          els.locationSelect.disabled = false;
+          scheduleAutoRefresh();
+        }
+      }
+
+      function changeMonth(delta) {
+        const originalYear = state.year;
+        let newMonth = state.month + delta;
+        let newYear = state.year;
+        if (newMonth > 11) {
+          newMonth = 0;
+          newYear += 1;
+        }
+        if (newMonth < 0) {
+          newMonth = 11;
+          newYear -= 1;
+        }
+        state.month = newMonth;
+        state.year = newYear;
+
+        if (newYear !== originalYear) {
+          loadData();
+        } else {
+          renderCalendar();
+        }
+      }
+
+      els.refresh.addEventListener('click', () => loadData({ force: true }));
+      els.prevMonth.addEventListener('click', () => changeMonth(-1));
+      els.nextMonth.addEventListener('click', () => changeMonth(1));
+
+      els.kindSelect.addEventListener('change', (event) => {
+        state.kindCode = event.target.value;
+        loadData();
+      });
+
+      els.locationSelect.addEventListener('change', (event) => {
+        state.location = event.target.value;
+        loadData();
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          if (refreshTimer) {
+            clearTimeout(refreshTimer);
+          }
+        } else {
+          loadData();
+        }
+      });
+
+      loadData({ force: true });
+    })();
+  </script>
+
+  <!-- ProBall Chatbot (auto-inject widget) -->
+  <script src="chatbot.js"></script>
+</body>
+</html>

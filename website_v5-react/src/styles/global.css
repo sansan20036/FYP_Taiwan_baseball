@@ -1,0 +1,215 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  color-scheme: light;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background-color: #0b1021;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at 20% 20%, #11204f, transparent 30%), radial-gradient(circle at 80% 0%, #2b1845, transparent 25%), linear-gradient(145deg, #0b1021, #0d152f);
+  color: #e8ecf5;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 16px clamp(16px, 3vw, 28px);
+  gap: 16px;
+}
+
+.app-shell__header {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 60px rgba(0, 0, 0, 0.35);
+  border-radius: 18px;
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  align-items: center;
+  backdrop-filter: blur(10px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #38bdf8, #a855f7);
+  box-shadow: 0 0 0 6px rgba(56, 189, 248, 0.18);
+}
+
+.brand__eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin: 0 0 4px 0;
+}
+
+.brand__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.nav__link {
+  padding: 9px 12px;
+  border-radius: 12px;
+  color: #cbd5e1;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.nav__link:hover {
+  border-color: rgba(148, 163, 184, 0.4);
+  color: #ffffff;
+}
+
+.nav__link.is-active {
+  background: linear-gradient(135deg, #38bdf8, #a855f7);
+  color: #0b1021;
+  font-weight: 700;
+  box-shadow: 0 8px 26px rgba(56, 189, 248, 0.25);
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  font-size: 12px;
+  color: #a0aec0;
+}
+
+.status__pill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.status__path {
+  font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+  color: #e2e8f0;
+}
+
+.app-shell__main {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  min-height: 60vh;
+}
+
+.legacy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+.legacy__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legacy__eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.legacy__title {
+  margin: 4px 0;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.legacy__description {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.legacy__button {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #38bdf8, #a855f7);
+  color: #0b1021;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(56, 189, 248, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.legacy__button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px rgba(168, 85, 247, 0.35);
+}
+
+.legacy__frame-wrap {
+  flex: 1;
+  background: #0b1021;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  overflow: hidden;
+  min-height: 70vh;
+}
+
+.legacy__frame {
+  width: 100%;
+  height: calc(100vh - 220px);
+  border: 0;
+  background: #0b1021;
+}
+
+@media (max-width: 960px) {
+  .app-shell__header {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+  }
+
+  .status {
+    align-items: flex-start;
+  }
+
+  .legacy__frame {
+    height: 70vh;
+  }
+}

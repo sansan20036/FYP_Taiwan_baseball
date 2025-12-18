@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>球員比較 | ProBall Analytics</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="max-w-7xl mx-auto py-10 px-6">
+    <h1 class="text-3xl font-bold mb-6">球員數據比較</h1>
+    <p class="text-gray-600 mb-4">自動偵測第一位球員，搜尋第二位球員進行賽季與整體數據比較。</p>
+
+
+
+    <!-- start of header --> 
+    <div>
+      <iframe src="header.html" frameborder="0" width="100%" height="80px" style="border:none;">
+      </iframe>
+
+
+    </div> 
+    <!-- end of header -->
+
+
+
+    <!-- Player 1 -->
+    <div class="bg-white rounded-lg shadow mb-6 p-4">
+      <h2 id="p1Name" class="text-2xl font-semibold mb-2"></h2>
+      <p id="p1Team" class="text-gray-600 mb-4"></p>
+      <h3 class="text-lg font-semibold mb-2">賽季數據總覽</h3>
+      <canvas id="p1SeasonChart" height="120"></canvas>
+    </div>
+
+    <!-- Player 2 search -->
+    <div class="mb-8">
+      <label class="block font-semibold mb-2">搜尋比較的球員：</label>
+      <input id="searchInput" type="text" placeholder="輸入球員名字..." 
+        class="w-full p-3 border rounded shadow-sm focus:ring focus:ring-blue-300" />
+      <div id="searchResults" class="mt-3 bg-white rounded shadow divide-y"></div>
+    </div>
+
+    <!-- Player 2 -->
+    <div id="p2Card" class="bg-white rounded-lg shadow mb-6 p-4 hidden">
+      <h2 id="p2Name" class="text-2xl font-semibold mb-2 text-red-600"></h2>
+      <p id="p2Team" class="text-gray-600 mb-4"></p>
+      <h3 class="text-lg font-semibold mb-2">賽季數據總覽</h3>
+      <canvas id="p2SeasonChart" height="120"></canvas>
+    </div>
+
+    <!-- Comparison -->
+    <div id="compareSection" class="hidden bg-white rounded-lg shadow p-4">
+      <h2 class="text-2xl font-semibold mb-4">技能雷達圖（打擊能力五角圖）</h2>
+      <canvas id="radarChart" height="140" class="mb-8"></canvas>
+
+      <h2 class="text-2xl font-semibold mb-4">數據總覽比較</h2>
+      <canvas id="compareChart" height="140"></canvas>
+    </div>
+  </div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const playerAName = params.get("player");
+let allPlayers = [];
+let playerA = null, playerB = null;
+let chartA = null, chartB = null, chartCompare = null, radarChart = null;
+
+async function loadPlayers() {
+  const res = await fetch("members_details.json");
+  const data = await res.json();
+  allPlayers = Array.isArray(data) ? data : Object.values(data);
+
+  if (playerAName) {
+    playerA = findPlayer(playerAName);
+    if (playerA) renderPlayerA(playerA);
+  }
+}
+
+function findPlayer(name) {
+  return allPlayers.find(p => {
+    const n = p.name || p['姓名'] || p['Name'];
+    return n && n.trim() === name.trim();
+  });
+}
+
+function renderPlayerA(p) {
+  const name = p.name || p['姓名'];
+  document.getElementById("p1Name").textContent = name;
+  document.getElementById("p1Team").textContent = p.team || "";
+  const seasons = buildSeasons(p);
+  drawSeasonChart("p1SeasonChart", seasons, name, "#2563eb");
+}
+
+function renderPlayerB(p) {
+  const name = p.name || p['姓名'];
+  document.getElementById("p2Card").classList.remove("hidden");
+  document.getElementById("p2Name").textContent = name;
+  document.getElementById("p2Team").textContent = p.team || "";
+  const seasons = buildSeasons(p);
+  drawSeasonChart("p2SeasonChart", seasons, name, "#dc2626");
+}
+
+const searchInput = document.getElementById("searchInput");
+const searchResults = document.getElementById("searchResults");
+searchInput.addEventListener("input", e => {
+  const keyword = e.target.value.trim();
+  searchResults.innerHTML = "";
+  if (!keyword) return;
+  const matched = allPlayers.filter(p => (p.name || p['姓名']).includes(keyword)).slice(0, 10);
+  matched.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "p-3 hover:bg-blue-100 cursor-pointer";
+    div.textContent = p.name || p['姓名'];
+    div.onclick = () => selectPlayerB(p);
+    searchResults.appendChild(div);
+  });
+});
+
+function selectPlayerB(p) {
+  playerB = p;
+  searchInput.value = p.name || p['姓名'];
+  searchResults.innerHTML = "";
+  renderPlayerB(playerB);
+
+  const sA = buildSeasons(playerA);
+  const sB = buildSeasons(playerB);
+  drawRadarChart(sA, sB, playerA.name || playerA['姓名'], playerB.name || playerB['姓名']);
+  drawCompareChart(sA, sB, playerA.name || playerA['姓名'], playerB.name || playerB['姓名']);
+}
+
+/* ======== buildSeasons (from show_player_profile.js) ======== */
+function buildSeasons(player) {
+  if (!player || !player.pitch_record || !player.batting_result) {
+    console.warn("⚠️ Player record incomplete:", player?.name);
+    return [];
+  }
+
+  const seasons = [];
+  const pitchHeader = player.pitch_record[0] || [];
+  const pitchRows = player.pitch_record.slice(1).filter(r => r[0] !== "TOTAL");
+  const batHeader = player.batting_result[0] || [];
+  const batRows = player.batting_result.slice(1).filter(r => r[0] !== "TOTAL");
+
+  const getIndex = (header, name) => header.indexOf(name);
+  const yearIdxP = 0;
+  const year_recenter = getIndex(pitchHeader, "年度");
+  const wIdx = getIndex(pitchHeader, "勝場")-year_recenter;
+  const eraIdx = getIndex(pitchHeader, "防禦率")-year_recenter;
+  const kIdx = getIndex(pitchHeader, "被三振")-year_recenter;
+  const hitIdx = getIndex(pitchHeader, "安打")-year_recenter;
+  const hitcountIdx = getIndex(pitchHeader, "打數")-year_recenter;
+  const hrIdxP = getIndex(pitchHeader, "全壘打")-year_recenter;
+  const rbiIdxP = getIndex(pitchHeader, "打點")-year_recenter;
+  const obpIdxP = getIndex(pitchHeader, "上壘率")-year_recenter;
+
+  const avgIdx = getIndex(batHeader, "打擊率") !== -1 ? getIndex(batHeader, "打擊率") : getIndex(batHeader, "AVG");
+  const hrIdx = getIndex(batHeader, "全壘打") !== -1 ? getIndex(batHeader, "全壘打") : getIndex(batHeader, "HR");
+  const rbiIdx = getIndex(batHeader, "打點") !== -1 ? getIndex(batHeader, "打點") : getIndex(batHeader, "RBI");
+  const obpIdx = getIndex(batHeader, "上壘率") !== -1 ? getIndex(batHeader, "上壘率") : getIndex(batHeader, "OBP");
+
+  const pitch_map = {};
+  pitchRows.forEach(row => {
+    const year = row[yearIdxP];
+    pitch_map[year] = {
+      AVG: parseFloat(row[hitIdx]/row[hitcountIdx]) || 0,
+      HR: parseInt(row[hrIdxP]) || 0,
+      RBI: parseInt(row[rbiIdxP]) || 0,
+      OBP: parseFloat(row[obpIdxP]) || 0,
+      H: parseInt(row[hitIdx]) || 0,
+      SB: parseInt(row[8]) || 0 // example index for stolen bases (modify if diff)
+    };
+  });
+
+  pitchRows.forEach(row => {
+    const year = row[yearIdxP];
+    const W = parseInt(row[wIdx]) || 0;
+    const ERA = parseFloat(row[eraIdx]) || 0;
+    const K = parseInt(row[kIdx]) || 0;
+    const batting = pitch_map[year] || { AVG: 0, HR: 0, RBI: 0, OBP: 0, H:0, SB:0 };
+    seasons.push({ year, ...batting, ERA, K, W });
+  });
+
+  return seasons;
+}
+
+/* ======== Charts ======== */
+function drawSeasonChart(canvasId, seasons, name, color) {
+  const ctx = document.getElementById(canvasId);
+  const labels = seasons.map(s => s.year);
+  const datasets = [
+    { label: 'AVG', data: seasons.map(s => s.AVG), borderColor: color, backgroundColor: color+'33', yAxisID: 'y1', tension: .3 },
+    { label: 'HR', data: seasons.map(s => s.HR), borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,.2)', yAxisID: 'y2', tension: .3 },
+    { label: 'K', data: seasons.map(s => s.K), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,.2)', yAxisID: 'y2', tension: .3 }
+  ];
+  new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        y1: { type: 'linear', position: 'left', beginAtZero: false },
+        y2: { type: 'linear', position: 'right', beginAtZero: true, grid: { drawOnChartArea: false } }
+      },
+      plugins: { legend: { position: 'top' }, title: { display: true, text: `${name} 賽季數據總覽` } }
+    }
+  });
+}
+
+/* ======== New Radar Chart ======== */
+function drawRadarChart(sA, sB, nameA, nameB) {
+  const ctx = document.getElementById("radarChart");
+  const metrics = ["AVG", "H", "HR", "RBI", "SB"];
+  const labels = ["打擊率", "安打", "全壘打", "打點", "盜壘"];
+  const avgStats = (seasons) => {
+    const avg = k => seasons.reduce((a,b)=>a+(parseFloat(b[k])||0),0)/(seasons.length||1);
+    const sum = k => seasons.reduce((a,b)=>a+(parseFloat(b[k])||0),0);
+    return { AVG: avg("AVG"), H: sum("H"), HR: sum("HR"), RBI: sum("RBI"), SB: sum("SB") };
+  };
+  const A = avgStats(sA);
+  const B = avgStats(sB);
+  const dataA = metrics.map(k => A[k]);
+  const dataB = metrics.map(k => B[k]);
+  if (radarChart) radarChart.destroy();
+  radarChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels,
+      datasets: [
+        { label: nameA, data: dataA, borderColor: 'rgba(37,99,235,0.8)', backgroundColor: 'rgba(37,99,235,0.25)' },
+        { label: nameB, data: dataB, borderColor: 'rgba(239,68,68,0.8)', backgroundColor: 'rgba(239,68,68,0.25)' }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: { r: { beginAtZero: true, ticks: { display: false } } },
+      plugins: { legend: { position: 'top' }, title: { display: false } }
+    }
+  });
+}
+
+/* ======== Overall Comparison Bar Chart ======== */
+function drawCompareChart(sA, sB, nameA, nameB) {
+  const ctx = document.getElementById("compareChart");
+  const labels = ["AVG","HR","RBI","OBP","ERA","K","W"];
+  const zh = ["打擊率","全壘打","打點","上壘率","防禦率","三振","勝場"];
+  const avgStats = (seasons) => {
+    const avg = k => seasons.reduce((a,b)=>a+(parseFloat(b[k])||0),0)/(seasons.length||1);
+    const sum = k => seasons.reduce((a,b)=>a+(parseFloat(b[k])||0),0);
+    return { AVG: avg("AVG"), HR: sum("HR"), RBI: sum("RBI"), OBP: avg("OBP"), ERA: avg("ERA"), K: sum("K"), W: sum("W") };
+  };
+  const A = avgStats(sA), B = avgStats(sB);
+  const dataA = labels.map(k => A[k]);
+  const dataB = labels.map(k => B[k]);
+  if (chartCompare) chartCompare.destroy();
+  chartCompare = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: zh, datasets: [
+      { label: nameA, data: dataA, backgroundColor: 'rgba(37,99,235,0.7)', yAxisID: 'y1' },
+      { label: nameB, data: dataB, backgroundColor: 'rgba(239,68,68,0.7)', yAxisID: 'y2' }
+    ]},
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        y1: { type: 'linear', position: 'left', beginAtZero: true },
+        y2: { type: 'linear', position: 'right', beginAtZero: true, grid: { drawOnChartArea: false } }
+      },
+      plugins: { legend: { position: 'top' }, title: { display: true, text: "數據總覽比較" } }
+    }
+  });
+  document.getElementById("compareSection").classList.remove("hidden");
+}
+
+loadPlayers();
+</script>
+</body>
+</html>

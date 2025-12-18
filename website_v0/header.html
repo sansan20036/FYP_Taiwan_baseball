@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ProBall Analytics | 專業運動數據平台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+     <link rel="icon" href="https://fav.farm/⚾">
+     <link rel="stylesheet" href="app.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  </head>
+<body>
+    
+    <header class="navbar" role="banner">
+      <div class="navbar__inner container">
+        <a href="#" class="navbar__brand" aria-label="回到首頁">
+          <i class="ri-baseball-line"></i>
+          <span>ProBall Analytics</span>
+        </a>
+        <nav class="navbar__nav" role="navigation" aria-label="主選單" target="_parent">
+          <a class="nav__link is-active" href="index.html" target="_parent">首頁</a>
+          <a class="nav__link" href="matches.html">賽事</a>
+          <a class="nav__link is-active" href="team.html" target="_parent">球隊</a>
+          <a class="nav__link" href="players.html" target="_parent">球員</a>
+          <a class="nav__link" href="models.html" target="_parent">模型預測</a>
+          <a class="nav__link" href="personalize.html" target="_parent">個人化</a>
+        </nav>
+        <div class="navbar__tools">
+          <div class="search">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <input id="teamSearchInput" type="search" placeholder="搜尋球隊 / 球員" aria-label="搜尋球隊或球員" />
+            <div id="searchSuggest" class="suggest" hidden></div>
+          </div>
+          <button class="icon-btn" aria-label="通知">
+            <i class="ri-notification-3-line"></i>
+          </button>
+          <button id="themeToggleBtn" type="button" class="icon-btn theme-toggle" aria-label="切換主題" role="switch" aria-checked="false" data-theme-toggle>
+            <i class="ri-sun-line"></i>
+          </button>
+          <button class="avatar" aria-label="使用者選單">
+            <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=200&auto=format&fit=crop" alt="使用者頭像" />
+          </button>
+        </div>
+      </div>
+    </header>
+    
+</body>
+</html>

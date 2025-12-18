@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Poe Chatbot</title>
+</head>
+<body>
+  <h1>Poe Chatbot</h1>
+  <input id="userInput" placeholder="Type a message..." />
+  <button onclick="sendMessage()">Send</button>
+  <div id="chatBox"></div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById('userInput').value;
+      const res = await fetch('http://localhost:3001/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: input })
+      });
+      const data = await res.json();
+      document.getElementById('chatBox').innerHTML += `<p><b>You:</b> ${input}</p><p><b>Bot:</b> ${data.reply}</p>`;
+    }
+  </script>
+</body>
+</html>

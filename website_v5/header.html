@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ProBall Analytics | 專業運動數據平台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" href="https://fav.farm/⚾">
+    <link rel="stylesheet" href="app.css" />
+    <style>
+      /* (Kept) local suggest styles, not used for rendering now */
+      .navbar .search { position: relative; }
+      .suggest {
+        position: absolute; top: 100%; left: 0; right: 0;
+        background: #fff; border: 1px solid rgba(0,0,0,0.08);
+        border-radius: 10px; margin-top: 6px; padding: 6px 0;
+        box-shadow: 0 14px 32px rgba(0,0,0,0.08);
+        max-height: 320px; overflow:auto;
+        z-index: 9999;
+      }
+      .suggest__item { display: grid; grid-template-columns: 40px 1fr auto; gap: 10px; align-items: center; padding: 8px 12px; cursor: pointer; }
+      .suggest__item:hover, .suggest__item.is-active { background: #f5f7ff; }
+      .suggest__badge { font-size: 12px; color: #445; background: #eef2ff; padding: 2px 8px; border-radius: 999px; }
+      .suggest__avatar { width: 28px; height: 28px; border-radius: 50%; background: #e5e7eb center/cover no-repeat; border: 1px solid rgba(0,0,0,0.05); }
+    </style>
+  </head>
+
+  <body>
+    <header class="navbar" role="banner">
+      <div class="navbar__inner container">
+        <a href="#" class="navbar__brand" aria-label="回到首頁">
+          <i class="ri-baseball-line"></i>
+          <span>ProBall Analytics</span>
+        </a>
+        <nav class="navbar__nav" role="navigation" aria-label="主選單" target="_parent">
+          <a class="nav__link is-active" href="index.html" target="_parent">首頁</a>
+          <a class="nav__link" href="matches.html" target="_parent">賽事</a>
+          <a class="nav__link is-active" href="team.html" target="_parent">球隊</a>
+          <a class="nav__link" href="players.html" target="_parent">球員</a>
+          <a class="nav__link" href="simulation.html" target="_parent">模型預測</a>
+          <a class="nav__link" href="personalize.html" target="_parent">個人化</a>
+        </nav>
+        <div class="navbar__tools">
+          <div class="search">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <input id="teamSearchInput" type="search" placeholder="搜尋球隊 / 球員" aria-label="搜尋球隊或球員" />
+            <!-- kept but unused for display -->
+            <div id="searchSuggest" class="suggest" hidden></div>
+          </div>
+          <button class="icon-btn" aria-label="通知"><i class="ri-notification-3-line"></i></button>
+          <button id="themeToggleBtn" type="button" class="icon-btn theme-toggle" aria-label="切換主題" role="switch" aria-checked="false" data-theme-toggle>
+            <i class="ri-sun-line"></i>
+          </button>
+          <button class="avatar" aria-label="使用者選單">
+            <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=200&auto=format&fit=crop" alt="使用者頭像" />
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <script>
+    // --- Player Search engine (same logic; only display changed to full-screen overlay iframe on parent) ---
+    (function () {
+      const input = document.getElementById('teamSearchInput');
+      const suggestBox = document.getElementById('searchSuggest'); // kept for compatibility, not used to render
+      let index = [];            // [{name, number, team, avatar}]
+      let filtered = [];         // current suggestions
+      let activeIndex = -1;      // keyboard highlight
+
+      // Helpers
+      const norm = s => (s || '').toString().trim().toLowerCase();
+      const debounce = (fn, ms=200) => { let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); } };
+
+      function buildIndex(raw) {
+        const arr = Array.isArray(raw) ? raw : Object.values(raw || {});
+        return arr.map((p, i) => {
+          const name = p.name || p['姓名'] || p['Name'] || `Player ${i+1}`;
+          const number = p.number || p['背號'] || p['Number'] || '';
+          const team = p.team || p['球隊'] || p['Team'] || '';
+          const avatar = p.photo || p.headshot || '';
+          return { name, number: String(number || ''), team, avatar };
+        });
+      }
+
+      function openProfile(name) {
+        const url = `show_player_profile.html?player_name=${encodeURIComponent(name)}`;
+        try { window.top.location.href = url; } catch { window.location.href = url; }
+      }
+
+      // ---------- DISPLAY: overlay iframe on top of parent ----------
+      const OVERLAY_ID = 'searchOverlayFrame';
+
+      function hideOverlay() {
+        try {
+          const old = window.parent.document.getElementById(OVERLAY_ID);
+          if (old) old.remove();
+        } catch {}
+      }
+
+function renderOverlay(items) {
+  hideOverlay();
+  if (!items.length) return;
+
+  const parentDoc = window.parent.document;
+  const overlay = parentDoc.createElement('iframe');
+  overlay.id = OVERLAY_ID;
+  Object.assign(overlay.style, {
+    position: 'fixed',
+    inset: '0',
+    width: '100vw',
+    height: '100vh',
+    zIndex: '2147483647',
+    border: '0',
+    background: 'transparent',
+    pointerEvents: 'none' // let typing continue in search bar
+  });
+  overlay.setAttribute("tabindex", "-1"); // prevent focus stealing
+
+  parentDoc.body.appendChild(overlay);
+
+  const doc = overlay.contentDocument;
+  doc.open();
+  doc.write(`
+    <style>
+      body { margin:0; pointer-events:none; }
+      .layer { pointer-events:auto; }
+      .backdrop {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.25);
+      }
+      .panel {
+        position: fixed; left: 50%; transform: translateX(-50%);
+        top: 72px; width: min(720px, 92vw); max-height: 70vh;
+        background: #fff; border-radius: 12px; overflow: auto;
+        box-shadow: 0 24px 64px rgba(0,0,0,0.28), 0 6px 18px rgba(0,0,0,0.18);
+      }
+      .row {
+        display:grid; grid-template-columns:44px 1fr auto; gap:12px; align-items:center;
+        padding:10px 14px; cursor:pointer;
+      }
+      .row:hover { background:#f5f7ff; }
+      .avatar {
+        width:32px; height:32px; border-radius:50%;
+        background:#e5e7eb center/cover no-repeat; border:1px solid rgba(0,0,0,0.05);
+      }
+      .badge {
+        font-size:12px;color:#445;background:#eef2ff;
+        padding:2px 8px;border-radius:999px;
+      }
+    </style>
+    <div class="layer">
+      <div class="backdrop" id="backdrop"></div>
+      <div class="panel" id="panel"></div>
+    </div>
+  `);
+  doc.close();
+
+  const panel = doc.getElementById('panel');
+  panel.innerHTML = items.map((it, idx) => `
+    <div class="row" data-idx="${idx}">
+      <div class="avatar" style="${it.avatar ? `background-image:url('${it.avatar}')` : ''}"></div>
+      <div>
+        <div style="font-weight:600;">${it.name}${it.number ? ` <span style='color:#667'>#${it.number}</span>` : ''}</div>
+        <div style="font-size:12px;color:#667;">${it.team || ''}</div>
+      </div>
+      <div class="badge">球員</div>
+    </div>
+  `).join('');
+
+  panel.querySelectorAll('.row').forEach(el => {
+    el.addEventListener('mousedown', () => {
+      const pick = items[Number(el.dataset.idx)];
+      if (pick) openProfile(pick.name);
+    });
+  });
+
+  doc.getElementById('backdrop').addEventListener('mousedown', hideOverlay);
+}
+
+
+      // Render suggestions (now via overlay)
+
+      function renderSuggestions(items) {
+        // old in-iframe dropdown hidden
+        suggestBox.hidden = true;
+        suggestBox.innerHTML = '';
+        // now show full-screen overlay in parent
+        renderOverlay(items);
+      }
+
+      function search(q) {
+        const qn = norm(q);
+        if (!qn) { activeIndex = -1; renderSuggestions([]); return; }
+
+        const scored = index.map(p => {
+          const n = norm(p.name), t = norm(p.team), num = norm(p.number);
+          let score = -Infinity;
+          if (n.startsWith(qn)) score = 100 - (n.length - qn.length);
+          else if (n.includes(qn)) score = 80 - n.indexOf(qn);
+          else if (num && num === qn.replace('#','')) score = 75;
+          else if (t.includes(qn)) score = 50 - t.indexOf(qn);
+          return { p, score };
+        }).filter(x => x.score > -Infinity)
+          .sort((a,b) => b.score - a.score)
+          .slice(0, 10)
+          .map(x => x.p);
+
+        filtered = scored;
+        activeIndex = filtered.length ? 0 : -1;
+        renderSuggestions(filtered);
+      }
+
+      const onInput = debounce((e) => search(e.target.value), 120);
+
+      // Events
+      input.addEventListener('input', onInput);
+
+      // Keyboard navigation (works by re-rendering overlay with activeIndex)
+      input.addEventListener('keydown', (e) => {
+        const overlay = window.parent.document.getElementById(OVERLAY_ID);
+        const hasOverlay = !!overlay && filtered.length;
+
+        if (!hasOverlay) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          activeIndex = (activeIndex + 1) % filtered.length;
+          renderSuggestions(filtered);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          activeIndex = (activeIndex - 1 + filtered.length) % filtered.length;
+          renderSuggestions(filtered);
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (activeIndex >= 0 && filtered[activeIndex]) {
+            openProfile(filtered[activeIndex].name);
+          } else if (filtered.length) {
+            openProfile(filtered[0].name);
+          }
+        } else if (e.key === 'Escape') {
+          hideOverlay();
+        }
+      });
+
+      // Hide overlay on blur (allow click selection first)
+      //input.addEventListener('blur', () => setTimeout(hideOverlay, 120));
+      // Keep overlay visible while typing; only close when clicking outside or pressing ESC
+        input.addEventListener('blur', (e) => {
+          // do nothing here — overlay will close via backdrop click or ESC
+        });
+
+
+      // Load index once
+      async function init() {
+        try {
+          const res = await fetch('members_details.json', { cache: 'no-store' });
+          const data = await res.json();
+          index = buildIndex(data);
+        } catch (err) {
+          console.warn('Search index load failed:', err);
+        }
+      }
+      init();
+
+      // Also auto-close overlay when parent scrolls/resizes (optional but nice)
+      ['scroll', 'resize'].forEach(evt => {
+        window.parent.addEventListener(evt, hideOverlay, { passive: true });
+      });
+    })();
+    </script>
+  </body>
+</html>

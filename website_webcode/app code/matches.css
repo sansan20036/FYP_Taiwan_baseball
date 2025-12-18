@@ -1,0 +1,2831 @@
+/* 棒球賽事頁面樣式 */
+:root {
+  --primary: #1e3a8a; /* 深藍 */
+  --primary-light: #3b82f6;
+  --primary-dark: #1e40af;
+  --accent: #f59e0b; /* 亮橘 */
+  --accent-light: #fbbf24;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  
+  --bg: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-card: #ffffff;
+  --surface: #f1f5f9;
+  
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', 'Noto Sans TC', 'Roboto', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.container {
+  width: min(1200px, 92%);
+  margin-inline: auto;
+}
+
+.main {
+  padding-top: 80px;
+}
+
+/* 導航列樣式 */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 72px;
+}
+
+/* Logo 樣式 */
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 18px;
+  transition: color 0.2s ease;
+}
+
+.navbar__brand:hover {
+  color: var(--primary);
+}
+
+.navbar__brand i {
+  color: var(--primary);
+  font-size: 24px;
+}
+
+/* 導航選單 */
+.navbar__nav {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.nav__link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.nav__link:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+
+.nav__link.is-active {
+  color: var(--primary);
+  background: rgba(30, 58, 138, 0.1);
+  font-weight: 600;
+}
+
+.nav__link.is-active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+/* 右側工具列 */
+.navbar__tools {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* 搜尋欄 */
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  gap: 8px;
+  min-width: 280px;
+  transition: all 0.2s ease;
+}
+
+.search:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+}
+
+.search i {
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+.search input {
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--text);
+  width: 100%;
+  font-size: 14px;
+}
+
+.search input::placeholder {
+  color: var(--text-muted);
+}
+
+/* 用戶選單 */
+.user-menu {
+  position: relative;
+}
+
+.avatar {
+  background: transparent;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.avatar:hover {
+  border-color: var(--primary);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatar i {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  background: var(--bg);
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* 下拉選單 */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  min-width: 200px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: var(--text);
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: var(--surface);
+}
+
+.dropdown-item i {
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+/* 頁面標題區 */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32px 0 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.page-title h1 {
+  margin: 0 0 8px 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-title h1 i {
+  color: var(--primary);
+}
+
+.page-title p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+.page-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* 按鈕樣式 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-accent {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.btn-accent:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.btn-outline:hover {
+  background: var(--surface);
+  border-color: var(--text-muted);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+/* 賽事內容區域 */
+.matches-content {
+  margin-bottom: 48px;
+}
+
+.matches-grid {
+  display: grid;
+  gap: 20px;
+}
+
+/* 賽事卡片 */
+.match-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+}
+
+.match-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* 卡片標題 */
+.match-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.league-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.league-name {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.match-type {
+  background: var(--surface);
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.match-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.match-status.live {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+.match-status.live i {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* 球隊對戰區域 */
+.match-teams {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.team {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.team.home {
+  justify-content: flex-end;
+}
+
+.team.away {
+  justify-content: flex-start;
+}
+
+.team-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: var(--radius);
+}
+
+.team-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.team-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.team-score {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* VS 區域 */
+.match-vs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.vs-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.match-time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.inning {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.time {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* 卡片底部 */
+.match-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-light);
+}
+
+.venue {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.venue i {
+  color: var(--text-muted);
+}
+
+/* 回到頂端按鈕 */
+.fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 900;
+  border: 0;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: white;
+  background: var(--primary);
+  box-shadow: var(--shadow-lg);
+  transition: all 0.2s ease;
+}
+
+.fab:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+/* Hero 輪播區樣式 */
+.hero-section {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  padding: 40px 0;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="baseball" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23baseball)"/></svg>');
+  opacity: 0.3;
+}
+
+.hero-container {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.hero-header h2 {
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-header h2 i {
+  color: var(--accent);
+}
+
+.hero-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hero-nav {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.hero-nav:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.hero-nav:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.hero-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.hero-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hero-dot.active {
+  background: white;
+  transform: scale(1.2);
+}
+
+.hero-carousel {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+}
+
+.hero-track {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+
+.hero-slide {
+  min-width: 100%;
+  background: white;
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 32px;
+  position: relative;
+}
+
+.hero-slide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(245, 158, 11, 0.05) 100%);
+  pointer-events: none;
+}
+
+.hero-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.hero-team.home {
+  order: 1;
+}
+
+.hero-team.away {
+  order: 3;
+}
+
+.hero-team-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  background: white;
+  padding: 8px;
+}
+
+.hero-team-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.hero-team-score {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--primary);
+  margin: 0;
+}
+
+.hero-vs {
+  order: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.hero-vs-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.hero-match-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.hero-match-time {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.hero-match-venue {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.hero-match-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.hero-match-status.live {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+.hero-match-status.upcoming {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+
+.hero-match-status.finished {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.hero-actions {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+}
+
+.hero-btn {
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-btn-primary {
+  background: var(--primary);
+  color: white;
+  border: 1px solid var(--primary);
+}
+
+.hero-btn-primary:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.hero-btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+  .hero-btn-secondary:hover {
+    background: var(--surface);
+    border-color: var(--text-muted);
+  }
+
+/* 賽事列表區樣式 */
+.schedule-section {
+  background: var(--bg-secondary);
+  padding: 40px 0;
+  margin-top: 32px;
+}
+
+/* 日期分區導航 */
+.date-navigation {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.date-nav {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.date-nav:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.date-nav:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.date-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex: 1;
+}
+
+.date-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.date-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 80px;
+  border: 1px solid transparent;
+}
+
+.date-option:hover {
+  background: var(--surface);
+}
+
+.date-option.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.date-option .day {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.date-option .date {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.date-option .matches-count {
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* 賽事列表內容 */
+.schedule-content {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.schedule-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.schedule-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.schedule-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.stat i {
+  color: var(--primary);
+}
+
+.schedule-list {
+  padding: 0;
+}
+
+/* 賽事卡片 */
+.schedule-card {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-light);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.schedule-card:hover {
+  background: var(--bg-secondary);
+}
+
+.schedule-card:last-child {
+  border-bottom: none;
+}
+
+.schedule-card.live {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.05) 0%, transparent 100%);
+  border-left: 4px solid var(--danger);
+}
+
+.schedule-card.finished {
+  opacity: 0.8;
+}
+
+/* 球隊資訊 */
+.team-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.team-info.home {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.team-info.away {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.team-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: var(--radius);
+  background: white;
+  padding: 4px;
+  box-shadow: var(--shadow);
+}
+
+.team-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.team-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+.team-record {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* 比賽狀態區域 */
+.match-status-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+  padding: 0 16px;
+}
+
+.match-time {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.match-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.match-status.live {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+.match-status.upcoming {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+
+.match-status.finished {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+/* 比分區域（進行中比賽） */
+.score-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.score {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.score-divider {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* 進度條 */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* 功能圖示 */
+.match-features {
+  display: flex;
+  gap: 8px;
+  margin-left: 16px;
+}
+
+.feature-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.feature-icon.live {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+.feature-icon.ticket {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+
+.feature-icon.stats {
+  background: rgba(30, 58, 138, 0.1);
+  color: var(--primary);
+}
+
+.feature-icon:hover {
+  transform: scale(1.1);
+}
+
+  .feature-icon[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: white;
+    padding: 4px 8px;
+    border-radius: var(--radius);
+    font-size: 11px;
+    white-space: nowrap;
+    margin-bottom: 4px;
+    z-index: 10;
+  }
+
+/* 模態框樣式 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.modal:not([hidden]) {
+  display: flex;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  cursor: pointer;
+}
+
+.modal-container {
+  position: relative;
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  max-width: 1200px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 模態框標題 */
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-secondary);
+}
+
+.match-header-info {
+  flex: 1;
+}
+
+.match-teams-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.team-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.team-header.home {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.team-header.away {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.team-logo-header {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: var(--radius);
+  background: white;
+  padding: 4px;
+  box-shadow: var(--shadow);
+}
+
+.team-info-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.team-name-header {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.team-score-header {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.match-vs-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 80px;
+}
+
+.vs-text-header {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.match-status-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.match-status-header.live {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+.match-meta-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.match-time-venue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.match-progress {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* 模態框操作按鈕 */
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.modal-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.modal-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.modal-btn[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: white;
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  font-size: 11px;
+  white-space: nowrap;
+  margin-bottom: 4px;
+  z-index: 10;
+}
+
+.modal-close {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+/* 模態框內容 */
+.modal-body {
+  padding: 0;
+  max-height: calc(90vh - 120px);
+  overflow: hidden;
+}
+
+/* Tab 導航 */
+.tab-navigation {
+  display: flex;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-secondary);
+}
+
+.tab-btn {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  padding: 16px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-bottom: 2px solid transparent;
+}
+
+.tab-btn:hover {
+  color: var(--text);
+  background: rgba(30, 58, 138, 0.05);
+}
+
+.tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background: white;
+}
+
+.tab-btn i {
+  font-size: 16px;
+}
+
+/* Tab 內容 */
+.tab-content {
+  height: calc(90vh - 200px);
+  overflow-y: auto;
+}
+
+.tab-panel {
+  display: none;
+  padding: 24px;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+/* 賽事統計 */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.stat-card h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.stat-chart {
+  height: 200px;
+  position: relative;
+}
+
+/* 局數進度 */
+.inning-progress {
+  padding: 16px 0;
+}
+
+.inning-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 8px;
+}
+
+.inning-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  text-align: center;
+}
+
+.inning-item.completed {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.inning-item.current {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.inning-number {
+  font-weight: 600;
+}
+
+.inning-score {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+/* 關鍵數據 */
+.key-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.key-stat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: var(--surface);
+  border-radius: var(--radius);
+}
+
+.key-stat-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.key-stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* 球員名單 */
+.players-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.team-players h4 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--primary);
+}
+
+.players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.player-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.player-item:hover {
+  background: var(--surface);
+  border-color: var(--primary);
+  transform: translateX(4px);
+}
+
+.player-avatar-small {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.player-info-small {
+  flex: 1;
+}
+
+.player-name-small {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 2px 0;
+}
+
+.player-position-small {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.player-number {
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* 重要事件 */
+.events-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.event-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  position: relative;
+}
+
+.event-item::before {
+  content: '';
+  position: absolute;
+  left: 24px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+
+.event-time {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  min-width: 60px;
+}
+
+.event-content {
+  flex: 1;
+}
+
+.event-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 4px 0;
+}
+
+.event-description {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.event-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  color: var(--primary);
+  font-size: 16px;
+}
+
+/* 直播回放 */
+.live-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  height: 100%;
+}
+
+.live-video-placeholder {
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--text-secondary);
+}
+
+.live-video-placeholder i {
+  font-size: 48px;
+  opacity: 0.5;
+}
+
+.live-chat {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: white;
+  box-shadow: var(--shadow);
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--primary);
+  color: white;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.chat-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.online-count {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  max-height: 400px;
+  background: var(--bg-secondary);
+}
+
+.chat-message {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 3px solid var(--primary);
+}
+
+.chat-message.own-message {
+  background: var(--primary);
+  color: white;
+  border-left-color: var(--accent);
+}
+
+.chat-message.own-message .chat-username {
+  color: white;
+}
+
+.chat-message.own-message .chat-text {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.chat-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.chat-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-username {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chat-time {
+  font-size: 10px;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.chat-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.chat-input {
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+  border-top: 1px solid var(--border-light);
+  background: white;
+}
+
+.chat-input input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.chat-input input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.send-btn {
+  background: var(--primary);
+  color: white;
+  border: 0;
+  border-radius: var(--radius);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.send-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.send-btn:active {
+  transform: translateY(0);
+}
+
+/* 聊天訊息動畫 */
+.chat-message {
+  animation: messageSlideIn 0.3s ease;
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 系統訊息樣式 */
+.chat-message.system {
+  background: var(--surface);
+  border-left-color: var(--warning);
+  text-align: center;
+  font-style: italic;
+}
+
+.chat-message.system .chat-avatar {
+  background: var(--warning);
+}
+
+/* 聊天室空狀態 */
+.chat-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.chat-empty i {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.chat-empty p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* 推薦/資訊區樣式 */
+.recommendations-section {
+  padding: 40px 0;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-light);
+}
+
+.recommendation-group {
+  margin-bottom: 40px;
+}
+
+.recommendation-group:last-child {
+  margin-bottom: 0;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.group-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.group-header h3 i {
+  color: var(--primary);
+}
+
+.view-all {
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.view-all:hover {
+  color: var(--primary-dark);
+  transform: translateX(2px);
+}
+
+/* 新聞輪播 */
+.news-carousel,
+.analysis-carousel,
+.rankings-carousel {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 4px 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x mandatory;
+}
+
+.news-carousel::-webkit-scrollbar,
+.analysis-carousel::-webkit-scrollbar,
+.rankings-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.news-card,
+.analysis-card,
+.ranking-card {
+  scroll-snap-align: start;
+}
+
+.carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 8px 0 12px 0;
+}
+
+.carousel-nav {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.carousel-nav:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.carousel-nav:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 新聞卡片 */
+.news-card {
+  min-width: 320px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.news-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+
+.news-image {
+  width: 100%;
+  height: 160px;
+  border-radius: var(--radius);
+  object-fit: cover;
+  margin-bottom: 16px;
+}
+
+.news-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.news-category {
+  background: var(--primary);
+  color: white;
+  padding: 2px 8px;
+  border-radius: var(--radius);
+  font-weight: 500;
+}
+
+.news-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.news-excerpt {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 分析卡片 */
+.analysis-card {
+  min-width: 280px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.analysis-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+}
+
+.analysis-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.analysis-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 8px 0;
+}
+
+.analysis-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+.analysis-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.analysis-stat {
+  text-align: center;
+}
+
+.analysis-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+}
+
+.analysis-stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* 排行卡片 */
+.ranking-card {
+  min-width: 280px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.ranking-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--warning);
+}
+
+.ranking-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ranking-position {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.ranking-position.gold {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #b8860b;
+}
+
+.ranking-position.silver {
+  background: linear-gradient(135deg, #c0c0c0, #e5e5e5);
+  color: #696969;
+}
+
+.ranking-position.bronze {
+  background: linear-gradient(135deg, #cd7f32, #daa520);
+  color: #8b4513;
+}
+
+.team-info-ranking {
+  flex: 1;
+}
+
+.team-name-ranking {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 4px 0;
+}
+
+.team-record-ranking {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.ranking-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.ranking-stat {
+  text-align: center;
+}
+
+.ranking-stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.ranking-stat-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* 頁尾樣式 */
+.footer {
+  background: var(--text);
+  color: white;
+  padding: 40px 0 20px;
+  margin-top: 60px;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.footer-section h4 {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.footer-brand i {
+  font-size: 24px;
+  color: var(--primary);
+}
+
+.footer-brand span {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+}
+
+.footer-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 24px 0;
+}
+
+.social-links {
+  display: flex;
+  gap: 12px;
+}
+
+.social-link {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.social-link:hover {
+  background: var(--primary);
+  transform: translateY(-2px);
+}
+
+.social-link i {
+  font-size: 18px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 12px;
+}
+
+.footer-links a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: white;
+}
+
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-info p {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.footer-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.footer-action {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s ease;
+}
+
+.footer-action:hover {
+  color: white;
+}
+
+.footer-action i {
+  font-size: 14px;
+}
+
+/* 球員卡片模態框 */
+.player-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.player-modal:not([hidden]) {
+  display: flex;
+}
+
+.player-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.player-modal-container {
+  position: relative;
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  max-width: 500px;
+  width: 100%;
+  max-height: 80vh;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease;
+}
+
+.player-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-secondary);
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.player-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.player-details h3 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.player-details p {
+  margin: 0 0 2px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.player-modal-close {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.player-modal-close:hover {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+.player-modal-body {
+  padding: 20px;
+}
+
+.player-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .navbar__inner {
+    gap: 16px;
+    height: 64px;
+  }
+  
+  .navbar__nav {
+    display: none; /* 在手機版隱藏導航選單 */
+  }
+  
+  .search {
+    min-width: 200px;
+  }
+  
+  /* Hero 輪播響應式 */
+  .hero-section {
+    padding: 24px 0;
+  }
+  
+  .hero-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .hero-header h2 {
+    font-size: 20px;
+  }
+  
+  .hero-slide {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 24px;
+  }
+  
+  .hero-team {
+    order: unset !important;
+  }
+  
+  .hero-vs {
+    order: -1;
+  }
+  
+  .hero-team-logo {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .hero-team-name {
+    font-size: 20px;
+  }
+  
+  .hero-team-score {
+    font-size: 28px;
+  }
+  
+  .hero-actions {
+    position: static;
+    transform: none;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  /* 賽事列表響應式 */
+  .schedule-section {
+    padding: 24px 0;
+  }
+  
+  .date-navigation {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .date-scroll {
+    order: 1;
+    width: 100%;
+  }
+  
+  .date-nav {
+    order: 2;
+  }
+  
+  .schedule-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .schedule-stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .schedule-card {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .team-info {
+    justify-content: center !important;
+    text-align: center;
+  }
+  
+  .match-status-area {
+    order: -1;
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .match-features {
+    margin-left: 0;
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* 模態框響應式 */
+  .modal {
+    padding: 10px;
+  }
+
+  .modal-container {
+    max-height: 95vh;
+  }
+
+  .modal-header {
+    padding: 16px;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .match-teams-header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .team-header {
+    justify-content: center !important;
+    text-align: center;
+  }
+
+  .match-vs-header {
+    order: -1;
+  }
+
+  .match-meta-header {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .modal-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tab-navigation {
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    flex: 1 1 50%;
+    padding: 12px 8px;
+    font-size: 12px;
+  }
+
+  .tab-content {
+    height: calc(95vh - 250px);
+  }
+
+  .tab-panel {
+    padding: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .players-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .live-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .chat-messages {
+    max-height: 200px;
+  }
+
+  .player-modal-container {
+    max-width: 90vw;
+  }
+
+  .player-modal-header {
+    padding: 16px;
+  }
+
+  .player-info {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .player-stats {
+    grid-template-columns: 1fr;
+  }
+
+  /* 推薦區響應式 */
+  .recommendations-section {
+    padding: 24px 0;
+  }
+
+  .recommendation-group {
+    margin-bottom: 24px;
+  }
+
+  .group-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .news-carousel,
+  .analysis-carousel,
+  .rankings-carousel {
+    gap: 12px;
+  }
+
+  .news-card,
+  .analysis-card,
+  .ranking-card {
+    min-width: 280px;
+    padding: 16px;
+  }
+
+  /* 頁尾響應式 */
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .footer-section {
+    text-align: center;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .footer-actions {
+    justify-content: center;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .page-title h1 {
+    font-size: 24px;
+  }
+  
+  .match-teams {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .team {
+    justify-content: center !important;
+  }
+  
+  .match-vs {
+    order: -1;
+  }
+  
+  .match-footer {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .carousel-controls {
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: 95%;
+  }
+  
+  .search {
+    min-width: 160px;
+  }
+  
+  .match-card {
+    padding: 16px;
+  }
+} 
+
+.schedule-controls{ display:flex; gap:10px; align-items:center; margin:10px 0 16px }
+.schedule-controls .control-group{ display:flex; align-items:center; gap:8px; background: var(--surface); border:1px solid var(--border); border-radius: var(--radius); padding:8px 10px }
+.schedule-controls input{ background:transparent; border:0; outline:0; color:var(--text); width:220px }
+.schedule-controls select{ background: var(--surface); border:1px solid var(--border); color:var(--text); padding:8px 10px; border-radius: var(--radius) }
+
+/* 互動視覺：tilt 與 ripple */
+.schedule-card{ transition: transform .18s ease, box-shadow .18s ease }
+.schedule-card:hover{ transform: translateY(-4px); box-shadow: var(--shadow-lg) }
+.btn, .feature-icon{ position:relative; overflow:hidden }
+.btn::after, .feature-icon::after{ content:""; position:absolute; inset:0; border-radius:inherit; transform:scale(0); background:rgba(0,0,0,.06); opacity:0; transition:transform .35s ease, opacity .4s ease }
+.btn.ripple::after, .feature-icon.ripple::after{ transform:scale(1); opacity:1 }
+
+/* Toast */
+.toast{ position: fixed; right: 16px; bottom: 16px; background: rgba(0,0,0,.85); color: #fff; padding: 10px 12px; border-radius: 10px; box-shadow: var(--shadow-lg); opacity:0; transform: translateY(12px); transition: all .25s ease; z-index: 1000 }
+.toast.show{ opacity:1; transform: translateY(0) } 

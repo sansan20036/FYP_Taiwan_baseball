@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>ProBall Analytics｜對決預測與模擬</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Tailwind CDN (OK for FYP demo / prototype) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+      <style>    #loading_animation {
+      position: fixed; /* cover whole page */
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #fff; /* optional background */
+      z-index: 9999; /* keep on top */
+      transition: opacity 1s ease; /* fade duration */
+    }
+    #loading_animation.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #loading_animation iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }</style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+
+<div class="max-w-6xl mx-auto px-4 py-8">
+    
+
+       <!-- start of animation -->
+    <div id="loading_animation" width="100%" height="100%" >
+
+
+      <iframe src="loading_animation.html" frameborder="0" width="100%" height="100%">
+      </iframe>
+        <script>
+      // Wait 1.5 second, then fade out
+      setTimeout(() => {
+        document.getElementById("loading_animation").classList.add("fade-out");
+      }, 1500);
+      </script>
+    </div>
+    <!-- end of animation --> 
+
+    <!-- start of header --> 
+    <div>
+      <iframe src="header.html" frameborder="0" width="100%" height="80px" style="border:none;">
+      </iframe>
+
+
+    </div> 
+    <!-- end of header --> 
+
+  <!-- ================= HEADER ================= -->
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">對決預測與模擬</h1>
+    <p class="text-slate-400 text-sm">
+      使用 members_details.json 作為靜態資料來源，模擬打者與投手的對戰結果。
+    </p>
+  </header>
+
+  <!-- ================= PLAYER SELECT ================= -->
+  <section class="grid md:grid-cols-2 gap-6 mb-8">
+
+    <!-- Batter -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+      <h2 class="font-semibold mb-3">打者 Batter</h2>
+      <select id="batterSelect" class="w-full mb-3 bg-slate-800 border border-slate-700 rounded px-3 py-2"></select>
+      <div id="batterStats" class="text-xs text-slate-300"></div>
+    </div>
+
+    <!-- Pitcher -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+      <h2 class="font-semibold mb-3">投手 Pitcher</h2>
+      <select id="pitcherSelect" class="w-full mb-3 bg-slate-800 border border-slate-700 rounded px-3 py-2"></select>
+      <div id="pitcherStats" class="text-xs text-slate-300"></div>
+    </div>
+
+  </section>
+
+  <!-- ================= PREDICTION ================= -->
+  <section class="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-8">
+    <h2 class="font-semibold mb-3">對決預測</h2>
+
+    <button id="predictBtn"
+      class="mb-3 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-4 py-2 rounded">
+      預測對決
+    </button>
+
+    <div class="h-4 bg-slate-800 rounded overflow-hidden">
+      <div id="advBar" class="h-full bg-gradient-to-r from-emerald-400 to-sky-400 w-1/2"></div>
+    </div>
+
+    <div id="predictText" class="text-xs text-slate-300 mt-2"></div>
+  </section>
+
+  <!-- ================= SIMULATION ================= -->
+  <section class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+    <h2 class="font-semibold mb-3">打席模擬</h2>
+
+    <div class="flex items-center gap-4 mb-4">
+      <label class="text-xs">
+        模擬打席數
+        <input id="paInput" type="number" value="50" min="1" max="1000"
+          class="ml-2 w-24 bg-slate-800 border border-slate-700 rounded px-2 py-1">
+      </label>
+
+      <button id="simulateBtn"
+        class="bg-sky-500 hover:bg-sky-400 text-black font-semibold px-4 py-2 rounded">
+        開始模擬
+      </button>
+    </div>
+
+    <div id="simSummary" class="text-xs mb-3"></div>
+
+    <div class="bg-slate-950 border border-slate-800 rounded p-3 max-h-64 overflow-y-auto text-xs">
+      <div class="font-semibold mb-2">Play-by-play</div>
+      <div id="simLog"></div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+/* ======================================================
+   GLOBAL STATE
+====================================================== */
+let players = [];
+
+/* ======================================================
+   LOAD members_details.json
+====================================================== */
+fetch("members_details.json")
+  .then(res => res.json())
+  .then(data => {
+    players = transformMembers(data);
+    initSelectors();
+  })
+  .catch(err => {
+    console.error("members_details.json load failed", err);
+  });
+
+/* ======================================================
+   TRANSFORM DATA
+====================================================== */
+function transformMembers(data) {
+  const players = [];
+
+  data.forEach(m => {
+
+    /* ================= BATTER ================= */
+    if (Array.isArray(m.batting_result) && m.batting_result.length > 1) {
+      const header = m.batting_result[0];
+      const rows = m.batting_result.slice(1);
+
+      // Use TOTAL row if exists
+      const totalRow = rows.find(r => r[0] === "TOTAL") || rows[rows.length - 1];
+      if (totalRow) {
+        const idx = name => header.indexOf(name);
+
+        const ab  = Number(totalRow[idx("打數")]);
+        const h   = Number(totalRow[idx("安打")]);
+        const d2  = Number(totalRow[idx("二安")]);
+        const d3  = Number(totalRow[idx("三安")]);
+        const hr  = Number(totalRow[idx("全壘打")]);
+        const bb  = Number(totalRow[idx("四壞")]);
+        const so  = Number(totalRow[idx("被三振")]);
+
+        if (ab > 0) {
+          players.push({
+            id: m.web_url,
+            name: m.name,
+            team: m.team,
+            role: "batter",
+            batting: {
+              ab, hits: h, doubles: d2, triples: d3, hr, bb, so
+            }
+          });
+        }
+      }
+    }
+
+    /* ================= PITCHER ================= */
+    if (Array.isArray(m.pitch_record) && m.pitch_record.length > 1) {
+      const header = m.pitch_record[0];
+      const rows = m.pitch_record.slice(1);
+
+      const totalRow = rows.find(r => r[0] === "TOTAL");
+      if (totalRow) {
+        const idx = name => header.indexOf(name);
+
+        const bf  = Number(totalRow[idx("打席")]);
+        const h   = Number(totalRow[idx("安打")]);
+        const hr  = Number(totalRow[idx("全壘打")]);
+        const bb  = Number(totalRow[idx("四壞")]);
+        const so  = Number(totalRow[idx("被三振")]);
+
+        if (bf > 0) {
+          players.push({
+            id: m.web_url + "_P",
+            name: m.name,
+            team: m.team,
+            role: "pitcher",
+            pitching: {
+              bf, hits: h, hr, bb, so
+            }
+          });
+        }
+      }
+    }
+  });
+
+  return players;
+}
+
+
+/* ======================================================
+   UI HELPERS
+====================================================== */
+const batterSelect = document.getElementById("batterSelect");
+const pitcherSelect = document.getElementById("pitcherSelect");
+const batterStats = document.getElementById("batterStats");
+const pitcherStats = document.getElementById("pitcherStats");
+const advBar = document.getElementById("advBar");
+const predictText = document.getElementById("predictText");
+const simSummary = document.getElementById("simSummary");
+const simLog = document.getElementById("simLog");
+
+function initSelectors() {
+  batterSelect.innerHTML = players.filter(p => p.role === "batter")
+    .map(p => `<option value="${p.id}">${p.name} (${p.team})</option>`).join("");
+
+  pitcherSelect.innerHTML = players.filter(p => p.role === "pitcher")
+    .map(p => `<option value="${p.id}">${p.name} (${p.team})</option>`).join("");
+
+  updateStats();
+}
+
+function getBatter() {
+  return players.find(p => p.id === batterSelect.value);
+}
+
+function getPitcher() {
+  return players.find(p => p.id === pitcherSelect.value);
+}
+
+function updateStats() {
+  const b = getBatter();
+  const p = getPitcher();
+
+  if (b) {
+    const avg = (b.batting.hits / b.batting.ab).toFixed(3);
+    batterStats.innerHTML =
+      `AVG: ${avg} ｜ HR: ${b.batting.hr} ｜ BB: ${b.batting.bb} ｜ SO: ${b.batting.so}`;
+  }
+
+  if (p) {
+    const kRate = ((p.pitching.so / p.pitching.bf) * 100).toFixed(1);
+    pitcherStats.innerHTML =
+      `BF: ${p.pitching.bf} ｜ SO: ${p.pitching.so} (${kRate}%) ｜ BB: ${p.pitching.bb} ｜ HR: ${p.pitching.hr}`;
+  }
+}
+
+
+
+batterSelect.onchange = updateStats;
+pitcherSelect.onchange = updateStats;
+
+/* ======================================================
+   PREDICTION MODEL
+====================================================== */
+document.getElementById("predictBtn").onclick = () => {
+  const b = getBatter();
+  const p = getPitcher();
+  if (!b || !p) return;
+
+  const avg = b.batting.hits / b.batting.ab;
+  const kRate = p.pitching.so / p.pitching.bf;
+
+  let prob = 0.5 + (avg - kRate) * 0.7;
+  prob = Math.max(0.1, Math.min(0.9, prob));
+
+  advBar.style.width = (prob * 100) + "%";
+  predictText.innerHTML =
+    `${b.name} 在單一打席取得有利結果的機率約 <b>${(prob*100).toFixed(1)}%</b>`;
+};
+
+/* ======================================================
+   SIMULATION
+====================================================== */
+document.getElementById("simulateBtn").onclick = () => {
+  const b = getBatter();
+  const p = getPitcher();
+  const n = parseInt(document.getElementById("paInput").value);
+
+  let H=0, HR=0, BB=0, K=0;
+  simLog.innerHTML = "";
+
+  for (let i=1;i<=n;i++) {
+    const r = Math.random();
+    let text = `PA ${i}: `;
+
+    if (r < 0.18) { K++; text+="三振"; }
+    else if (r < 0.25) { BB++; text+="保送"; }
+    else if (r < 0.30) { HR++; H++; text+="全壘打"; }
+    else if (r < 0.55) { H++; text+="安打"; }
+    else text+="出局";
+
+    simLog.innerHTML += `<div>${text}</div>`;
+  }
+
+  simSummary.innerHTML =
+    `PA:${n} H:${H} HR:${HR} BB:${BB} SO:${K}`;
+};
+</script>
+
+</body>
+
+<!-- ProBall Chatbot (auto-inject widget) -->
+<script src="chatbot.js"></script>
+</html>

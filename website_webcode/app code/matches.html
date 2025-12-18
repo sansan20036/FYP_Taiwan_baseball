@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>棒球賽事 | ProBall Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" href="https://fav.farm/⚾">
+    <link rel="stylesheet" href="matches.css" />
+  </head>
+  <body class="theme-light">
+    <!-- 頂部導航列 -->
+    <header class="navbar" role="banner">
+      <div class="navbar__inner container">
+        <!-- 左側：平台 Logo -->
+        <a href="app.html" class="navbar__brand" aria-label="回到首頁">
+          <i class="ri-baseball-line"></i>
+          <span>ProBall Analytics</span>
+        </a>
+
+        <!-- 中間：賽事分類 -->
+        <nav class="navbar__nav" role="navigation" aria-label="賽事分類">
+          <a class="nav__link is-active" href="#league">聯盟賽程</a>
+          <a class="nav__link" href="international.html">國際賽</a>
+          <a class="nav__link" href="latest.html">最新動態</a>
+        </nav>
+
+        <!-- 右側：搜尋欄 + 個人用戶入口 -->
+        <div class="navbar__tools">
+          <div class="search">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <input id="matchSearchInput" type="search" placeholder="搜尋球隊 / 球員 / 賽事" aria-label="搜尋賽事" />
+          </div>
+          
+          <div class="user-menu">
+            <button class="avatar" aria-label="使用者選單" id="userMenuBtn">
+              <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=200&auto=format&fit=crop" alt="使用者頭像" />
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+            <div class="dropdown-menu" id="userDropdown" hidden>
+              <a href="#profile" class="dropdown-item">
+                <i class="ri-user-line"></i>
+                個人資料
+              </a>
+              <a href="#settings" class="dropdown-item">
+                <i class="ri-settings-3-line"></i>
+                設定
+              </a>
+              <a href="#favorites" class="dropdown-item">
+                <i class="ri-heart-line"></i>
+                我的收藏
+              </a>
+              <div class="dropdown-divider"></div>
+              <a href="#logout" class="dropdown-item">
+                <i class="ri-logout-box-r-line"></i>
+                登出
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主要內容區域 -->
+    <main class="main">
+      <!-- 賽事概覽輪播區 (Hero) -->
+      <section class="hero-section">
+        <div class="hero-container container">
+          <div class="hero-header">
+            <h2><i class="ri-star-line"></i> 今日重點比賽</h2>
+            <div class="hero-controls">
+              <button class="hero-nav prev" id="heroPrev" aria-label="上一張">
+                <i class="ri-arrow-left-s-line"></i>
+              </button>
+              <div class="hero-dots" id="heroDots"></div>
+              <button class="hero-nav next" id="heroNext" aria-label="下一張">
+                <i class="ri-arrow-right-s-line"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="hero-carousel" id="heroCarousel">
+            <!-- 輪播卡片將由 JavaScript 動態生成 -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 頁面標題區 -->
+      <section class="page-header container">
+        <div class="page-title">
+          <h1><i class="ri-calendar-event-line"></i> 棒球賽事</h1>
+          <p>即時掌握最新賽程、比分與賽事資訊</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-outline" id="filterBtn">
+            <i class="ri-filter-3-line"></i>
+            篩選
+          </button>
+          <button class="btn btn-accent" id="refreshBtn">
+            <i class="ri-refresh-line"></i>
+            重新整理
+          </button>
+        </div>
+      </section>
+
+      <!-- 賽事列表區 -->
+      <section class="schedule-section">
+        <div class="container">
+          <!-- 日期分區導航 -->
+          <div class="date-navigation">
+            <button class="date-nav prev" id="datePrev" aria-label="前幾天">
+              <i class="ri-arrow-left-s-line"></i>
+            </button>
+            
+            <div class="date-scroll" id="dateScroll">
+              <!-- 日期選項將由 JavaScript 動態生成 -->
+            </div>
+            
+            <button class="date-nav next" id="dateNext" aria-label="後幾天">
+              <i class="ri-arrow-right-s-line"></i>
+            </button>
+          </div>
+
+          <!-- 賽事列表 -->
+          <div class="schedule-content">
+            <div class="schedule-header">
+              <h3 id="currentDate">今日賽事</h3>
+              <div class="schedule-stats">
+                <span class="stat">
+                  <i class="ri-calendar-event-line"></i>
+                  <span id="totalMatches">0</span> 場比賽
+                </span>
+                <span class="stat">
+                  <i class="ri-live-line"></i>
+                  <span id="liveMatches">0</span> 場直播
+                </span>
+              </div>
+            </div>
+
+            <div class="schedule-controls" aria-label="賽程篩選與排序">
+              <div class="control-group">
+                <i class="ri-search-2-line" aria-hidden="true"></i>
+                <input id="schedSearch" type="search" placeholder="搜尋隊伍 / 球場" aria-label="搜尋賽程" />
+              </div>
+              <select id="schedStatus" aria-label="狀態">
+                <option value="all">全部狀態</option>
+                <option value="live">LIVE</option>
+                <option value="upcoming">即將開始</option>
+                <option value="finished">已結束</option>
+              </select>
+              <select id="schedSort" aria-label="排序">
+                <option value="time">時間最近</option>
+                <option value="status">狀態（LIVE 優先）</option>
+                <option value="alpha">隊伍名稱</option>
+              </select>
+            </div>
+
+            <div class="schedule-list" id="scheduleList">
+              <!-- 賽事卡片將由 JavaScript 動態生成 -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 推薦/資訊區 -->
+      <section class="recommendations-section">
+        <div class="container">
+          <!-- 熱門新聞 -->
+          <div class="recommendation-group">
+            <div class="group-header">
+              <h3><i class="ri-fire-line"></i> 熱門新聞</h3>
+              <a href="#news" class="view-all">查看全部 <i class="ri-arrow-right-s-line"></i></a>
+            </div>
+            <div class="carousel-controls">
+              <button class="carousel-nav prev" id="newsPrev" aria-label="上一則">
+                <i class="ri-arrow-left-s-line"></i>
+              </button>
+              <button class="carousel-nav next" id="newsNext" aria-label="下一則">
+                <i class="ri-arrow-right-s-line"></i>
+              </button>
+            </div>
+            <div class="news-carousel" id="newsCarousel">
+              <!-- 新聞卡片將由 JavaScript 動態生成 -->
+            </div>
+          </div>
+
+          <!-- 賽事分析 -->
+          <div class="recommendation-group">
+            <div class="group-header">
+              <h3><i class="ri-bar-chart-line"></i> 賽事分析</h3>
+              <a href="#analysis" class="view-all">查看全部 <i class="ri-arrow-right-s-line"></i></a>
+            </div>
+            <div class="carousel-controls">
+              <button class="carousel-nav prev" id="analysisPrev" aria-label="上一則">
+                <i class="ri-arrow-left-s-line"></i>
+              </button>
+              <button class="carousel-nav next" id="analysisNext" aria-label="下一則">
+                <i class="ri-arrow-right-s-line"></i>
+              </button>
+            </div>
+            <div class="analysis-carousel" id="analysisCarousel">
+              <!-- 分析卡片將由 JavaScript 動態生成 -->
+            </div>
+          </div>
+
+          <!-- 球隊排行 -->
+          <div class="recommendation-group">
+            <div class="group-header">
+              <h3><i class="ri-trophy-line"></i> 球隊排行</h3>
+              <a href="#rankings" class="view-all">查看全部 <i class="ri-arrow-right-s-line"></i></a>
+            </div>
+            <div class="carousel-controls">
+              <button class="carousel-nav prev" id="rankingsPrev" aria-label="上一則">
+                <i class="ri-arrow-left-s-line"></i>
+              </button>
+              <button class="carousel-nav next" id="rankingsNext" aria-label="下一則">
+                <i class="ri-arrow-right-s-line"></i>
+              </button>
+            </div>
+            <div class="rankings-carousel" id="rankingsCarousel">
+              <!-- 排行卡片將由 JavaScript 動態生成 -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <div class="footer-content">
+          <!-- 平台資訊 -->
+          <div class="footer-section">
+            <div class="footer-brand">
+              <i class="ri-baseball-line"></i>
+              <span>ProBall Analytics</span>
+            </div>
+            <p class="footer-description">
+              專業的棒球賽事數據分析平台，提供即時賽事資訊、深度分析與AI預測服務。
+            </p>
+            <div class="social-links">
+              <a href="#facebook" class="social-link" aria-label="Facebook">
+                <i class="ri-facebook-fill"></i>
+              </a>
+              <a href="#twitter" class="social-link" aria-label="Twitter">
+                <i class="ri-twitter-fill"></i>
+              </a>
+              <a href="#instagram" class="social-link" aria-label="Instagram">
+                <i class="ri-instagram-fill"></i>
+              </a>
+              <a href="#youtube" class="social-link" aria-label="YouTube">
+                <i class="ri-youtube-fill"></i>
+              </a>
+              <a href="#line" class="social-link" aria-label="LINE">
+                <i class="ri-line-fill"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- 平台連結 -->
+          <div class="footer-section">
+            <h4>平台服務</h4>
+            <ul class="footer-links">
+              <li><a href="#about">關於我們</a></li>
+              <li><a href="#features">功能特色</a></li>
+              <li><a href="#pricing">價格方案</a></li>
+              <li><a href="#api">API 服務</a></li>
+              <li><a href="#partners">合作夥伴</a></li>
+            </ul>
+          </div>
+
+          <!-- 支援服務 -->
+          <div class="footer-section">
+            <h4>支援服務</h4>
+            <ul class="footer-links">
+              <li><a href="#help">幫助中心</a></li>
+              <li><a href="#contact">聯絡客服</a></li>
+              <li><a href="#feedback">意見回饋</a></li>
+              <li><a href="#tutorial">使用教學</a></li>
+              <li><a href="#faq">常見問題</a></li>
+            </ul>
+          </div>
+
+          <!-- 法律條款 -->
+          <div class="footer-section">
+            <h4>法律條款</h4>
+            <ul class="footer-links">
+              <li><a href="#terms">使用條款</a></li>
+              <li><a href="#privacy">隱私政策</a></li>
+              <li><a href="#cookies">Cookie 政策</a></li>
+              <li><a href="#security">安全政策</a></li>
+              <li><a href="#compliance">法規遵循</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 頁尾底部 -->
+        <div class="footer-bottom">
+          <div class="footer-info">
+            <p>&copy; <span id="currentYear"></span> ProBall Analytics. 保留所有權利。</p>
+            <p>台灣台北市 | 統一編號：12345678</p>
+          </div>
+          <div class="footer-actions">
+            <a href="#language" class="footer-action">
+              <i class="ri-global-line"></i>
+              繁體中文
+            </a>
+            <a href="#accessibility" class="footer-action">
+              <i class="ri-accessibility-line"></i>
+              無障礙服務
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- 回到頂端按鈕 -->
+    <button id="scrollTopBtn" class="fab" aria-label="回到頂端" hidden>
+      <i class="ri-arrow-up-line"></i>
+    </button>
+
+    <!-- 比賽詳情模態框 -->
+    <div id="matchDetailModal" class="modal" hidden>
+      <div class="modal-overlay" id="modalOverlay"></div>
+      <div class="modal-container">
+        <div class="modal-header">
+          <div class="match-header-info">
+            <div class="match-teams-header">
+              <div class="team-header home">
+                <img src="" alt="" class="team-logo-header" id="homeTeamLogo" />
+                <div class="team-info-header">
+                  <h3 class="team-name-header" id="homeTeamName"></h3>
+                  <span class="team-score-header" id="homeTeamScore"></span>
+                </div>
+              </div>
+              
+              <div class="match-vs-header">
+                <span class="vs-text-header">VS</span>
+                <div class="match-status-header" id="matchStatusHeader"></div>
+              </div>
+              
+              <div class="team-header away">
+                <div class="team-info-header">
+                  <h3 class="team-name-header" id="awayTeamName"></h3>
+                  <span class="team-score-header" id="awayTeamScore"></span>
+                </div>
+                <img src="" alt="" class="team-logo-header" id="awayTeamLogo" />
+              </div>
+            </div>
+            
+            <div class="match-meta-header">
+              <div class="match-time-venue">
+                <i class="ri-time-line"></i>
+                <span id="matchTimeHeader"></span>
+                <span class="divider">•</span>
+                <i class="ri-map-pin-2-line"></i>
+                <span id="matchVenueHeader"></span>
+              </div>
+              <div class="match-progress" id="matchProgressHeader"></div>
+            </div>
+          </div>
+          
+          <div class="modal-actions">
+            <button class="modal-btn" id="shareBtn" data-tooltip="分享比賽">
+              <i class="ri-share-line"></i>
+            </button>
+            <button class="modal-btn" id="favoriteBtn" data-tooltip="收藏比賽">
+              <i class="ri-heart-line"></i>
+            </button>
+            <button class="modal-btn" id="subscribeBtn" data-tooltip="訂閱提醒">
+              <i class="ri-notification-line"></i>
+            </button>
+            <button class="modal-close" id="closeModal" aria-label="關閉">
+              <i class="ri-close-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-body">
+          <!-- Tab 導航 -->
+          <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="stats">
+              <i class="ri-bar-chart-line"></i>
+              賽事統計
+            </button>
+            <button class="tab-btn" data-tab="players">
+              <i class="ri-team-line"></i>
+              球員名單
+            </button>
+            <button class="tab-btn" data-tab="events">
+              <i class="ri-time-line"></i>
+              重要事件
+            </button>
+            <button class="tab-btn" data-tab="live">
+              <i class="ri-live-line"></i>
+              直播回放
+            </button>
+          </div>
+
+          <!-- Tab 內容 -->
+          <div class="tab-content">
+            <!-- 賽事統計 Tab -->
+            <div class="tab-panel active" id="statsPanel">
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <h4>打擊表現</h4>
+                  <div class="stat-chart">
+                    <canvas id="battingChart"></canvas>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <h4>投手表現</h4>
+                  <div class="stat-chart">
+                    <canvas id="pitchingChart"></canvas>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <h4>局數進度</h4>
+                  <div class="inning-progress">
+                    <div class="inning-grid" id="inningGrid"></div>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <h4>關鍵數據</h4>
+                  <div class="key-stats" id="keyStats"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 球員名單 Tab -->
+            <div class="tab-panel" id="playersPanel">
+              <div class="players-container">
+                <div class="team-players">
+                  <h4 id="homeTeamPlayersTitle"></h4>
+                  <div class="players-list" id="homeTeamPlayers"></div>
+                </div>
+                <div class="team-players">
+                  <h4 id="awayTeamPlayersTitle"></h4>
+                  <div class="players-list" id="awayTeamPlayers"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 重要事件 Tab -->
+            <div class="tab-panel" id="eventsPanel">
+              <div class="events-timeline" id="eventsTimeline"></div>
+            </div>
+
+            <!-- 直播回放 Tab -->
+            <div class="tab-panel" id="livePanel">
+              <div class="live-container">
+                <div class="live-video-placeholder">
+                  <i class="ri-play-circle-line"></i>
+                  <p>直播畫面</p>
+                  <div style="margin-top: 16px; font-size: 12px; opacity: 0.7;">
+                    <p>直播功能開發中...</p>
+                    <p>敬請期待！</p>
+                  </div>
+                </div>
+                <div class="live-chat">
+                  <div class="chat-header">
+                    <h4><i class="ri-chat-3-line"></i> 即時聊天室</h4>
+                    <span class="online-count"><i class="ri-user-line"></i> 1,234 人在線</span>
+                  </div>
+                  <div class="chat-messages" id="chatMessages">
+                    <!-- 聊天訊息將由 JavaScript 動態生成 -->
+                  </div>
+                  <div class="chat-input">
+                    <input type="text" placeholder="輸入您的訊息..." id="chatInput" maxlength="200" />
+                    <button class="send-btn" title="發送訊息">
+                      <i class="ri-send-plane-line"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 球員卡片模態框 -->
+    <div id="playerCardModal" class="player-modal" hidden>
+      <div class="player-modal-overlay" id="playerModalOverlay"></div>
+      <div class="player-modal-container">
+        <div class="player-modal-header">
+          <div class="player-info">
+            <img src="" alt="" class="player-avatar" id="playerAvatar" />
+            <div class="player-details">
+              <h3 id="playerName"></h3>
+              <p id="playerPosition"></p>
+              <p id="playerTeam"></p>
+            </div>
+          </div>
+          <button class="player-modal-close" id="closePlayerModal">
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+        <div class="player-modal-body">
+          <div class="player-stats" id="playerStats"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="matches.js"></script>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  </body>
+</html> 

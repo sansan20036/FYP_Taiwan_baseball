@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ProBall Analytics | 專業運動數據平台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+     <link rel="icon" href="https://fav.farm/⚾">
+     <link rel="stylesheet" href="app.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <style>    #loading_animation {
+      position: fixed; /* cover whole page */
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #fff; /* optional background */
+      z-index: 9999; /* keep on top */
+      transition: opacity 1s ease; /* fade duration */
+    }
+    #loading_animation.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #loading_animation iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    .show_all_players-container {
+      position: absolute;
+      top: 60px; /* same as header height */
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .show_all_players-container_iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    </style>
+  </head>
+  
+  <body>
+    <!-- start of animation -->
+    <div id="loading_animation" width="100%" height="100%" >
+
+
+      <iframe src="loading_animation.html" frameborder="0" width="100%" height="100%">
+      </iframe>
+        <script>
+      // Wait 1.5 second, then fade out
+      setTimeout(() => {
+        document.getElementById("loading_animation").classList.add("fade-out");
+      }, 1500);
+      </script>
+    </div>
+    <!-- end of animation --> 
+
+    <!-- start of header --> 
+    <div>
+      <iframe src="header.html" frameborder="0" width="100%" height="80px" style="border:none;">
+      </iframe>
+    </div>
+    <!-- end of header -->
+
+    <div class="show_all_players-container">
+        <iframe id=".show_all_players-container_iframe" src="all_players_render.html" frameborder="0"width="100%" height="100%"></iframe>
+    </div>
+
+  </body>
+</html>

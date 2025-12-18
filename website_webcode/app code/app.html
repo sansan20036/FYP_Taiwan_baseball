@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ProBall Analytics | 專業運動數據平台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+     <link rel="icon" href="https://fav.farm/⚾">
+     <link rel="stylesheet" href="app.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  </head>
+  <body class="theme-light baseball-theme">
+
+    
+    <div id="splash" class="splash" aria-label="啟動畫面" aria-live="polite">
+      <div class="splash__inner">
+        <div class="splash__logo">
+          <div class="splash__mark" aria-hidden="true">
+            <svg id="splashBall" width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="旋轉棒球">
+              <defs>
+                <radialGradient id="ballGrad" cx="35%" cy="30%" r="70%">
+                  <stop offset="0%" stop-color="#ffffff"/>
+                  <stop offset="100%" stop-color="#e5e7eb"/>
+                </radialGradient>
+              </defs>
+              <circle cx="60" cy="60" r="46" fill="url(#ballGrad)" stroke="#d1d5db" stroke-width="2"/>
+              <!-- seams -->
+              <path d="M24,60 C24,30 96,30 96,60" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+              <path d="M24,60 C24,90 96,90 96,60" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+              <!-- stitches -->
+              <g stroke="#ef4444" stroke-width="2" stroke-linecap="round">
+                <path d="M36,50 l6,-6"/>
+                <path d="M46,46 l6,-6"/>
+                <path d="M56,44 l6,-6"/>
+                <path d="M68,44 l6,-6"/>
+                <path d="M78,46 l6,-6"/>
+                <path d="M36,70 l6,6"/>
+                <path d="M46,74 l6,6"/>
+                <path d="M56,76 l6,6"/>
+                <path d="M68,76 l6,6"/>
+                <path d="M78,74 l6,6"/>
+              </g>
+            </svg>
+            <div class="splash__ring" aria-hidden="true"></div>
+          </div>
+          <div class="splash__badge" aria-label="PA 徽章">PA</div>
+          <span class="splash__brand">ProBall Analytics</span>
+        </div>
+        <div class="splash__glow"></div>
+      </div>
+    </div>
+    <div class="bg-canvas" aria-hidden="true"></div>
+    <div class="scroll-progress" aria-hidden="true"><span></span></div>
+
+    
+    <header class="navbar" role="banner">
+      <div class="navbar__inner container">
+        <a href="#" class="navbar__brand" aria-label="回到首頁">
+          <i class="ri-baseball-line"></i>
+          <span>ProBall Analytics</span>
+        </a>
+        <nav class="navbar__nav" role="navigation" aria-label="主選單">
+          <a class="nav__link is-active" href="#home">首頁</a>
+          <a class="nav__link" href="matches.html">賽事</a>
+          <a class="nav__link" href="players.html">球員</a>
+          <a class="nav__link" href="models.html">模型預測</a>
+          <a class="nav__link" href="personalize.html">個人化</a>
+        </nav>
+        <div class="navbar__tools">
+          <div class="search">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <input id="teamSearchInput" type="search" placeholder="搜尋球隊 / 球員" aria-label="搜尋球隊或球員" />
+            <div id="searchSuggest" class="suggest" hidden></div>
+          </div>
+          <button class="icon-btn" aria-label="通知">
+            <i class="ri-notification-3-line"></i>
+          </button>
+          <button id="themeToggleBtn" type="button" class="icon-btn theme-toggle" aria-label="切換主題" role="switch" aria-checked="false" data-theme-toggle>
+            <i class="ri-sun-line"></i>
+          </button>
+          <button class="avatar" aria-label="使用者選單">
+            <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=200&auto=format&fit=crop" alt="使用者頭像" />
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="home" class="main"> 
+      <section class="hero container" aria-labelledby="heroTitle">
+        <div class="section-header">
+          <h2 id="heroTitle"><i class="ri-baseball-line"></i> 今日焦點賽事</h2>
+          <div class="section-actions">
+            <button class="chip is-live"><i class="ri-radio-button-line"></i> Live</button>
+            <button class="chip"><i class="ri-time-line"></i> 即將開始</button>
+          </div>
+        </div>
+
+        <div class="match">
+          <article class="team-card home" aria-label="主隊資訊">
+            <img class="team-logo lazy" data-src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Baseball_%28crop%29.jpg" alt="主隊 Logo" />
+            <h3 class="team-name">Dragons</h3>
+            <p class="record">32 勝 - 18 負</p>
+            <div class="recent">
+              <span class="badge badge-win" title="上一場勝">W</span>
+              <span class="badge badge-loss" title="上一場負">L</span>
+              <span class="badge badge-win" title="上一場勝">W</span>
+              <span class="badge badge-win" title="上一場勝">W</span>
+              <span class="badge badge-loss" title="上一場負">L</span>
+            </div>
+            <div class="standing">分區排名 第 1</div>
+            <ul class="team-stats">
+              <li><span>AVG</span><strong>0.268</strong></li>
+              <li><span>HR</span><strong>112</strong></li>
+              <li><span>OPS</span><strong>.789</strong></li>
+            </ul>
+            <div class="key-players">
+              <img class="kp-avatar" src="https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=120&auto=format&fit=crop" alt="A. Chen" title="A. Chen" />
+              <img class="kp-avatar" src="https://images.unsplash.com/photo-1521417531039-94c1d5f8ddee?q=80&w=120&auto=format&fit=crop" alt="K. Lin" title="K. Lin" />
+              <img class="kp-avatar" src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?q=80&w=120&auto=format&fit=crop" alt="J. Wang" title="J. Wang" />
+            </div>
+            <div class="team-actions">
+              <button class="btn btn-outline" id="followDragons"><i class="ri-star-line"></i> 關注球隊</button>
+              <a class="btn" href="matches.html"><i class="ri-calendar-event-line"></i> 檢視賽程</a>
+            </div>
+          </article>
+
+          <div class="match-center" aria-label="賽事資訊">
+            <div class="match-meta">
+              <div class="time-place">
+                <i class="ri-calendar-event-line"></i>
+                <span id="matchTime">今晚 19:05</span>
+                <span class="divider">•</span>
+                <i class="ri-map-pin-2-line"></i>
+                <span>台北大巨蛋</span>
+              </div>
+              <div class="countdown" aria-live="polite">
+                <i class="ri-timer-flash-line"></i>
+                <span id="countdownText">比賽即將開始</span>
+              </div>
+            </div>
+
+            <div class="probability">
+              <canvas id="winProbChart" aria-label="預測勝率圖" role="img"></canvas>
+              <div class="probability__label">
+                <span class="home-label">Dragons</span>
+                <span class="vs">VS</span>
+                <span class="away-label">Tigers</span>
+              </div>
+            </div>
+
+            <div class="cta">
+              <button class="btn btn-accent" id="predictBtn"><i class="ri-rocket-2-line"></i> 開打預測</button>
+              <a class="btn btn-outline" href="#live" id="liveLink"><i class="ri-play-circle-line"></i> 直播連結</a>
+            </div>
+          </div>
+
+          <article class="team-card away" aria-label="客隊資訊">
+            <img class="team-logo lazy" data-src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Baseball_%28crop%29.jpg" alt="客隊 Logo" />
+            <h3 class="team-name">Tigers</h3>
+            <p class="record">29 勝 - 21 負</p>
+            <div class="recent">
+              <span class="badge badge-loss" title="上一場負">L</span>
+              <span class="badge badge-loss" title="上一場負">L</span>
+              <span class="badge badge-win" title="上一場勝">W</span>
+              <span class="badge badge-win" title="上一場勝">W</span>
+              <span class="badge badge-win" title="上一場勝">W</span>
+            </div>
+            <div class="standing">分區排名 第 2</div>
+            <ul class="team-stats">
+              <li><span>AVG</span><strong>0.254</strong></li>
+              <li><span>HR</span><strong>98</strong></li>
+              <li><span>OPS</span><strong>.761</strong></li>
+            </ul>
+            <div class="key-players">
+              <img class="kp-avatar" src="https://images.unsplash.com/photo-1532634732-8b9fb99825fb?q=80&w=120&auto=format&fit=crop" alt="R. Tanaka" title="R. Tanaka" />
+              <img class="kp-avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=120&auto=format&fit=crop" alt="M. Ito" title="M. Ito" />
+              <img class="kp-avatar" src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=120&auto=format&fit=crop" alt="K. Sato" title="K. Sato" />
+            </div>
+            <div class="team-actions">
+              <button class="btn btn-outline" id="followTigers"><i class="ri-star-line"></i> 關注球隊</button>
+              <a class="btn" href="matches.html"><i class="ri-calendar-event-line"></i> 檢視賽程</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="players" class="pitcher-vs container" aria-labelledby="pitcherTitle">
+        <div class="section-header">
+          <h2 id="pitcherTitle"><i class="ri-baseball-bat-line"></i> 先發投手對決</h2>
+        </div>
+        <div class="pitcher-grid">
+          <article class="player-card">
+            <div class="avatar-wrap">
+              <img class="player-avatar lazy" data-src="https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=300&auto=format&fit=crop" alt="主隊投手頭像" />
+              <img class="flag" src="https://flagcdn.com/w20/us.png" alt="國籍: US" />
+            </div>
+            <h3 class="player-name">A. Chen</h3>
+            <ul class="stats">
+              <li><span>ERA</span><strong>2.81</strong></li>
+              <li><span>WHIP</span><strong>0.98</strong></li>
+              <li><span>SO/9</span><strong>10.4</strong></li>
+            </ul>
+            <div class="pitches">
+              <span class="icon" data-tooltip="四縫線速球"><i class="ri-arrow-up-s-line"></i></span>
+              <span class="icon" data-tooltip="滑球"><i class="ri-swap-line"></i></span>
+              <span class="icon" data-tooltip="變速球"><i class="ri-speed-up-line"></i></span>
+            </div>
+          </article>
+
+          <div class="radar">
+            <canvas id="pitchRadarChart" aria-label="投球雷達圖" role="img"></canvas>
+          </div>
+
+          <article class="player-card">
+            <div class="avatar-wrap">
+              <img class="player-avatar lazy" data-src="https://images.unsplash.com/photo-1532634732-8b9fb99825fb?q=80&w=300&auto=format&fit=crop" alt="客隊投手頭像" />
+              <img class="flag" src="https://flagcdn.com/w20/jp.png" alt="國籍: JP" />
+            </div>
+            <h3 class="player-name">R. Tanaka</h3>
+            <ul class="stats">
+              <li><span>ERA</span><strong>3.12</strong></li>
+              <li><span>WHIP</span><strong>1.05</strong></li>
+              <li><span>SO/9</span><strong>9.1</strong></li>
+            </ul>
+            <div class="pitches">
+              <span class="icon" data-tooltip="伸卡球"><i class="ri-arrow-down-s-line"></i></span>
+              <span class="icon" data-tooltip="曲球"><i class="ri-loop-left-line"></i></span>
+              <span class="icon" data-tooltip="滑球"><i class="ri-swap-line"></i></span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="matches" class="team-compare container" aria-labelledby="teamCompareTitle">
+        <div class="section-header">
+          <h2 id="teamCompareTitle"><i class="ri-baseball-bat-line"></i> 關鍵數據比較</h2>
+        </div>
+        <div class="compare-grid">
+          <div class="compare-side">
+            <div class="compare-title"><i class="ri-shield-star-line"></i> Dragons</div>
+            <canvas id="teamLeftBar" aria-label="主隊關鍵數據" role="img"></canvas>
+          </div>
+          <div class="compare-side">
+            <div class="compare-title"><i class="ri-sword-line"></i> Tigers</div>
+            <canvas id="teamRightBar" aria-label="客隊關鍵數據" role="img"></canvas>
+          </div>
+        </div>
+        <ul class="compare-legend">
+          <li><i class="ri-baseball-bat-line"></i> 打擊率</li>
+          <li><i class="ri-fire-line"></i> 全壘打</li>
+          <li><i class="ri-group-line"></i> 上壘率</li>
+          <li><i class="ri-shield-check-line"></i> 守備率</li>
+        </ul>
+      </section>
+
+      <section id="models" class="prediction container" aria-labelledby="predictionTitle">
+        <div class="section-header">
+          <h2 id="predictionTitle"><i class="ri-baseball-line"></i> AI 模型預測</h2>
+        </div>
+        <div class="prediction-grid">
+          <div class="gauge">
+            <canvas id="modelGauge" aria-label="模型勝率圖" role="img"></canvas>
+            <div class="gauge-info">
+              <div class="confidence">信心水準：<strong id="confidenceText">高</strong></div>
+              <div class="source">參數來源：<button id="toggleParams" class="link">查看</button></div>
+            </div>
+          </div>
+          <div class="report">
+            <button id="toggleReport" class="btn btn-accent"><i class="ri-file-chart-line"></i> 詳細預測報告</button>
+            <div id="reportPanel" class="report-panel" hidden>
+              <div class="report-grid">
+                <div class="report-card">
+                  <div class="label">可能比分</div>
+                  <div class="value">4 - 2</div>
+                </div>
+                <div class="report-card">
+                  <div class="label">關鍵勝負因素</div>
+                  <ul class="factors">
+                    <li><i class="ri-focus-2-line"></i> 先發投手壓制力</li>
+                    <li><i class="ri-arrow-up-circle-line"></i> 主隊最近打擊狀態提升</li>
+                    <li><i class="ri-windy-line"></i> 球場風向影響長打</li>
+                  </ul>
+                </div>
+              </div>
+              <p class="disclaimer">本預測僅供參考，實際賽事仍具變數。</p>
+            </div>
+
+            <div id="paramsPanel" class="params-panel" hidden>
+              <h3>模型參數</h3>
+              <ul>
+                <li>近期 10 場表現權重：0.35</li>
+                <li>投手對位指標權重：0.30</li>
+                <li>球場因子權重：0.15</li>
+                <li>防守效率權重：0.10</li>
+                <li>旅途與休息因子：0.10</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="h2h container" aria-labelledby="h2hTitle">
+        <div class="section-header">
+          <h2 id="h2hTitle"><i class="ri-baseball-line"></i> 歷史對戰回顧</h2>
+        </div>
+        <div class="timeline" role="list">
+          <article class="game-card" role="listitem">
+            <header class="game-header">
+              <div class="date"><i class="ri-calendar-2-line"></i> 2025-07-21</div>
+              <div class="score"><strong>DRG 5</strong> : <strong>4 TIG</strong></div>
+            </header>
+            <div class="game-body">
+              <div class="tags">
+                <span class="tag"><i class="ri-user-voice-line"></i> MVP: A. Chen</span>
+                <span class="tag"><i class="ri-shield-line"></i> 先發: L. Wang vs R. Tanaka</span>
+              </div>
+              <button class="link toggle-more" aria-expanded="false">展開更多</button>
+              <div class="more" hidden>
+                <ul>
+                  <li>關鍵一擊：8 局下二壘安打</li>
+                  <li>救援成功：K. Lin</li>
+                  <li>觀眾：28,321</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+
+          <article class="game-card" role="listitem">
+            <header class="game-header">
+              <div class="date"><i class="ri-calendar-2-line"></i> 2025-06-02</div>
+              <div class="score"><strong>DRG 2</strong> : <strong>3 TIG</strong></div>
+            </header>
+            <div class="game-body">
+              <div class="tags">
+                <span class="tag"><i class="ri-user-voice-line"></i> MVP: R. Tanaka</span>
+                <span class="tag"><i class="ri-shield-line"></i> 先發: Z. Wu vs K. Sato</span>
+              </div>
+              <button class="link toggle-more" aria-expanded="false">展開更多</button>
+              <div class="more" hidden>
+                <ul>
+                  <li>再見安打：9 局上</li>
+                  <li>救援成功：M. Ito</li>
+                  <li>觀眾：25,004</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+
+          <article class="game-card" role="listitem">
+            <header class="game-header">
+              <div class="date"><i class="ri-calendar-2-line"></i> 2025-05-12</div>
+              <div class="score"><strong>DRG 7</strong> : <strong>1 TIG</strong></div>
+            </header>
+            <div class="game-body">
+              <div class="tags">
+                <span class="tag"><i class="ri-user-voice-line"></i> MVP: J. Wang</span>
+                <span class="tag"><i class="ri-shield-line"></i> 先發: A. Chen vs K. Sato</span>
+              </div>
+              <button class="link toggle-more" aria-expanded="false">展開更多</button>
+              <div class="more" hidden>
+                <ul>
+                  <li>全壘打：3 支</li>
+                  <li>保送/三振比：5/10</li>
+                  <li>觀眾：31,902</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <div class="container footer__inner">
+        <div class="footer__brand">
+          <i class="ri-baseball-line"></i>
+          <span>ProBall Analytics</span>
+        </div>
+        <nav class="footer__nav" aria-label="頁尾連結">
+          <a href="#contact">聯絡我們</a>
+          <a href="#terms">使用條款</a>
+          <a href="#privacy">隱私政策</a>
+          <a href="#api">API 申請</a>
+          <a href="#social">社群連結</a>
+        </nav>
+        <div class="footer__copy">© <span id="year"></span> ProBall Analytics</div>
+      </div>
+    </footer>
+
+    <button id="scrollTopBtn" class="fab" aria-label="回到頂端" hidden>
+      <i class="ri-arrow-up-line"></i>
+    </button>
+
+    <!-- Chatbot Floating Button -->
+    <button id="chatFab" class="fab chat-fab" aria-label="開啟 AI 助理">
+      <i class="ri-robot-2-line"></i>
+    </button>
+
+    <!-- AI Chatbot Panel -->
+    <section id="chatbot" class="chatbot" aria-label="AI 聊天助理" hidden>
+      <header class="chat-header">
+        <div class="chat-title"><i class="ri-robot-2-line"></i> ProBall AI 助理</div>
+        <div class="chat-actions">
+          <button id="chatClose" class="icon-btn" aria-label="清除對話" data-tooltip="清除對話"><i class="ri-close-line"></i></button>
+        </div>
+      </header>
+      <div id="chatBody" class="chat-body" role="log" aria-live="polite"></div>
+      <div class="chat-input">
+        <input id="chatText" type="text" placeholder="輸入訊息，例如：今天有哪些賽事？" aria-label="輸入訊息" />
+        <button id="chatSend" class="btn btn-accent" aria-label="送出"><i class="ri-send-plane-2-line"></i></button>
+      </div>
+    </section>
+
+
+
+    <div id="themeToast" class="toast" aria-live="polite" hidden></div>
+    <div id="homeToast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

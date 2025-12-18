@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>模型預測 | ProBall Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" href="https://fav.farm/⚾">
+    <link rel="stylesheet" href="models.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  </head>
+  <body class="theme-light baseball-theme">
+    <header class="navbar" role="banner">
+      <div class="navbar__inner container">
+        <a href="app.html" class="navbar__brand" aria-label="回到首頁"><i class="ri-baseball-line"></i><span>ProBall Analytics</span></a>
+        <nav class="navbar__nav" aria-label="主選單">
+          <a class="nav__link" href="app.html">首頁</a>
+          <a class="nav__link" href="matches.html">賽事</a>
+          <a class="nav__link" href="players.html">球員</a>
+          <a class="nav__link is-active" href="models.html">模型預測</a>
+        </nav>
+        <div class="navbar__tools">
+          <div class="search">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <input id="modelSearch" type="search" placeholder="搜尋比賽 / 球隊 / 球員" />
+          </div>
+          <button class="btn btn-outline" id="themeToggle" aria-label="切換主題" aria-pressed="false" title="切換主題"><i class="ri-moon-line"></i></button>
+          <a class="avatar" aria-label="使用者">
+            <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=200&auto=format&fit=crop" alt="使用者頭像" />
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="bgfx" aria-hidden="true">
+        <div class="bgfx__gradient"></div>
+        <div class="bgfx__grid"></div>
+        <div class="bgfx__noise"></div>
+        <div class="bgfx__orbs">
+          <div class="orb orb-1"></div>
+          <div class="orb orb-2"></div>
+          <div class="orb orb-3"></div>
+        </div>
+      </div>
+      <!-- 比賽總覽卡片 -->
+      <section class="hero container" aria-labelledby="heroTitle">
+        <div class="hero-header">
+          <h1 id="heroTitle"><i class="ri-trophy-line"></i> 比賽總覽預測</h1>
+          <div class="hero-actions">
+            <select id="gameSelect" aria-label="選擇比賽"></select>
+            <div class="toggle">
+              <button class="toggle-btn is-active" data-mode="today">今日</button>
+              <button class="toggle-btn" data-mode="season">賽季</button>
+            </div>
+            <div class="toggle">
+              <button class="toggle-btn is-active" data-model="ens">Ensemble</button>
+              <button class="toggle-btn" data-model="xgb">XGBoost</button>
+              <button class="toggle-btn" data-model="nn">NN</button>
+            </div>
+            <button id="pinSummary" class="btn btn-outline"><i class="ri-pushpin-2-line"></i> 釘選到首頁</button>
+          </div>
+        </div>
+        <div class="chips" id="chips">
+          <button class="chip is-active" data-cat="overview"><i class="ri-dashboard-2-line"></i> 總覽</button>
+          <button class="chip" data-cat="pitching"><i class="ri-speed-up-line"></i> 投手</button>
+          <button class="chip" data-cat="batting"><i class="ri-baseball-bat-line"></i> 打擊</button>
+          <button class="chip" data-cat="trends"><i class="ri-line-chart-line"></i> 趨勢</button>
+        </div>
+        <div class="summary-grid">
+          <article class="summary-card win-card">
+            <div class="card-header">
+              <h3>勝率預測</h3>
+              <div class="accuracy-badge" title="模型準確度 87%">87%</div>
+            </div>
+            <div class="win-display">
+              <div class="win-percentage" id="winPercentage">62%</div>
+              <div class="win-label">主隊勝率</div>
+              <canvas id="winDonut"></canvas>
+            </div>
+            <div class="confidence">
+              <div class="confidence-label">信心水準</div>
+              <div class="confidence-bar">
+                <div class="confidence-fill" id="confidenceFill"></div>
+              </div>
+              <div class="confidence-text" id="confidenceText">高</div>
+              <div class="confidence-control" style="display:flex; align-items:center; gap:8px; margin-top:8px">
+                <i class="ri-mental-health-line" aria-hidden="true"></i>
+                <input type="range" id="confidenceSlider" min="40" max="95" value="87" aria-label="模型信心權重" />
+                <span id="confidenceValue">87%</span>
+              </div>
+            </div>
+          </article>
+          <article class="summary-card score-card">
+            <div class="card-header">
+              <h3>預測比分</h3>
+              <div class="confidence-interval" id="scoreInterval">±0.8</div>
+            </div>
+            <div class="match-teams">
+              <div class="team home">
+                <img class="team-logo" src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Baseball_%28crop%29.jpg" alt="主隊" />
+                <div class="team-name">Dragons</div>
+                <div class="predicted-score" id="homeScore">5.3</div>
+              </div>
+              <div class="vs-section">
+                <div class="vs-text">VS</div>
+                <div class="game-time">19:05</div>
+              </div>
+              <div class="team away">
+                <img class="team-logo" src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Baseball_%28crop%29.jpg" alt="客隊" />
+                <div class="team-name">Tigers</div>
+                <div class="predicted-score" id="awayScore">4.7</div>
+              </div>
+            </div>
+            <canvas id="scoreBars"></canvas>
+          </article>
+          <article class="summary-card mvp-card">
+            <div class="card-header">
+              <h3>MVP 候選</h3>
+              <div class="mvp-probability" id="mvpProbability">78%</div>
+            </div>
+            <div class="mvp-player">
+              <img class="mvp-avatar" src="https://images.unsplash.com/photo-1532634732-8b9fb99825fb?q=80&w=300&auto=format&fit=crop" alt="MVP 頭像" />
+              <div class="mvp-info">
+                <div class="mvp-name" id="mvpName">A. Chen</div>
+                <div class="mvp-position">投手 (RHP)</div>
+              </div>
+            </div>
+            <div class="mvp-stats">
+              <div class="stat-item">
+                <span class="stat-label">預測打擊率</span>
+                <div class="stat-bar">
+                  <div class="stat-fill" style="width: 85%"></div>
+                </div>
+                <span class="stat-value">0.321</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">預測安打數</span>
+                <div class="stat-bar">
+                  <div class="stat-fill" style="width: 70%"></div>
+                </div>
+                <span class="stat-value">3.2</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">投球局數</span>
+                <div class="stat-bar">
+                  <div class="stat-fill" style="width: 90%"></div>
+                </div>
+                <span class="stat-value">6.5</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- 比賽過程預測 -->
+      <section class="details container" aria-labelledby="detailTitle">
+        <h2 id="detailTitle"><i class="ri-line-chart-line"></i> 比賽過程預測</h2>
+        <div class="detail-grid">
+          <article class="panel">
+            <h3 class="panel-title">每局得分走勢</h3>
+            <canvas id="inningLine2"></canvas>
+            <div class="inning-highlights" id="inningHighlights">
+              <div class="highlight-item">
+                <span class="inning">第7局</span>
+                <span class="probability high">爆發機率 85%</span>
+              </div>
+              <div class="highlight-item">
+                <span class="inning">第3局</span>
+                <span class="probability medium">爆發機率 65%</span>
+              </div>
+            </div>
+          </article>
+          <article class="panel">
+            <h3 class="panel-title">投打對決關鍵數據</h3>
+            <div class="matchup-table" id="matchupTable">
+              <div class="matchup-header">
+                <span>投手</span>
+                <span>打者</span>
+                <span>預測安打率</span>
+                <span>HR機率</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel win-prob-panel">
+            <h3 class="panel-title">投手表現預測</h3>
+            <canvas id="pitcherRadar"></canvas>
+            <div class="pitcher-stats" id="pitcherStats"></div>
+          </article>
+
+          <article class="panel">
+            <h3 class="panel-title">打者表現預測</h3>
+            <canvas id="batterChart"></canvas>
+            <div class="batter-stats" id="batterStats"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- 互動模擬 -->
+      <section class="simulator container" aria-labelledby="simTitle">
+        <h2 id="simTitle"><i class="ri-gamepad-line"></i> 互動模擬</h2>
+        <div class="sim-grid">
+          <div class="sim-panel">
+            <h3 class="sim-title">陣容調整</h3>
+            <div class="lineup-controls">
+              <label>先發投手</label>
+              <select id="pitcherSelect">
+                <option value="chen">A. Chen (ERA 2.81)</option>
+                <option value="wang">L. Wang (ERA 3.12)</option>
+              </select>
+              <label>打序配置</label>
+              <select id="batterSelect">
+                <option value="lineup1">標準打序</option>
+                <option value="lineup2">強攻打序</option>
+              </select>
+              <button class="btn btn-accent" id="updateSim"><i class="ri-refresh-line"></i> 更新預測</button>
+            </div>
+          </div>
+          <div class="sim-panel">
+            <h3 class="sim-title">多比賽對比</h3>
+            <div class="comparison-controls">
+              <label>對比賽事</label>
+              <select id="compareMatch">
+                <option value="tig-drg">TIG vs DRG</option>
+                <option value="lio-mon">LIO vs MON</option>
+              </select>
+              <button class="btn btn-outline" id="compareBtn"><i class="ri-contrast-2-line"></i> 開始對比</button>
+            </div>
+            <div class="comparison-result" id="comparisonResult" hidden>
+              <div class="compare-item">
+                <span class="match-name">當前比賽</span>
+                <span class="win-prob">62%</span>
+              </div>
+              <div class="compare-item">
+                <span class="match-name">對比賽事</span>
+                <span class="win-prob">58%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 模型解釋 -->
+      <section class="explain container" aria-labelledby="expTitle">
+        <h2 id="expTitle"><i class="ri-magic-line"></i> 模型解釋</h2>
+        <div class="exp-grid">
+          <article class="panel">
+            <h3 class="panel-title">特徵貢獻（前 6 項）</h3>
+            <ul id="featList" class="feat-list"></ul>
+          </article>
+          <article class="panel">
+            <h3 class="panel-title">重要度條形圖</h3>
+            <canvas id="featBar"></canvas>
+          </article>
+        </div>
+        <div class="exp-actions" style="display:flex; gap:8px; margin-top:10px">
+          <button class="btn btn-outline" id="exportPng"><i class="ri-image-line"></i> 匯出圖表 PNG</button>
+          <button class="btn btn-outline" id="shareLink"><i class="ri-share-line"></i> 分享連結</button>
+        </div>
+      </section>
+
+      <!-- 為你推薦 -->
+      <section class="recommend container" aria-labelledby="recTitle">
+        <h2 id="recTitle"><i class="ri-lightbulb-line"></i> 為你推薦</h2>
+        <div class="rec-grid">
+          <article class="rec-card historical">
+            <div class="rec-header">
+              <h4>類似比賽歷史</h4>
+              <div class="accuracy-indicator">
+                <span class="accuracy-dot high"></span>
+                <span class="accuracy-text">準確度高</span>
+              </div>
+            </div>
+            <div class="historical-matches" id="historicalMatches"></div>
+          </article>
+          <article class="rec-card insights">
+            <div class="rec-header">
+              <h4>模型洞察</h4>
+              <div class="accuracy-indicator">
+                <span class="accuracy-dot medium"></span>
+                <span class="accuracy-text">中等信心</span>
+              </div>
+            </div>
+            <div class="insights-list" id="insightsList"></div>
+          </article>
+          <article class="rec-card trends">
+            <div class="rec-header">
+              <h4>趨勢分析</h4>
+              <div class="accuracy-indicator">
+                <span class="accuracy-dot high"></span>
+                <span class="accuracy-text">趨勢明顯</span>
+              </div>
+            </div>
+            <canvas id="trendChart"></canvas>
+          </article>
+        </div>
+      </section>
+
+      <!-- 移除原有的詳細預測與其他區塊，簡化結構 -->
+      <section class="process container" aria-labelledby="processTitle">
+        <h2 id="processTitle"><i class="ri-line-chart-line"></i> 比賽過程預測</h2>
+        <div class="process-grid">
+          <article class="panel">
+            <h3 class="panel-title">每局得分走勢</h3>
+            <canvas id="inningLine2"></canvas>
+            <div class="inning-highlights" id="inningHighlights">
+              <div class="highlight-item">
+                <span class="inning">第7局</span>
+                <span class="probability high">爆發機率 85%</span>
+              </div>
+              <div class="highlight-item">
+                <span class="inning">第3局</span>
+                <span class="probability medium">爆發機率 65%</span>
+              </div>
+            </div>
+          </article>
+          <article class="panel">
+            <h3 class="panel-title">投打對決數據</h3>
+            <canvas id="winProbLine"></canvas>
+            <div class="prob-legend">
+              <span class="legend-item home">主隊勝率</span>
+              <span class="legend-item away">客隊勝率</span>
+            </div>
+          </article>
+
+          <article class="panel">
+            <h3 class="panel-title">投手表現預測</h3>
+            <canvas id="pitcherChart2"></canvas>
+            <div class="performance-summary">
+              <div class="perf-item">
+                <span class="perf-label">三振率</span>
+                <span class="perf-value">27%</span>
+              </div>
+              <div class="perf-item">
+                <span class="perf-label">控球穩定</span>
+                <span class="perf-value">82</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <h3 class="panel-title">打者表現預測</h3>
+            <canvas id="batterChart2"></canvas>
+            <div class="performance-summary">
+              <div class="perf-item">
+                <span class="perf-label">團隊打擊率</span>
+                <span class="perf-value">.285</span>
+              </div>
+              <div class="perf-item">
+                <span class="perf-label">長打機率</span>
+                <span class="perf-value">23%</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <div class="container footer__inner">
+        <div class="footer__copy">
+          模型來源：ProBall ML Suite · 更新時間：<span id="modelUpdated"></span>
+          <div class="disclaimer">本預測僅供參考，不代表最終比賽結果。</div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="models.js"></script>
+  </body>
+</html> 

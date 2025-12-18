@@ -1,0 +1,114 @@
+:root{ --intl-navy:#0b1b3a; --intl-blue:#123c78; --intl-red:#e63946; --intl-gold:#f0b429; --intl-white:#ffffff; --text:#ecf2ff; --text-dim:#c7d2fe; --card:#0e2247; --card-2:#112a58; --border:rgba(255,255,255,.12) }
+body.intl{ background:
+  radial-gradient(1200px 600px at 80% -10%, rgba(240,180,41,.12), transparent 60%),
+  radial-gradient(900px 500px at 10% 10%, rgba(230,57,70,.12), transparent 60%),
+  url('https://hips.hearstapps.com/hmg-prod/images/468398379-17858047293302027-9143348602238552196-n-67a478d6ed1b7.jpg?crop=1xw:1xh;center,top&resize=980:*') center/cover fixed;
+  color:var(--text);
+  font-family:'Inter','Noto Sans TC',system-ui,-apple-system,Segoe UI,Roboto,sans-serif }
+
+.container{ width:min(1200px,92%); margin:0 auto }
+
+.navbar{ position:sticky; top:0; z-index:20; background:rgba(11,27,58,.7); backdrop-filter:saturate(160%) blur(10px); border-bottom:1px solid var(--border) }
+.navbar__inner{ height:64px; display:flex; align-items:center; gap:16px }
+.navbar__brand{ display:flex; align-items:center; gap:8px; color:var(--intl-white); text-decoration:none; font-weight:700 }
+.navbar__brand i{ color:var(--intl-gold) }
+.navbar__nav{ display:flex; gap:10px; margin-left:8px }
+.navbar__nav .nav__link{ color:var(--text-dim); text-decoration:none; padding:8px 12px; border-radius:999px }
+.navbar__nav .nav__link.is-active, .navbar__nav .nav__link:hover{ background:linear-gradient(135deg, rgba(18,60,120,.6), rgba(230,57,70,.6)); color:#fff }
+.navbar__tools{ margin-left:auto; display:flex; align-items:center; gap:10px }
+.lang-switch{ display:flex; background:rgba(255,255,255,.06); border:1px solid var(--border); border-radius:999px; overflow:hidden }
+.lang-switch button{ background:transparent; color:#fff; border:0; padding:6px 10px; cursor:pointer }
+.lang-switch button.is-active{ background:var(--intl-red) }
+
+.btn{ background:rgba(255,255,255,.08); color:#fff; border:1px solid var(--border); padding:8px 12px; border-radius:10px; cursor:pointer; text-decoration:none }
+.btn-primary{ background:linear-gradient(135deg,var(--intl-blue),#1960c5) }
+.btn-accent{ background:linear-gradient(135deg,var(--intl-red),#ff5a6a) }
+
+.hero{ position:relative; padding:48px 0; background:
+  radial-gradient(1000px 300px at 50% -20%, rgba(255,255,255,.15), transparent 60%),
+  linear-gradient(180deg, rgba(0,0,0,.2), rgba(0,0,0,.0));
+  border-bottom:1px solid var(--border) }
+.hero__inner{ display:grid; grid-template-columns:1fr auto; align-items:center; gap:20px }
+.hero__flags{ display:flex; align-items:center; gap:16px; font-weight:700; font-size:26px }
+.hero__flags .flag{ background:var(--card); padding:10px 14px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.25) }
+.hero__flags .vs{ padding:0 8px; color:var(--intl-gold) }
+.hero__meta{ display:flex; align-items:center; gap:20px }
+.time-place{ display:flex; align-items:center; gap:8px; font-weight:600 }
+.hero__actions{ display:flex; gap:10px }
+
+.scoreboard .board{ background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden }
+.board__header,.board__row{ display:grid; grid-template-columns:120px repeat(9, 1fr) 60px; align-items:center }
+.board__header{ background:linear-gradient(90deg, rgba(18,60,120,.9), rgba(18,60,120,.5)); padding:10px 12px; font-weight:700 }
+.board__row{ padding:10px 12px; border-top:1px solid var(--border) }
+.board__row.home .team{ color:#7fb3ff }
+.board__row.away .team{ color:#ff9db1 }
+.board__row .total{ font-weight:700; color:var(--intl-gold) }
+
+.section__head{ display:flex; align-items:center; justify-content:space-between; margin:26px 0 14px }
+.section__head h2{ display:flex; align-items:center; gap:8px }
+
+.upcoming__grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:14px }
+.upcoming__grid .card{ background:var(--card-2); border:1px solid var(--border); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:8px; transition:transform .2s ease, box-shadow .2s ease }
+.upcoming__grid .card:hover{ transform:translateY(-4px); box-shadow:0 14px 40px rgba(0,0,0,.35) }
+.card .meta{ display:flex; align-items:center; gap:8px; color:var(--text-dim) }
+.card .hot{ margin-left:auto; color:#ffb4c1 }
+
+.rank-table{ width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden }
+.rank-table tr{ border-bottom:1px solid var(--border) }
+.rank-table th,.rank-table td{ padding:12px 14px; text-align:left }
+.rank-table th{ background:rgba(18,60,120,.65); font-weight:700 }
+.rank-flag{ font-size:18px; margin-right:8px }
+
+.highlight__grid{ display:grid; grid-template-columns:2fr 1.6fr 1.8fr; gap:14px }
+.card{ background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden }
+.card__head{ padding:12px 14px; border-bottom:1px solid var(--border); background:linear-gradient(90deg, rgba(240,180,41,.16), transparent); font-weight:700 }
+.card__body{ padding:14px }
+
+.video-item{ display:flex; gap:10px; padding:10px; border:1px solid var(--border); border-radius:12px; margin-bottom:10px; background:var(--card-2) }
+.video-thumb{ width:120px; height:68px; border-radius:8px; object-fit:cover }
+
+.vote{ padding:14px }
+.vote__options{ display:grid; gap:8px }
+.vote__options button{ display:flex; align-items:center; justify-content:space-between; background:var(--card-2); border:1px solid var(--border); color:#fff; padding:10px 12px; border-radius:10px; cursor:pointer }
+.vote__result{ margin-top:8px; height:10px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden }
+.vote__bar{ height:100%; background:linear-gradient(90deg, var(--intl-gold), #ffd875) }
+
+.comments{ padding:0 14px 14px }
+.comments__list{ max-height:220px; overflow:auto; display:grid; gap:8px; padding:8px; border:1px solid var(--border); border-radius:12px; background:var(--card-2) }
+.comments__input{ display:flex; gap:8px; margin-top:8px }
+.comments__input input{ flex:1; background:rgba(255,255,255,.08); border:1px solid var(--border); color:#fff; padding:10px 12px; border-radius:10px }
+
+.rec__grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:10px; padding:14px }
+.rec-card{ background:var(--card-2); border:1px solid var(--border); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px }
+.rec-head{ display:flex; align-items:center; gap:8px; font-weight:700 }
+.rec-win{ font-weight:800; font-size:22px; color:#fff }
+.rec-chart{ height:120px }
+.rec-reason{ color:var(--text-dim) }
+
+.partners{ display:flex; gap:16px; align-items:center; justify-content:center; padding:18px 0; opacity:.9 }
+.footer{ border-top:1px solid var(--border); margin-top:26px }
+.footer-bottom{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 0; color:var(--text-dim) }
+.footer-bottom .links{ display:flex; gap:12px }
+
+.controls{ display:flex; gap:10px; align-items:center; margin-bottom:12px }
+.control-group{ position:relative; display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.08); border:1px solid var(--border); border-radius:12px; padding:8px 10px }
+.control-group input{ background:transparent; border:0; outline:0; color:#fff; width:220px }
+.controls select{ background:rgba(255,255,255,.08); border:1px solid var(--border); color:#fff; padding:8px 10px; border-radius:10px }
+
+.toast{ position:fixed; right:16px; bottom:16px; background:rgba(0,0,0,.8); color:#fff; padding:12px 14px; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,.3); z-index:50; transform:translateY(20px); opacity:0; transition:all .25s ease }
+.toast.show{ transform:translateY(0); opacity:1 }
+
+/* 卡片 tilt 效果（微視差） */
+.upcoming__grid .card{ perspective:600px }
+.tilt{ transform-style:preserve-3d }
+.tilt:hover{ transform:rotateX(6deg) rotateY(-6deg) translateY(-4px) }
+
+/* Ripple */
+.btn{ position:relative; overflow:hidden }
+.btn::after{ content:""; position:absolute; inset:0; border-radius:inherit; transform:scale(0); background:rgba(255,255,255,.25); opacity:0; transition:transform .35s ease, opacity .5s ease }
+.btn.ripple::after{ transform:scale(1); opacity:1 }
+
+@media (max-width: 960px){
+  .highlight__grid{ grid-template-columns:1fr }
+  .hero__inner{ grid-template-columns:1fr; gap:10px }
+} 

@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>球員資料 | ProBall Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" href="https://fav.farm/⚾">
+    <link rel="stylesheet" href="show_player_profile.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script>
+        // Get query parameters
+        const params = new URLSearchParams(window.location.search);
+        const value = params.get("value");
+
+        console.log("Received variable:", value);
+
+        // Example: show it in the page
+        document.body.innerHTML += `<p>Received: ${value}</p>`;
+    </script>
+  </head>
+  <body class="theme-light">
+    <header class="navbar" role="banner">
+      <div class="navbar__inner container">
+        <a href="index.html" class="navbar__brand" aria-label="回到首頁">
+          <i class="ri-baseball-line"></i>
+          <span>ProBall Analytics</span>
+        </a>
+        <nav class="navbar__nav" role="navigation" aria-label="主選單">
+          <a class="nav__link" href="index.html">首頁</a>
+          <a class="nav__link" href="matches.html">賽事</a>
+          <a class="nav__link" href="team.html">球隊</a>
+          <a class="nav__link is-active" href="players.html">球員</a>
+        </nav>
+        <div class="navbar__tools">
+          <div class="search">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <input id="playerSearchInput" type="search" placeholder="搜尋球員 / 球隊" aria-label="搜尋球員或球隊" />
+          </div>
+          <div class="user-menu">
+            <button class="avatar" aria-label="使用者選單" id="userMenuBtn">
+              <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=200&auto=format&fit=crop" alt="使用者頭像" />
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+            <div class="dropdown-menu" id="userDropdown" hidden>
+              <a href="#profile" class="dropdown-item"><i class="ri-user-line"></i> 個人資料</a>
+              <a href="#settings" class="dropdown-item"><i class="ri-settings-3-line"></i> 設定</a>
+              <div class="dropdown-divider"></div>
+              <a href="#logout" class="dropdown-item"><i class="ri-logout-box-r-line"></i> 登出</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- Hero: 球員資訊大頭區 -->
+      <section class="player-hero">
+        <div class="player-hero__bg" aria-hidden="true"></div>
+        <div class="player-hero__inner container">
+          <div class="player-hero__left">
+            <div class="portrait-card">
+              <img id="playerPortrait" src="https://media.istockphoto.com/id/473559846/zh/%E7%85%A7%E7%89%87/baseball-player-in-stadium.jpg?s=612x612&w=0&k=20&c=Ydjmuoq6LWi3qDsLImCA8m6DcsSJLtNyIbsek86q2ao=" alt="棒球照片" />
+            </div>
+          </div>
+          <div class="player-hero__right">
+            <div class="player-header">
+
+
+            <!-- name -->
+              <h1 id="playerName">Sho Tanaka</h1>
+                <script>
+                    // Read variable from query string
+                    const player_names = new URLSearchParams(window.location.search);
+                    const playerName = player_names.get("player_name");
+
+                    // Replace text in the page
+                    if (playerName) {
+                    document.getElementById("playerName").textContent = playerName;
+                    }
+                </script>
+
+                <!-- player data -->
+              <div class="player-meta">
+                <span class="number">#<span id="playerNumber">27</span></span>
+                <!-- <script>
+                    // Example: set player number dynamically
+                    document.getElementById("playerNumber").textContent = "27"; // Replace with actual data
+                </script> -->
+                <img id="teamLogo" class="team-logo" src="https://static.vecteezy.com/system/resources/previews/024/228/025/original/slashed-zero-icon-symbol-in-mathematics-null-set-empty-set-illustration-free-vector.jpg" alt="球隊 Logo" />
+                <span class="team-name" id="teamName">Tigers</span>
+              </div>
+              <div class="player-position" id="playerPosition"><i class="ri-user-star-line"></i> 投手（RHP）</div>
+              <ul class="player-basics">
+                <li><i class="ri-user-3-line"></i> 生日：<strong id="birthday">28</strong></li>
+                <li><i class="ri-ruler-line"></i> 身高 / 體重：<strong id="playerHeight">185 cm</strong> / <strong id="playerWeight">85 kg</strong></li>
+                <li><i class="ri-flag-line"></i> 國籍：<strong id="playerNation">JP</strong></li>
+              </ul>
+              <div class="hero-cta">
+                <button id="versusPlayerBtn" class="btn btn-blue">
+                  <i class="ri-user-line"></i> 對戰球員
+                </button>
+
+                <script>
+                  // Get current player from the page URL (?player_name=xxx)
+                  const versus_params = new URLSearchParams(window.location.search);
+                  const versus_playerName = versus_params.get("player_name");
+
+                  const versusBtn = document.getElementById("versusPlayerBtn");
+
+                  versusBtn.addEventListener('click', () => {
+                    if (!versus_playerName) {
+                      alert("無法取得目前球員名稱！");
+                      return;
+                    }
+                    // Open player comparison page with current player name
+                    window.location.href = `player_compare.html?player=${encodeURIComponent(playerName)}`;
+                  });
+                </script>
+
+                <button id="favoritePlayerBtn" class="btn btn-outline"><i class="ri-star-line"></i> 收藏球員</button>
+                <button id="viewStatsBtn" class="btn btn-accent"><i class="ri-bar-chart-2-line"></i> 查看數據</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Overview -->
+      <section class="stats-overview container">
+        <div class="stats-grid" id="statsGrid">
+          <!-- 動態卡片由 JS 產生 -->
+        </div>
+      </section>
+
+      <!-- Performance Details -->
+      <section class="performance container">
+        <div class="chart-modes" role="tablist" aria-label="圖表模式切換">
+          <button class="mode-btn active" data-mode="season" aria-pressed="true">賽季</button>
+        </div>
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="season"><i class="ri-calendar-event-line"></i> 賽季數據</button>
+          <button class="tab-btn" data-tab="games"><i class="ri-list-ordered"></i> 比賽逐場</button>
+          <button class="tab-btn" data-tab="career"><i class="ri-trophy-line"></i> 生涯數據</button>
+        </div>
+        <div class="tab-panels">
+          <div id="tab-season" class="tab-panel active">
+            <div class="panel-grid">
+              <div class="panel-card">
+                <h3 class="panel-title">賽季數據總覽</h3>
+                <table class="data-table" aria-label="賽季數據">
+                  <thead>
+                    <tr>
+                      <th>賽季</th>
+                      <th>AVG</th>
+                      <th>HR</th>
+                      <th>RBI</th>
+                      <th>OBP</th>
+                      <th>ERA</th>
+                      <th>K</th>
+                      <th>W</th>
+                    </tr>
+                  </thead>
+                  <tbody id="seasonTableBody"></tbody>
+                </table>
+              </div>
+              <div class="panel-card">
+                <h3 class="panel-title">賽季表現趨勢</h3>
+                <canvas id="seasonChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+
+          <div id="tab-games" class="tab-panel">
+            <div class="panel-toolbar">
+              <label>
+                <span>月份：</span>
+                <select id="monthSelect" aria-label="選擇月份">
+                  <option value="all">全部</option>
+                  <option value="4">4月</option>
+                  <option value="5">5月</option>
+                  <option value="6">6月</option>
+                  <option value="7">7月</option>
+                </select>
+              </label>
+            </div>
+            <div class="panel-grid">
+              <div class="panel-card">
+                <h3 class="panel-title">逐場數據列表</h3>
+                <div id="gamesList" class="games-list" role="list"></div>
+              </div>
+              <div class="panel-card">
+                <h3 class="panel-title">逐場表現圖</h3>
+                <canvas id="gamesChart"></canvas>
+              </div>
+              <div class="panel-card" style="grid-column: 1 / -1;">
+                <h3 class="panel-title">當月快速統計</h3>
+                <div id="gamesQuickStats" class="mini-stats"></div>
+              </div>
+              <div class="panel-card" style="grid-column: 1 / -1;">
+                <h3 class="panel-title">單場明細表</h3>
+                <table class="data-table" aria-label="單場明細">
+                  <thead>
+                    <tr>
+                      <th>日期</th>
+                      <th>對手</th>
+                      <th>主/客</th>
+                      <th>勝負</th>
+                      <th>HR</th>
+                      <th>RBI</th>
+                      <th>IP</th>
+                      <th>K</th>
+                    </tr>
+                  </thead>
+                  <tbody id="gamesTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div id="tab-career" class="tab-panel">
+            <div class="panel-grid">
+              <div class="panel-card">
+                <h3 class="panel-title">生涯數據比較</h3>
+                <canvas id="careerChart"></canvas>
+              </div>
+              <div class="panel-card">
+                <h3 class="panel-title">生涯總覽</h3>
+                <div id="careerTotals" class="totals-grid"></div>
+              </div>
+              <div class="panel-card">
+                <h3 class="panel-title">重點成就</h3>
+                <ul class="achievements" id="achievements"></ul>
+              </div>
+              <div class="panel-card" style="grid-column: 1 / -1;">
+                <h3 class="panel-title">里程碑進度</h3>
+                <div id="milestones" class="milestones"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+            <!-- new interactive chart here -->
+              <div class="panel-card" id="customTrendCard" style="grid-column: 1 / -1;">
+                <h3 class="panel-title">互動式比對圖表</h3>
+                <div class="custom-trend">
+                  <div class="trend-controls" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+                    <label style="display:flex;flex-direction:column;font-weight:600;gap:4px;">
+                      参数 1 
+                      <select id="trendMetricA" style="min-width:140px;padding:8px 10px;border:1px solid rgba(41,56,128,0.18);border-radius:8px;background:#f7f8ff;"></select>
+                    </label>
+                    <label style="display:flex;flex-direction:column;font-weight:600;gap:4px;">
+                      参数 2
+                      <select id="trendMetricB" style="min-width:140px;padding:8px 10px;border:1px solid rgba(41,56,128,0.18);border-radius:8px;background:#f7f8ff;"></select>
+                    </label>
+                    <label style="display:flex;flex-direction:column;font-weight:600;gap:4px;">
+                      展現方式
+                      <select id="trendChartType" style="min-width:140px;padding:8px 10px;border:1px solid rgba(41,56,128,0.18);border-radius:8px;background:#f7f8ff;">
+                        <option value="line">綫條</option>
+                        <option value="bar">条形</option>
+                      </select>
+                    </label>
+                    <button id="applyTrendBtn" class="btn btn-accent" type="button" style="white-space:nowrap;"><i class="ri-refresh-line"></i> 更新</button>
+                  </div>
+                  <div class="trend-chart" style="min-height:220px;">
+                    <canvas id="customTrendChart" height="220"></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <!-- interactive chart ends here -->
+
+              <script src="show_player_profile_interactive_chart.js">
+                  //script in different file
+                </script>
+
+
+      </section>
+
+
+      
+
+      <!-- Career & Highlights -->
+      <section class="career container">
+        <h2 class="section-title"><i class="ri-road-map-line"></i> 生涯沿革與亮點</h2>
+        <div class="timeline" id="careerTimeline" role="list"></div>
+        <div class="videos">
+          <article class="video-card" role="listitem">
+            <div class="thumb"><i class="ri-play-circle-line"></i></div>
+            <div class="video-info">
+              <h4>全壘打集錦</h4>
+              <p>經典長打瞬間回顧</p>
+            </div>
+          </article>
+          <article class="video-card" role="listitem">
+            <div class="thumb"><i class="ri-play-circle-line"></i></div>
+            <div class="video-info">
+              <h4>經典比賽回顧</h4>
+              <p>巔峰之戰高光時刻</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- News & Social -->
+      <section class="news-social container">
+        <div class="news-section">
+          <h2 class="section-title"><i class="ri-newspaper-line"></i> 相關新聞</h2>
+          <div class="news-grid" id="playerNews"></div>
+        </div>
+        <div class="social-section">
+          <h2 class="section-title"><i class="ri-share-line"></i> 社群連結</h2>
+          <div class="social-links" id="socialLinks"></div>
+          <div class="discussion">
+            <h3 class="panel-title"><i class="ri-chat-3-line"></i> 熱門討論</h3>
+            <div class="comments" id="comments"></div>
+            <div class="comment-input">
+              <input id="commentText" type="text" placeholder="發表你的看法..." maxlength="200" />
+              <button id="sendComment" class="btn btn-accent"><i class="ri-send-plane-line"></i> 發送</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+    </main>
+
+    <!-- 統計詳情模態窗 -->
+    <div id="statModal" class="modal" hidden>
+      <div class="modal-overlay" id="statModalOverlay"></div>
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3 id="statModalTitle" style="margin:0;">詳細統計</h3>
+          <div class="modal-actions">
+            <button class="modal-close" id="statModalClose" aria-label="關閉"><i class="ri-close-line"></i></button>
+          </div>
+        </div>
+        <div class="modal-body">
+          <div class="modal-toolbar chart-modes" style="padding:12px 16px; border-bottom:1px solid var(--border-light);">
+            <button class="mode-btn active" data-mode="season">賽季</button>
+            <button class="mode-btn" data-mode="career">生涯</button>
+            <button class="mode-btn" data-mode="games">單場</button>
+          </div>
+          <div style="padding:16px;">
+            <canvas id="statModalChart" height="280"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div>
+      <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" hidden>
+        <div class="toast-body" id="toastMessage">hello, world</div>
+    </div>
+    
+<iframe src="news.html"
+        frameborder="0"
+        style="width:100%; height:100vh; border:none; display:block;"></iframe>
+
+
+
+
+    <footer class="footer" role="contentinfo">
+      <div class="container footer-content">
+        <div class="footer-section">
+          <div class="footer-brand">
+            <i class="ri-baseball-line"></i>
+            <span>ProBall Analytics</span>
+          </div>
+          <p class="footer-description">專業的棒球賽事數據分析平台，提供即時賽事資訊、深度分析與 AI 預測服務。</p>
+          <div class="social-links">
+            <a href="#facebook" aria-label="Facebook" class="social-link"><i class="ri-facebook-fill"></i></a>
+            <a href="#twitter" aria-label="Twitter" class="social-link"><i class="ri-twitter-fill"></i></a>
+            <a href="#instagram" aria-label="Instagram" class="social-link"><i class="ri-instagram-fill"></i></a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h4>平台服務</h4>
+          <ul class="footer-links">
+            <li><a href="app.html#features">功能特色</a></li>
+            <li><a href="matches.html">賽事頁面</a></li>
+            <li><a href="#api">API 服務</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>支援服務</h4>
+          <ul class="footer-links">
+            <li><a href="#help">幫助中心</a></li>
+            <li><a href="#contact">聯絡客服</a></li>
+            <li><a href="#faq">常見問題</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="container footer-bottom">
+        <div class="footer-info">
+          <p>© <span id="currentYear"></span> ProBall Analytics. 保留所有權利。</p>
+          <p>台灣台北市</p>
+        </div>
+      </div>
+    </footer>
+
+
+
+
+    
+
+
+
+
+    <script src="show_player_profile.js"></script>
+  </body>
+
+<!-- ProBall Chatbot (auto-inject widget) -->
+<script src="chatbot.js"></script>
+</html> 

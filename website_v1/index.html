@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ProBall Analytics | 專業運動數據平台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+     <link rel="icon" href="https://fav.farm/⚾">
+     <link rel="stylesheet" href="app.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <style>
+          :root {
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: #f3f4f8;
+      color: #1f2230;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    header.topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 20px clamp(16px, 5vw, 48px) 0;
+    }
+
+    .topbar__title h1 {
+      margin: 0;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+    }
+
+    .topbar__title p {
+      margin: 4px 0 0;
+      color: #5d647c;
+      font-size: 0.95rem;
+    }
+
+    .topbar__controls {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button#refresh {
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: 1px solid #2664f5;
+      background: linear-gradient(135deg, #336ef6, #5792ff);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button#refresh:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(45, 112, 255, 0.25);
+    }
+
+    button#refresh:disabled {
+      opacity: 0.6;
+      cursor: progress;
+      box-shadow: none;
+    }
+
+    .topbar__status {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 200px;
+      font-size: 0.9rem;
+      color: #4b5065;
+    }
+
+    main {
+      padding: 0 clamp(16px, 5vw, 48px) 48px;
+      display: grid;
+      gap: 24px;
+    }
+
+    section.panel {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid rgba(22, 30, 64, 0.08);
+      box-shadow: 0 12px 24px -20px rgba(28, 37, 77, 0.6);
+      padding: 20px clamp(16px, 5vw, 32px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel__header h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .panel__header .en {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #7780a0;
+    }
+
+    .empty-state {
+      font-size: 0.95rem;
+      color: #6a7089;
+    }
+
+    .magazine {
+      display: grid;
+      gap: 20px;
+    }
+
+    .magazine__current {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(180px, 220px) 1fr;
+      align-items: center;
+    }
+
+    .magazine__cover {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      background: #d8dbea center/cover no-repeat;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px -18px rgba(0, 0, 0, 0.6);
+    }
+
+    .magazine__cover::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+      pointer-events: none;
+    }
+
+    .magazine__info {
+      display: grid;
+      gap: 8px;
+    }
+
+    .magazine__title {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .magazine__period {
+      font-size: 0.95rem;
+      color: #5f6785;
+    }
+
+    .magazine__desc {
+      margin: 0;
+      color: #444b63;
+      line-height: 1.55;
+    }
+
+    .magazine__history {
+      display: grid;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+
+    .magazine__history ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+    }
+
+    .magazine__history li {
+      color: #4860d0;
+    }
+
+    .standing {
+      display: grid;
+      gap: 18px;
+    }
+
+    .standing__card {
+      border: 1px solid rgba(47, 61, 136, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(245, 247, 255, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%);
+    }
+
+    .standing__card h3 {
+      margin: 0 0 12px;
+      font-size: 1.05rem;
+      color: #303658;
+    }
+
+    .standing__card table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .standing__card th,
+    .standing__card td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid rgba(41, 56, 125, 0.08);
+    }
+
+    .standing__card th {
+      font-weight: 600;
+      color: #4c5275;
+    }
+
+    .standing__card tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .team-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .team-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #d2d6e6 center/contain no-repeat;
+      flex-shrink: 0;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .topfive-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .topfive {
+      border: 1px solid rgba(47, 61, 136, 0.1);
+      border-radius: 12px;
+      padding: 14px;
+      background: #f8f9ff;
+      display: grid;
+      gap: 12px;
+    }
+
+    .topfive__metric {
+      font-weight: 600;
+      color: #2e3a7c;
+      font-size: 1rem;
+    }
+
+    .topfive table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    .topfive th,
+    .topfive td {
+      padding: 6px 6px;
+      text-align: left;
+      border-bottom: 1px solid rgba(33, 42, 84, 0.08);
+    }
+
+    .topfive tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .news {
+      display: grid;
+      gap: 20px;
+    }
+
+    .news__focus {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: minmax(220px, 320px) 1fr;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(51, 106, 255, 0.08), rgba(100, 132, 255, 0.12));
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .news__image {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 12px;
+      background: #d9def1 center/cover no-repeat;
+      overflow: hidden;
+    }
+
+    .news__details {
+      display: grid;
+      gap: 8px;
+    }
+
+    .news__title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .news__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: #4b5272;
+    }
+
+    .news__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .news__tags a {
+      font-size: 0.8rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(51, 102, 255, 0.12);
+      color: #3157c7;
+    }
+
+    .news__desc {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #3d4260;
+      line-height: 1.6;
+    }
+
+    .news__list {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .news__card {
+      display: grid;
+      gap: 10px;
+      border: 1px solid rgba(41, 61, 116, 0.12);
+      border-radius: 12px;
+      padding: 12px;
+      background: #fcfdff;
+    }
+
+    .news__card .news__image {
+      aspect-ratio: 16 / 9;
+    }
+
+    @media (max-width: 840px) {
+      header.topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .magazine__current,
+      .news__focus {
+        grid-template-columns: 1fr;
+      }
+
+      .news__focus {
+        padding: 16px 14px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      button#refresh {
+        width: 100%;
+      }
+
+      .topfive-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+    /* loading animation styles */
+    #loading_animation {
+      position: fixed; /* cover whole page */
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #fff; /* optional background */
+      z-index: 9999; /* keep on top */
+      transition: opacity 1s ease; /* fade duration */
+    }
+    #loading_animation.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #loading_animation iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    </style>
+
+  </head>
+  <body class="theme-light baseball-theme">
+
+    <!-- start of animation -->
+    <div id="loading_animation" width="100%" height="100%" >
+
+
+      <iframe src="loading_animation.html" frameborder="0" width="100%" height="100%">
+      </iframe>
+        <script>
+      // Wait 1.5 second, then fade out
+      setTimeout(() => {
+        document.getElementById("loading_animation").classList.add("fade-out");
+      }, 1500);
+      </script>
+    </div>
+    <!-- end of animation --> 
+
+    <!-- start of header --> 
+    <div>
+      <iframe src="header.html" frameborder="0" width="100%" height="80px" style="border:none;">
+      </iframe>
+    </div> 
+    <!-- end of header -->
+
+
+    
+  <header class="topbar">
+    <div class="topbar__title">
+      <h1>中華職業棒球大聯盟</h1>
+      <p>
+        CPBL Home Highlights
+      </p>
+    </div>
+    <div class="topbar__controls">
+      <button id="refresh" type="button">Refresh</button>
+      <div class="topbar__status">
+        <span id="status">Waiting for data...</span>
+        <span id="updatedAt">Last updated: never</span>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="panel" aria-labelledby="magazineHeading">
+      <div class="panel__header">
+        <h2 id="magazineHeading">職業棒球雜誌 <span class="en">magazines</span></h2>
+      </div>
+      <div id="magazineContent" class="magazine"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="standingHeading">
+      <div class="panel__header">
+        <h2 id="standingHeading">球隊戰績 <span class="en">standing</span></h2>
+      </div>
+      <div id="standingContent" class="standing"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="pitchingHeading">
+      <div class="panel__header">
+        <h2 id="pitchingHeading">投手TOP5 <span class="en">pitching leaders</span></h2>
+      </div>
+      <div id="pitchingContent" class="topfive-grid"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="battingHeading">
+      <div class="panel__header">
+        <h2 id="battingHeading">打擊TOP5 <span class="en">batting leaders</span></h2>
+      </div>
+      <div id="battingContent" class="topfive-grid"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="newsHeading">
+      <div class="panel__header">
+        <h2 id="newsHeading">最新消息 <span class="en">news</span></h2>
+      </div>
+      <div id="newsContent" class="news"></div>
+    </section>
+  </main>
+
+
+
+  
+  <script>
+    (function () {
+      const ENDPOINT = 'http://localhost:3000/home';
+      const AUTO_REFRESH_MS = 120000;
+
+      const els = {
+        status: document.getElementById('status'),
+        updatedAt: document.getElementById('updatedAt'),
+        refresh: document.getElementById('refresh'),
+        magazine: document.getElementById('magazineContent'),
+        standing: document.getElementById('standingContent'),
+        pitching: document.getElementById('pitchingContent'),
+        batting: document.getElementById('battingContent'),
+        news: document.getElementById('newsContent'),
+      };
+
+      let refreshTimer;
+
+      const createAnchor = (url, text, className) => {
+        const el = document.createElement(url ? 'a' : 'span');
+        if (className) el.className = className;
+        el.textContent = text || '';
+        if (url) {
+          el.href = url;
+          el.target = '_blank';
+          el.rel = 'noopener noreferrer';
+        }
+        return el;
+      };
+
+      const createEmpty = (message) => {
+        const p = document.createElement('p');
+        p.className = 'empty-state';
+        p.textContent = message;
+        return p;
+      };
+
+      const setBackgroundImage = (el, url) => {
+        if (url) {
+          el.style.backgroundImage = `url('${url}')`;
+        }
+      };
+
+      const renderMagazine = (data) => {
+        const container = els.magazine;
+        container.innerHTML = '';
+        if (!data || (!data.current && (!Array.isArray(data.history) || !data.history.length))) {
+          container.appendChild(createEmpty('No magazine data available right now.'));
+          return;
+        }
+
+        if (data.current) {
+          const current = document.createElement('div');
+          current.className = 'magazine__current';
+
+          const cover = document.createElement(data.current.url ? 'a' : 'div');
+          cover.className = 'magazine__cover';
+          setBackgroundImage(cover, data.current.image);
+          if (data.current.url) {
+            cover.href = data.current.url;
+            cover.target = '_blank';
+            cover.rel = 'noopener noreferrer';
+          }
+          cover.title = data.current.title || 'Magazine cover';
+
+          const info = document.createElement('div');
+          info.className = 'magazine__info';
+
+          info.appendChild(createAnchor(data.current.url, data.current.title || 'Current magazine', 'magazine__title'));
+          if (data.current.period) {
+            const period = document.createElement('div');
+            period.className = 'magazine__period';
+            period.textContent = data.current.period;
+            info.appendChild(period);
+          }
+          if (data.current.description) {
+            const desc = document.createElement('p');
+            desc.className = 'magazine__desc';
+            desc.textContent = data.current.description;
+            info.appendChild(desc);
+          }
+
+          current.appendChild(cover);
+          current.appendChild(info);
+          container.appendChild(current);
+        }
+
+        if (Array.isArray(data.history) && data.history.length) {
+          const history = document.createElement('div');
+          history.className = 'magazine__history';
+
+          const heading = document.createElement('div');
+          heading.textContent = 'Recent issues';
+          history.appendChild(heading);
+
+          const list = document.createElement('ul');
+          data.history.forEach((issue) => {
+            const li = document.createElement('li');
+            li.appendChild(createAnchor(issue.url, issue.title, ''));
+            list.appendChild(li);
+          });
+          history.appendChild(list);
+          container.appendChild(history);
+        }
+      };
+
+      const renderStandings = (data) => {
+        const container = els.standing;
+        container.innerHTML = '';
+        const hasRows = Array.isArray(data) && data.some((season) => Array.isArray(season.rows) && season.rows.length);
+        if (!hasRows) {
+          container.appendChild(createEmpty('No standings available.'));
+          return;
+        }
+
+        data.forEach((season) => {
+          if (!season || !Array.isArray(season.rows) || !season.rows.length) return;
+          const card = document.createElement('article');
+          card.className = 'standing__card';
+
+          const title = document.createElement('h3');
+          title.textContent = season.label || 'Standings';
+          card.appendChild(title);
+
+          const table = document.createElement('table');
+          const thead = document.createElement('thead');
+          thead.innerHTML = '<tr><th>#</th><th>Team</th><th>G</th><th>W-L-T</th><th>PCT</th><th>GB</th><th>Streak</th></tr>';
+          table.appendChild(thead);
+
+          const tbody = document.createElement('tbody');
+          season.rows.forEach((row) => {
+            const tr = document.createElement('tr');
+
+            const rankTd = document.createElement('td');
+            rankTd.textContent = row.rank || '-';
+            tr.appendChild(rankTd);
+
+            const teamTd = document.createElement('td');
+            teamTd.className = 'team-cell';
+            if (row.logo) {
+              const logo = document.createElement('span');
+              logo.className = 'team-logo';
+              setBackgroundImage(logo, row.logo);
+              teamTd.appendChild(logo);
+            }
+            teamTd.appendChild(createAnchor(row.teamUrl, row.team || 'Team', 'team-name'));
+            tr.appendChild(teamTd);
+
+            const gamesTd = document.createElement('td');
+            gamesTd.textContent = row.games || '';
+            tr.appendChild(gamesTd);
+
+            const recordTd = document.createElement('td');
+            recordTd.textContent = row.record || '';
+            tr.appendChild(recordTd);
+
+            const pctTd = document.createElement('td');
+            pctTd.textContent = row.winRate || '';
+            tr.appendChild(pctTd);
+
+            const gbTd = document.createElement('td');
+            gbTd.textContent = row.gamesBehind || '';
+            tr.appendChild(gbTd);
+
+            const streakTd = document.createElement('td');
+            streakTd.textContent = row.streak || '';
+            tr.appendChild(streakTd);
+
+            tbody.appendChild(tr);
+          });
+          table.appendChild(tbody);
+          card.appendChild(table);
+          container.appendChild(card);
+        });
+      };
+
+      const renderTopFive = (container, groups, emptyMessage) => {
+        container.innerHTML = '';
+        if (!Array.isArray(groups) || !groups.length) {
+          container.appendChild(createEmpty(emptyMessage));
+          return;
+        }
+
+        groups.forEach((group) => {
+          const card = document.createElement('article');
+          card.className = 'topfive';
+
+          const metric = document.createElement('div');
+          metric.className = 'topfive__metric';
+          metric.textContent = group.metric || 'Leaderboard';
+          card.appendChild(metric);
+
+          const table = document.createElement('table');
+          const thead = document.createElement('thead');
+          thead.innerHTML = '<tr><th>#</th><th>Player</th><th>Team</th><th>Stat</th></tr>';
+          table.appendChild(thead);
+
+          const tbody = document.createElement('tbody');
+          (group.players || []).forEach((player) => {
+            const tr = document.createElement('tr');
+
+            const rankTd = document.createElement('td');
+            rankTd.textContent = player.rank || '';
+            tr.appendChild(rankTd);
+
+            const nameTd = document.createElement('td');
+            nameTd.appendChild(createAnchor(player.playerUrl, player.player || '', ''));
+            tr.appendChild(nameTd);
+
+            const teamTd = document.createElement('td');
+            teamTd.textContent = player.team || '';
+            tr.appendChild(teamTd);
+
+            const valueTd = document.createElement('td');
+            valueTd.textContent = player.value || '';
+            tr.appendChild(valueTd);
+
+            tbody.appendChild(tr);
+          });
+          table.appendChild(tbody);
+          card.appendChild(table);
+          container.appendChild(card);
+        });
+      };
+
+      const renderNews = (data) => {
+        const container = els.news;
+        container.innerHTML = '';
+        const hasFocus = data && data.focus;
+        const hasItems = data && Array.isArray(data.items) && data.items.length;
+        if (!hasFocus && !hasItems) {
+          container.appendChild(createEmpty('No news posted yet.'));
+          return;
+        }
+
+        if (hasFocus) {
+          const focus = document.createElement('article');
+          focus.className = 'news__focus';
+
+          const img = document.createElement(data.focus.url ? 'a' : 'div');
+          img.className = 'news__image';
+          setBackgroundImage(img, data.focus.image);
+          if (data.focus.url) {
+            img.href = data.focus.url;
+            img.target = '_blank';
+            img.rel = 'noopener noreferrer';
+          }
+          img.title = data.focus.title || 'News image';
+
+          const details = document.createElement('div');
+          details.className = 'news__details';
+
+          const title = document.createElement('h3');
+          title.className = 'news__title';
+          const titleLink = createAnchor(data.focus.url, data.focus.title || 'Featured news', '');
+          title.appendChild(titleLink);
+          details.appendChild(title);
+
+          if (data.focus.date || (data.focus.tags && data.focus.tags.length)) {
+            const meta = document.createElement('div');
+            meta.className = 'news__meta';
+            if (data.focus.date) {
+              const date = document.createElement('span');
+              date.textContent = data.focus.date;
+              meta.appendChild(date);
+            }
+            if (Array.isArray(data.focus.tags) && data.focus.tags.length) {
+              const tags = document.createElement('div');
+              tags.className = 'news__tags';
+              data.focus.tags.forEach((tag) => {
+                tags.appendChild(createAnchor(tag.url, tag.title, ''));
+              });
+              meta.appendChild(tags);
+            }
+            details.appendChild(meta);
+          }
+
+          if (data.focus.description) {
+            const desc = document.createElement('p');
+            desc.className = 'news__desc';
+            desc.textContent = data.focus.description;
+            details.appendChild(desc);
+          }
+
+          focus.appendChild(img);
+          focus.appendChild(details);
+          container.appendChild(focus);
+        }
+
+        if (hasItems) {
+          const list = document.createElement('div');
+          list.className = 'news__list';
+          data.items.forEach((item) => {
+            const card = document.createElement('article');
+            card.className = 'news__card';
+
+            const img = document.createElement(item.url ? 'a' : 'div');
+            img.className = 'news__image';
+            setBackgroundImage(img, item.image);
+            if (item.url) {
+              img.href = item.url;
+              img.target = '_blank';
+              img.rel = 'noopener noreferrer';
+            }
+            card.appendChild(img);
+
+            const title = document.createElement('h4');
+            title.className = 'news__title';
+            title.appendChild(createAnchor(item.url, item.title || 'News', ''));
+            card.appendChild(title);
+
+            list.appendChild(card);
+          });
+          container.appendChild(list);
+        }
+      };
+
+      const scheduleRefresh = () => {
+        if (refreshTimer) {
+          clearTimeout(refreshTimer);
+        }
+        refreshTimer = setTimeout(loadData, AUTO_REFRESH_MS);
+      };
+
+      const loadData = async () => {
+        if (refreshTimer) {
+          clearTimeout(refreshTimer);
+        }
+        els.refresh.disabled = true;
+        els.status.textContent = 'Fetching latest data...';
+
+        try {
+          const response = await fetch(ENDPOINT, { cache: 'no-store' });
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}`);
+          }
+          const json = await response.json();
+
+          renderMagazine(json.magazines);
+          renderStandings(json.standings);
+          renderTopFive(els.pitching, json.pitchingTop5, 'No pitching leaderboard data.');
+          renderTopFive(els.batting, json.battingTop5, 'No batting leaderboard data.');
+          renderNews(json.news);
+
+          els.status.textContent = 'Data refreshed.';
+          const timestamp = json.fetchedAt ? new Date(json.fetchedAt) : new Date();
+          els.updatedAt.textContent = `Last updated: ${timestamp.toLocaleString()}`;
+        } catch (err) {
+          console.error(err);
+          els.status.textContent = `Error fetching data: ${err.message}`;
+          els.updatedAt.textContent = 'Last updated: failed';
+          els.magazine.innerHTML = '';
+          els.standing.innerHTML = '';
+          els.pitching.innerHTML = '';
+          els.batting.innerHTML = '';
+          els.news.innerHTML = '';
+          els.magazine.appendChild(createEmpty('Unable to load data.'));
+          els.standing.appendChild(createEmpty('Unable to load data.'));
+          els.pitching.appendChild(createEmpty('Unable to load data.'));
+          els.batting.appendChild(createEmpty('Unable to load data.'));
+          els.news.appendChild(createEmpty('Unable to load data.'));
+        } finally {
+          els.refresh.disabled = false;
+          scheduleRefresh();
+        }
+      };
+
+      els.refresh.addEventListener('click', loadData);
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          if (refreshTimer) {
+            clearTimeout(refreshTimer);
+          }
+        } else {
+          loadData();
+        }
+      });
+
+      loadData();
+    })();
+  </script>
+
+
+    
+
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Like Counter Demo</title>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      padding: 40px;
+      background: #0d1117;
+      color: white;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+    }
+
+    #likeBtn {
+      background: #e63946;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>❤️ My Personal Page</h1>
+
+  <h2 id="likeCount">Loading likes...</h2>
+
+  <button id="likeBtn">❤️ Like</button>
+
+<script>
+  // 1. Connect to Supabase
+  const supabase = supabase.createClient(
+    "https://YOUR_PROJECT.supabase.co",
+    "YOUR_ANON_KEY"
+  );
+
+  const PAGE_NAME = "my-personal-page";
+
+  // 2. Load like count
+  async function loadLikes() {
+    let { data } = await supabase
+      .from("likes")
+      .select("*")
+      .eq("page", PAGE_NAME)
+      .single();
+
+    if (!data) {
+      // First time — create it
+      const { data: newRow } = await supabase
+        .from("likes")
+        .insert([{ page: PAGE_NAME, count: 0 }])
+        .select()
+        .single();
+
+      data = newRow;
+    }
+
+    document.getElementById("likeCount").innerText =
+      `❤️ ${data.count} Likes`;
+  }
+
+  // 3. Add like + update database
+  async function addLike() {
+    // Get current row
+    const { data } = await supabase
+      .from("likes")
+      .select("*")
+      .eq("page", PAGE_NAME)
+      .single();
+
+    const newCount = data.count + 1;
+
+    await supabase
+      .from("likes")
+      .update({ count: newCount })
+      .eq("page", PAGE_NAME);
+
+    loadLikes(); // refresh display
+  }
+
+  document.getElementById("likeBtn").addEventListener("click", addLike);
+
+  loadLikes();
+</script>
+
+</body>
+
+<!-- ProBall Chatbot (auto-inject widget) -->
+<script src="chatbot.js"></script>
+</html>
